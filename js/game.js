@@ -1,8 +1,7 @@
 import { boardGen } from './gameBoard.js';
 import {createCamera, addCameraControls} from'./camera.js';
 import {createModels } from './modelMaker.js';
-import {HeightMap} from './heightMap.js';
-import {Melee, Defender, Ranged} from './actors.js'
+import {HeightMap, VanillaRandomHeightMap} from './heightMap.js';
 var height = window.innerHeight;
 var width = window.innerWidth;
 //create renderer
@@ -14,11 +13,13 @@ document.body.append(renderer.domElement);
 var scene = new THREE.Scene;
 scene.background = new THREE.Color("#C0C0C0");
 
-//Generate height map
-var heightMap = new HeightMap(4,3,5,1,-1).map;
+//Generate height map and obstacles array 
+var heightMap = new VanillaRandomHeightMap(4).map;
+let mapVerts = heightMap.length;
+var obstacles = [...Array(mapVerts-1)].map((_, i) => [...Array(mapVerts-1)].map((_, i) => 0));
 
 //call method from worldGeneration.js
-boardGen(scene, heightMap);
+boardGen(scene, heightMap, obstacles);
 
 //create camera and camera controls
 var camera = createCamera(width, height, renderer, scene);
@@ -33,15 +34,17 @@ function init(){
     def.model = scene.getObjectByName('defender');
     var mel = new Melee('Mike');
     mel.model = scene.getObjectByName('melee');
-    var ran = new Ranged('Rick');
+    var ran = new Range('Rick');
     ran.model = scene.getObjectByName('ranged');
-
+    for(let i = 0; i < obstacles.length;i++){
+        console.log(obstacles[i].toString());
+    }
     animate1();
 }
 
 //add event listeners
 //window.addEventListener('keypress', cameraRotation, false);
-//window.addEventListener('keypress', moveActor, false);
+window.addEventListener('keypress', moveActor, false);
 //call animate function
 
 //animation loop
