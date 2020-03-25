@@ -1,23 +1,10 @@
-import {
-    worldCreation,
-    generateSkybox,
-    fillBoard
-} from './js/worldGeneration.js';
-import {
-    createCamera,
-    addCameraControls
-} from './js/camera.js';
-import {
-    keyLifted,
-    movePlayer,
-    createModels,
-    loadCat,
-    initializeFirstCharacter
-} from './js/objectGeneration.js';
-import {
-    Node,
-    LinkedList
-} from './js/LinkedList.js';
+import { boardGen } from './js/gameBoard.js';
+import {createCamera, addCameraControls} from'./js/camera.js';
+import {createModels } from './js/modelMaker.js';
+import { keyLifted, movePlayer, changeCharacter, } from './js/objectGeneration.js';
+import {HeightMap} from './js/heightMap.js';
+import {Melee, Defender, Ranged} from './js/actors.js';
+import { addButtons, onEndTurnClick } from './js/HUD.js';
 
 //set window size
 var height = window.innerHeight;
@@ -32,16 +19,21 @@ document.body.append(renderer.domElement);
 var scene = new THREE.Scene();
 scene.background = new THREE.Color("#C0C0C0");
 
+//Generate height map
+var heightMap = new HeightMap(4,3,5,1,-1).map;
+
+//call method from worldGeneration.js
+boardGen(scene, heightMap);
+
 var camera = createCamera(width, height, renderer, scene);
-scene.add(camera);
+//scene.add(camera);
 var controls = addCameraControls(camera, renderer);
 
-worldCreation(scene);
-generateSkybox(scene);
-fillBoard(scene);
+// worldCreation(scene);
+// generateSkybox(scene);
+// fillBoard(scene);
 
-createModels();
-loadCat();
+//loadCat();
 
 const mapTopZ = 7.5;
 const mapRightX = -7.5;
@@ -56,29 +48,58 @@ function animate() { //returns void
 }
 
 var manager = new THREE.LoadingManager();
-let linked = new LinkedList();
-createModels(linked, manager);
+var charactersArray = [];
+var characterCount = 0;
+
+var managerEnemies = new THREE.LoadingManager();
+var enemiesArray = [];
+var enemyCount = 0;
+
+createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray);
+
+managerEnemies.onLoad = function() {
+    console.log("enemies loaded");
+}
 
 manager.onLoad = function () {
-    //var character = linked.head.element;
+    console.log(characterCount);
+
+    addButtons(charactersArray, enemiesArray);
+
     //Reference: https://stackoverflow.com/questions/8941183/pass-multiple-arguments-along-with-an-event-object-to-an-event-handler
-    var handler = function (character, linked) {
+    //var handler = function (character, linked) {
+    let handler = function (charactersArray) {
         return function (event) {
             if (event.key === 'w' || event.key === 'a' || event.key === 's' || event.key === 'd' || event.key === 'c')
-                movePlayer(character, event.key, linked);
-            else if (event.key === 'q')
+                movePlayer(event.key, charactersArray);
+            else if (event.key === 'r')
                 changeCharacter();
         };
     };
 
-    window.addEventListener('keydown', handler(character, linked), false);
-    window.addEventListener('keyup', keyLifted, false);
+    let raycaster = new THREE.Raycaster();
+    let mouse = new THREE.Vector2();
 
+    //Check this example for reference: https://threejs.org/examples/#webgl_interactive_lines
+    //event handler when clicking an enemy to attack (or possibly a teammate to heal?)
+    document.addEventListener('mousedown', onMouseDown, false);
+    function onMouseDown(event){
+        raycaster.setFromCamera(mouse, camera);     //place within render/animate function???
+
+        let intersects = raycaster.intersectObjects(scene.children, true);
+        console.log(intersects[0]);
+        console.log(intersects[0].object);
+        // console.log(intersects[0].object.name);
+    }
+
+    window.addEventListener('keydown', handler(charactersArray), false);
+    window.addEventListener('keyup', keyLifted, false);
+    console.log(characterCount);
     animate();
 }
 
 export {
-    scene, //charactersArray,
+    scene, charactersArray, enemiesArray,
     mapTopZ,
     mapRightX,
     mapBottomZ,

@@ -93,7 +93,6 @@ function clearRadius(scene, x, y, radius) {
 // Fills the board with multiple, invisible highlights
 // Creates the name of the highlight using it's x and z position
 function fillBoard(scene) {
-
     for (var i = 8; i > -9; i--) {
         for (var j = -8; j < 9; j++) {
             var temp = createHighlight();
@@ -105,7 +104,7 @@ function fillBoard(scene) {
     }
 
 }
-
+// !REPLACE with new skybox!
 function generateSkybox(scene) {
     var materialArray = [];
     var texture_ft = new THREE.TextureLoader().load('../textures/front.png');

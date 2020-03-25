@@ -1,8 +1,12 @@
 import { boardGen } from './gameBoard.js';
 import {createCamera, addCameraControls} from'./camera.js';
 import {createModels } from './modelMaker.js';
+import { keyLifted, movePlayer, changeCharacter, } from './objectGeneration.js';
 import {HeightMap} from './heightMap.js';
-import {Melee, Defender, Ranged} from './actors.js'
+import {Melee, Defender, Ranged} from './actors.js';
+import { addButtons, onEndTurnClick } from './HUD.js';
+
+
 var height = window.innerHeight;
 var width = window.innerWidth;
 //create renderer
@@ -26,7 +30,8 @@ var controls = addCameraControls(camera, renderer);
 
 const manager = new THREE.LoadingManager();
 manager.onLoad = init;
-createModels(manager,scene, heightMap);
+
+createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray);
 
 function init(){
     var def = new Defender('Dan');
