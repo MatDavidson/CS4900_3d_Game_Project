@@ -7,10 +7,11 @@ function createModels(manager, managerEnemies, scene, heightMap, charactersArray
   // var greenMat = new THREE.MeshLambertMaterial({color:0x11E020});
   var mixer;
   //load the obj
+  //floodfill uses the positions of the models
   const characters = {
-    melee: { url: './models/Pirate_Male.glb', name: 'melee', pos: 1.5 },
-    ranged: { url: './models/Ninja_Male.glb', name: 'ranged', pos: 2.5 },
-    defender: { url: './models/BlueSoldier_Female.glb', name: 'defender', pos: 0.5 },
+    melee: { url: './models/Pirate_Male.glb', name: 'melee', pos: 0 },
+    ranged: { url: './models/Ninja_Male.glb', name: 'ranged', pos: 1 },
+    defender: { url: './models/BlueSoldier_Female.glb', name: 'defender', pos: -1 },
   };
 
   const enemies = {
@@ -37,7 +38,7 @@ function createModels(manager, managerEnemies, scene, heightMap, charactersArray
 
 
       root.position.set(model.pos, 1.5, -3.75);
-      root.rotation.y += Math.PI;
+      //root.rotation.y += Math.PI;
       root.scale.set(.34, .34, .34)
       //root.visible = false;
 

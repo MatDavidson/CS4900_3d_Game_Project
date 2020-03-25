@@ -1,3 +1,6 @@
+/* THIS FILE IS UNUSED AS OF 3-24 */
+
+
 function worldCreation(scene) { //returns void
     //add lighting
     var light = new THREE.AmbientLight(0x404040, 15.0);
@@ -62,6 +65,7 @@ function characterRadius(scene, x, y, radius) {
     var temp = "highlight - " + x + " - " + y;
     var highlight = scene.getObjectByName(temp);
     if (highlight == undefined) {
+        console.log(":(");
         return;
     }
     highlight.visible = true;

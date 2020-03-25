@@ -9,10 +9,10 @@ import {
 import {
     characterRadius,
     clearRadius
-} from './worldGeneration.js';
+} from './gameBoard.js';
 
 var down = false;
-var characterCount = 1;
+var characterCount = 0;
 var enemyCount = 0;
 
 // Changes the seleceted character for the player
@@ -38,6 +38,10 @@ function movePlayer(key, charactersArray) {
     //create vector to hold object's location
     var positionVector = new THREE.Vector3();
     var currentCharacterObj = scene.getObjectByName(currentCharacter.name);
+    // console.log(currentCharacterObj.name);
+    // console.log(currentCharacterObj.turns);
+    //console.log(currentCharacterObj.position.x);
+
 
     while (currentCharacterObj.turns > 0) {
         if (down) //prevents obj from moving multiple spaces when key is held down
@@ -50,6 +54,7 @@ function movePlayer(key, charactersArray) {
             if (!(positionVector.z >= mapTopZ)) {
                 clearRadius(scene, currentCharacterObj.position.x, currentCharacterObj.position.z, currentCharacterObj.turns);
                 currentCharacterObj.position.z += 1;
+                console.log(positionVector.z);
             }
         } else if (event.key === 'a') { //a is pressed
             positionVector = currentCharacterObj.position;
@@ -57,6 +62,8 @@ function movePlayer(key, charactersArray) {
             if (!(positionVector.x >= mapLeftX)) {
                 clearRadius(scene, currentCharacterObj.position.x, currentCharacterObj.position.z, currentCharacterObj.turns);
                 currentCharacterObj.position.x += 1;
+                console.log(positionVector.x);
+
             }
         } else if (event.key === 's') { //s is pressed
             positionVector = currentCharacterObj.position;
@@ -114,7 +121,6 @@ function enemiesTurn(enemiesArray, enemyCount) {
     //create vector to hold object's location
     var positionVector = new THREE.Vector3();
     var currentEnemyObj = scene.getObjectByName(currentEnemy.name);
-
 
     while (currentEnemyObj.turns > 0) {
 

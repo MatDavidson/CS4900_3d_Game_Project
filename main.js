@@ -1,4 +1,4 @@
-import { boardGen } from './js/gameBoard.js';
+import { boardGen, fillBoard, generateSkybox, characterRadius } from './js/gameBoard.js';
 import {createCamera, addCameraControls} from'./js/camera.js';
 import {createModels } from './js/modelMaker.js';
 import { keyLifted, movePlayer, changeCharacter, } from './js/objectGeneration.js';
@@ -30,8 +30,8 @@ var camera = createCamera(width, height, renderer, scene);
 var controls = addCameraControls(camera, renderer);
 
 // worldCreation(scene);
-// generateSkybox(scene);
-// fillBoard(scene);
+generateSkybox(scene);
+fillBoard(scene);
 
 //loadCat();
 
@@ -64,11 +64,11 @@ managerEnemies.onLoad = function() {
 manager.onLoad = function () {
     console.log(characterCount);
 
-    addButtons(charactersArray, enemiesArray);
+    /////////////////addButtons(charactersArray, enemiesArray);
 
     //Reference: https://stackoverflow.com/questions/8941183/pass-multiple-arguments-along-with-an-event-object-to-an-event-handler
     //var handler = function (character, linked) {
-    let handler = function (charactersArray) {
+    var handler = function (charactersArray) {
         return function (event) {
             if (event.key === 'w' || event.key === 'a' || event.key === 's' || event.key === 'd' || event.key === 'c')
                 movePlayer(event.key, charactersArray);
