@@ -1,6 +1,6 @@
 //This file creates the layout of the scene
 function boardGen(scene, heightMap, obstacles) {
-  let mapVerts = heightMap.length;
+  var mapVerts = heightMap.length;
   //add lighting
   var light = new THREE.AmbientLight( 0x404040, 15.0 );
   light.position.set(1, 1, 1);
@@ -21,7 +21,7 @@ function boardGen(scene, heightMap, obstacles) {
   floorMesh.rotation.x -= Math.PI / 2;
 
   //Extraact the position array from the PlaneBufferGeometry
-  var positions = floorGeom.getAttribute('position').array;
+  let positions = floorGeom.getAttribute('position').array;
 
   //Convert the heightMap to a 1d array
   var hM = [];
@@ -48,6 +48,8 @@ function boardGen(scene, heightMap, obstacles) {
   layer1(obstacles);
   //add elements
   scene.add(light, floorMesh, line);
+  //
+  createHighlights();
 
   //add natural terrain objects to the map
   function layer1(obstacles){
@@ -174,6 +176,44 @@ function boardGen(scene, heightMap, obstacles) {
       return true;
     }
     return false;
+  }
+  //Create the highlights for the gameboard
+  function createHighlights(){
+    for (let i = 0; i < heightMap.length-1; i++) {
+      for (let j = 0; j < heightMap.length-1; j++) {
+        let temp = createHighlight(i,j);
+        //temp.position.set(i, 0.2, j);
+        temp.name = "highlight - " + i + " - " + j;
+        //console.log(temp.name);
+        //temp.visible = false;
+        scene.add(temp);
+      }
+    }
+  }
+  //
+  function createHighlight(y, x){
+    var highlightPlane = new THREE.PlaneBufferGeometry(1, 1, 1, 1);
+    var highlightMaterial = new THREE.MeshBasicMaterial({
+      color: "#FFD700",
+      transparent: true,
+      opacity: 0.5
+    });
+    let positions = highlightPlane.getAttribute('position').array;
+
+    positions[2] = heightMap[y][x];
+    positions[5] = heightMap[y][x+1];
+    positions[8] = heightMap[y+1][x];
+    positions[11] = heightMap[y+1][x+1];
+
+    // Creating highlight
+    var highLightMesh = new THREE.Mesh(highlightPlane, highlightMaterial);
+    
+    highLightMesh.rotation.x -= Math.PI / 2;
+    
+    return highLightMesh;
+  }
+  function placeHighlight(plane, y, x){
+    
   }
 }
 

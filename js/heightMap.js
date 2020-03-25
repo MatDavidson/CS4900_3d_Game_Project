@@ -101,13 +101,13 @@ function getNoise() {
     result = 0;
   else if(roll > 60 && roll < 90)
     if(sign > 0)
+      result = Math.random()/4;
+    else 
+      result = -1 * Math.random()/4;
+  else  
+    if(sign > 0)
       result = Math.random()/2;
     else 
       result = -1 * Math.random()/2;
-  else  
-    if(sign > 0)
-      result = Math.random();
-    else 
-      result = -1 * Math.random();
   return result;
 }
