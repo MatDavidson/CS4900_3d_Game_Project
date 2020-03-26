@@ -1,9 +1,10 @@
 import {layer1} from './layer1.js';
+import {createHighlights} from './highlights.js';
 
 //This file creates the layout of the scene
 function boardGen(scene, heightMap, obstacles) {
   var mapVerts = heightMap.length;
-  let unit = mapVerts/(mapVerts - 1);
+  
   //add lighting
   var light = new THREE.AmbientLight( 0x404040, 15.0 );
   light.position.set(1, 1, 1);
@@ -45,53 +46,14 @@ function boardGen(scene, heightMap, obstacles) {
   line.material.transparent = false;
   line.rotation.x -= Math.PI / 2;
   
-  floorMesh.name = floorMesh;
+  floorMesh.name = 'floorMesh';
   
   //add natural terrain objects to the map
   layer1(scene, obstacles, mapVerts);
   //add elements
   scene.add(light, floorMesh, line);
-  //
-  createHighlights();
-  
-  //Create the highlights for the gameboard
-  function createHighlights(){
-    for (let i = 0; i < heightMap.length-1; i++) {
-      for (let j = 0; j < heightMap.length-1; j++) {
-        let temp = createHighlight(i,j);
-        //temp.position.set(i, 0.2, j);
-        temp.name = "highlight - " + i + " - " + j;
-        //console.log(temp.name);
-        //temp.visible = false;
-        scene.add(temp);
-      }
-    }
-  }
-  //
-  function createHighlight(y, x){
-    var highlightPlane = new THREE.PlaneBufferGeometry(1, 1, 1, 1);
-    var highlightMaterial = new THREE.MeshBasicMaterial({
-      color: "#FFD700",
-      transparent: true,
-      opacity: 0.5
-    });
-    let positions = highlightPlane.getAttribute('position').array;
-
-    positions[2] = heightMap[y][x];
-    positions[5] = heightMap[y][x+1];
-    positions[8] = heightMap[y+1][x];
-    positions[11] = heightMap[y+1][x+1];
-
-    // Creating highlight
-    var highLightMesh = new THREE.Mesh(highlightPlane, highlightMaterial);
-    
-    highLightMesh.rotation.x -= Math.PI / 2;
-    
-    return highLightMesh;
-  }
-  function placeHighlight(plane, y, x){
-    
-  }
+  //add the highlight layers
+  createHighlights(scene, heightMap, mapVerts, obstacles);
 }
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));

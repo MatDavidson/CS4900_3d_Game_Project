@@ -12,7 +12,7 @@
     let caster = new THREE.Raycaster(new THREE.Vector3(0,0,0), down);
     let unit = mapVerts/(mapVerts - 1);
     let mid = (mapVerts - 1)/2;
-    console.log(numObjs);
+    //console.log(numObjs);
 
     //Setup an array of model properties
     const models = [
@@ -38,47 +38,47 @@
         //Check that the next model will not go to a quad that is too crowded
         while(quad == mostPopulated){
           quad = getRandomInt(4);
-          console.log('Quad change')
+          //console.log('Quad change')
         }
 
         //Place the model in a random location based on the random quad variable and mark its location on the obstacles array
         if(quad == 0){
           //For each quadrant, call isOccupied to ensure that each piece goes to an empty spot
-          while(isOccupied(obstacles,mid-y-1,mid-x-1)){
-            x = getRandomInt(mid);
-            y = getRandomInt(mid);
-            console.log('Coord Change');
-          }
-          root.position.set((unit/2) + x*unit, 0.01, (unit/2) + y*unit);
-          obstacles[mid-y-1][mid-x-1] = 1;
-        }
-        else if(quad == 1){
-          while(isOccupied(obstacles,mid+y,mid-x-1)){
-            x = getRandomInt(mid);
-            y = getRandomInt(mid);
-            console.log('Coord Change');
-          }  
-          root.position.set((unit/2) + x*unit, 0.01, -(unit/2) - y*unit);
-          obstacles[mid+y][mid-x-1] = 1;
-
-        }
-        else if(quad ==2){
           while(isOccupied(obstacles,mid+y,mid+x)){
             x = getRandomInt(mid);
             y = getRandomInt(mid);
-            console.log('Coord Change');
-          }  
-          root.position.set(-(unit/2) - x*unit, 0.01, -(unit/2) - y*unit);
+            //console.log('Coord Change');
+          }
+          root.position.set((unit/2) + x*unit, 0.01, (unit/2) + y*unit);
           obstacles[mid+y][mid+x] = 1;
         }
-        else{
+        else if(quad == 1){
           while(isOccupied(obstacles,mid-y-1,mid+x)){
             x = getRandomInt(mid);
             y = getRandomInt(mid);
-            console.log('Coord Change');
+            //console.log('Coord Change');
+          }  
+          root.position.set((unit/2) + x*unit, 0.01, -(unit/2) - y*unit);
+          obstacles[mid-y-1][mid+x] = 1;
+
+        }
+        else if(quad ==2){
+          while(isOccupied(obstacles,mid-y-1,mid-x-1)){
+            x = getRandomInt(mid);
+            y = getRandomInt(mid);
+            //console.log('Coord Change');
+          }  
+          root.position.set(-(unit/2) - x*unit, 0.01, -(unit/2) - y*unit);
+          obstacles[mid-y-1][mid-x-1] = 1;
+        }
+        else{
+          while(isOccupied(obstacles,mid+y,mid-x-1)){
+            x = getRandomInt(mid);
+            y = getRandomInt(mid);
+            //console.log('Coord Change');
           }  
           root.position.set(-(unit/2) - x*unit, 0.01, (unit/2) + y*unit);
-          obstacles[mid-y-1][mid+x] = 1;
+          obstacles[mid+y][mid-x-1] = 1;
         }
         
         quads[quad]+=1;
@@ -86,9 +86,9 @@
         if(quads[mostPopulated] < quads[quad]){
           mostPopulated = quad;
         }  
-        console.log('Highest Populated: ', mostPopulated, ' with ', quads[mostPopulated], ' models.');
-        console.log(quads.toString())
-        console.log('Quad ', quad)
+        // console.log('Highest Populated: ', mostPopulated, ' with ', quads[mostPopulated], ' models.');
+        // console.log(quads.toString())
+        // console.log('Quad ', quad)
         //Give the model a random rotation
         let rotate = getRandomInt(3);
         if(rotate == 0){

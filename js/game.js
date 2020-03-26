@@ -39,6 +39,13 @@ function init(){
     for(let i = 0; i < obstacles.length;i++){
         console.log(obstacles[i].toString());
     }
+
+    for (let i = 0; i < heightMap.length-1; i++) {
+        for (let j = 0; j < heightMap.length-1; j++) {
+            if(obstacles[i][j] == 1)
+                scene.getObjectByName("highlight - " + i + " - " + j).visible = false;
+        }
+    }
     animate1();
 }
 
