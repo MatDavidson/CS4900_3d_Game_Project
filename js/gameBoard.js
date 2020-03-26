@@ -6,7 +6,6 @@ function boardGen(scene, heightMap) {
     var light = new THREE.AmbientLight(0x404040, 15.0);
     light.position.set(1, 1, 1);
 
-
     //console.log(heightMap.toString())
 
     //add map texture
@@ -21,8 +20,6 @@ function boardGen(scene, heightMap) {
     //add floor
     var mapVerts = heightMap.length;
     var floorGeom = new THREE.PlaneBufferGeometry(mapVerts, mapVerts, mapVerts - 1, mapVerts - 1);
-
-
 
     var floorMesh = new THREE.Mesh(floorGeom, material);
     floorMesh.rotation.x -= Math.PI / 2;
@@ -61,7 +58,7 @@ function boardGen(scene, heightMap) {
 // Fills the board with multiple, invisible highlights
 // Creates the name of the highlight using it's x and z position
 function fillBoard(scene) {
-//will need to look at why the highlights are uncentered
+/////////////////// !This needs to be altered once we have our character placement ready! //////////////////////////////////////
     for (var i = 8; i > -9; i--) {
         for (var j = -8; j < 9; j++) {
             var temp = createHighlight();
@@ -105,9 +102,10 @@ function characterRadius(scene, x, y, radius) {
 
     // This is the implementation of flood fill
     // !Uses the object's position in order to find the correct highlight; keep this in mind when scaling
-    characterRadius(scene, x + 1.25, y, radius - 1);
+    /////////////////// !This needs to be altered once we have our character placement ready! //////////////////////////////////////
+    characterRadius(scene, x + 1, y, radius - 1);
     characterRadius(scene, x, y + .75, radius - 1);
-    characterRadius(scene, x - 1.25, y, radius - 1);
+    characterRadius(scene, x - 1, y, radius - 1);
     characterRadius(scene, x, y - .75, radius - 1);
 
     // Finds the highlight in the scene if it exists and 
@@ -125,15 +123,16 @@ function characterRadius(scene, x, y, radius) {
 
 // Works the same as characterRadius, but sets
 // highlight visibility to false
+/////////////////// !This needs to be altered once we have our character placement ready! //////////////////////////////////////
 function clearRadius(scene, x, y, radius) {
 
     if (radius == -1) {
         return;
     }
 
-    clearRadius(scene, x + 1.25, y, radius - 1);
+    clearRadius(scene, x + 1, y, radius - 1);
     clearRadius(scene, x, y + .75, radius - 1);
-    clearRadius(scene, x - 1.25, y, radius - 1);
+    clearRadius(scene, x - 1, y, radius - 1);
     clearRadius(scene, x, y - .75, radius - 1);
 
     var temp = "highlight - " + x + " - " + y;
