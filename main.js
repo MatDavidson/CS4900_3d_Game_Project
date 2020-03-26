@@ -83,12 +83,50 @@ manager.onLoad = function () {
     //Check this example for reference: https://threejs.org/examples/#webgl_interactive_lines
     //event handler when clicking an enemy to attack (or possibly a teammate to heal?)
     document.addEventListener('mousedown', onMouseDown, false);
-    function onMouseDown(event){
-        raycaster.setFromCamera(mouse, camera);     //place within render/animate function???
+    //create different looking highlight based on if something is in range
+    /////////// vv see below vv document.addEventListener('mousemove', onMouseMove, false);
 
-        let intersects = raycaster.intersectObjects(scene.children, true);
-        console.log(intersects[0]);
-        console.log(intersects[0].object);
+    // function onMouseMove(event){
+    //     event.preventDefault();
+    //     mouse.set((event.clientX / window.innerWidth) * 2 -1, - (event.clientY / window.innerHeight ) * 2 + 1);
+    //     raycaster.setFromCamera(mouse, camera);
+    
+    //     var intersects = raycaster.intersectObjects(enemiesArray);
+
+    //     /////in progress
+    // }
+
+    function onMouseDown(event){
+
+        event.preventDefault();
+
+        
+        mouse.set((event.clientX / window.innerWidth) * 2 -1, - (event.clientY / window.innerHeight ) * 2 + 1);
+        raycaster.setFromCamera(mouse, camera);
+
+        //IN PROGRESS - it is not getting the correct object values we need
+        // Example: name is Body_0 (maybe need to access it through root?? Not sure)
+        // The object type is Skinned Mesh
+        var intersects = raycaster.intersectObjects(scene.children, true);
+
+        //testing purposes
+         if(intersects.length > 0){
+             var intersect = intersects[0];
+             console.log(intersect);
+        //     var cubeGeo = new THREE.BoxBufferGeometry(50, 50, 50);
+        //     var cubeMaterial = new THREE.MeshBasicMaterial({
+        //         color: 0xfeb74c
+        //     });
+        //     var placeholder = new THREE.Mesh(cubeGeo, cubeMaterial);
+        //     placeholder.position.copy(intersect.point);
+        //     //.add(intersect.face.normal);
+        //     scene.add(placeholder);
+        }
+
+        //render();
+
+        // console.log(intersects[0]);
+        // console.log(intersects[0].object);
         // console.log(intersects[0].object.name);
     }
 
