@@ -40,69 +40,70 @@
           quad = getRandomInt(4);
           //console.log('Quad change')
         }
-
         //Place the model in a random location based on the random quad variable and mark its location on the obstacles array
-        if(quad == 0){
-          //For each quadrant, call isOccupied to ensure that each piece goes to an empty spot
-          while(isOccupied(obstacles,mid+y,mid+x)){
-            x = getRandomInt(mid);
-            y = getRandomInt(mid);
-            //console.log('Coord Change');
-          }
-          root.position.set((unit/2) + x*unit, 0.01, (unit/2) + y*unit);
-          obstacles[mid+y][mid+x] = 1;
-        }
-        else if(quad == 1){
-          while(isOccupied(obstacles,mid-y-1,mid+x)){
-            x = getRandomInt(mid);
-            y = getRandomInt(mid);
-            //console.log('Coord Change');
-          }  
-          root.position.set((unit/2) + x*unit, 0.01, -(unit/2) - y*unit);
-          obstacles[mid-y-1][mid+x] = 1;
-
-        }
-        else if(quad ==2){
-          while(isOccupied(obstacles,mid-y-1,mid-x-1)){
-            x = getRandomInt(mid);
-            y = getRandomInt(mid);
-            //console.log('Coord Change');
-          }  
-          root.position.set(-(unit/2) - x*unit, 0.01, -(unit/2) - y*unit);
-          obstacles[mid-y-1][mid-x-1] = 1;
-        }
-        else{
-          while(isOccupied(obstacles,mid+y,mid-x-1)){
-            x = getRandomInt(mid);
-            y = getRandomInt(mid);
-            //console.log('Coord Change');
-          }  
-          root.position.set(-(unit/2) - x*unit, 0.01, (unit/2) + y*unit);
-          obstacles[mid+y][mid-x-1] = 1;
-        }
+        switch(quad){
+          case 0:
+            while(isOccupied(obstacles,mid+y,mid+x)){
+              x = getRandomInt(mid);
+              y = getRandomInt(mid);
+              //console.log('Coord Change');
+            }
+            root.position.set((unit/2) + x*unit, 0.01, (unit/2) + y*unit);
+            obstacles[mid+y][mid+x] = 1;
+            break;
+          case 1:
+            while(isOccupied(obstacles,mid-y-1,mid+x)){
+              x = getRandomInt(mid);
+              y = getRandomInt(mid);
+              //console.log('Coord Change');
+            }  
+            root.position.set((unit/2) + x*unit, 0.01, -(unit/2) - y*unit);
+            obstacles[mid-y-1][mid+x] = 1;
+            break;
+          case 2:
+            while(isOccupied(obstacles,mid-y-1,mid-x-1)){
+              x = getRandomInt(mid);
+              y = getRandomInt(mid);
+              //console.log('Coord Change');
+            }  
+            root.position.set(-(unit/2) - x*unit, 0.01, -(unit/2) - y*unit);
+            obstacles[mid-y-1][mid-x-1] = 1;
+            break;
+          case 3:
+            while(isOccupied(obstacles,mid+y,mid-x-1)){
+              x = getRandomInt(mid);
+              y = getRandomInt(mid);
+              //console.log('Coord Change');
+            }
+            root.position.set(-(unit/2) - x*unit, 0.01, (unit/2) + y*unit);
+            obstacles[mid+y][mid-x-1] = 1;
+            break;
+        }//end switch
         
         quads[quad]+=1;
 
         if(quads[mostPopulated] < quads[quad]){
           mostPopulated = quad;
         }  
-        // console.log('Highest Populated: ', mostPopulated, ' with ', quads[mostPopulated], ' models.');
-        // console.log(quads.toString())
-        // console.log('Quad ', quad)
+      
         //Give the model a random rotation
         let rotate = getRandomInt(3);
-        if(rotate == 0){
-        root.rotation.y += Math.PI;
-        }
-        else if(rotate == 1){
-          root.rotation.y += Math.PI / 2;
-        }
-        else{
-          root.rotation.y -= Math.PI / 2;
+
+        switch(rotate){
+          case 0:
+            root.rotation.y += Math.PI;
+            break;
+          case 1:
+            root.rotation.y += Math.PI / 2;
+            break;
+          case 2:
+            root.rotation.y -= Math.PI / 2;
+            break;
         }
 
         //Set the scale of the models
-        root.scale.set(models[choice].scale,models[choice].scale,models[choice].scale)
+        let sc = models[choice].scale;
+        root.scale.set(sc,sc,sc);
 
         //Set the height of the models
         caster.set(root.position, down);
@@ -126,4 +127,4 @@
     }
     return false;
   }
-  export{layer1};
+  export{layer1, isOccupied};

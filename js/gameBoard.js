@@ -53,7 +53,7 @@ function boardGen(scene, heightMap, obstacles) {
   //add elements
   scene.add(light, floorMesh, line);
   //add the highlight layers
-  createHighlights(scene, heightMap, mapVerts, obstacles);
+  createHighlights(scene, heightMap, mapVerts);
 }
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));

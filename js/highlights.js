@@ -1,5 +1,5 @@
 //Create the highlights for the gameboard
-function createHighlights(scene, heightMap, mapVerts, obstacles){
+function createHighlights(scene, heightMap, mapVerts){
     let unit = mapVerts/(mapVerts - 1);
     let mid = (mapVerts - 1)/2;
 
@@ -7,7 +7,6 @@ function createHighlights(scene, heightMap, mapVerts, obstacles){
         for (let j = 0; j < heightMap.length-1; j++) {
             let temp = createHighlight(j,i);
             temp.name = "highlight - " + j + " - " + i;
-
             scene.add(temp);
         }
     }
@@ -31,34 +30,34 @@ function createHighlights(scene, heightMap, mapVerts, obstacles){
         var highlightMesh = new THREE.Mesh(highlightPlane, highlightMaterial);
         
         highlightMesh.rotation.x -= Math.PI / 2;
-        placeHighlight(highlightMesh, x, y);
+        placeObject(highlightMesh, x, y, mid, unit);
         return highlightMesh;
     }
-
-    function placeHighlight(plane, x, y){
-        let quad = getQuad(x, y);
+}
+    function placeObject(object, x, y, mid, unit){
+        let quad = getQuad(x, y, mid);
         let horizontal = getDiff(mid, x);
         let vertical = getDiff(mid, y);
 
         switch(quad){
         case 0:
-            plane.position.set((unit/2) + horizontal*unit, 0.011, (unit/2) + vertical*unit);
+            object.position.set((unit/2) + horizontal*unit, 0.011, (unit/2) + vertical*unit);
             break;
         case 1:
-            plane.position.set((unit/2) + horizontal*unit, 0.011, -(unit/2) - (vertical - 1)*unit);
+            object.position.set((unit/2) + horizontal*unit, 0.011, -(unit/2) - (vertical - 1)*unit);
             break;
         case 2:
-            plane.position.set((-(unit/2) - (horizontal-1)*unit), 0.011, -(unit/2) - (vertical - 1)*unit);
+            object.position.set((-(unit/2) - (horizontal-1)*unit), 0.011, -(unit/2) - (vertical - 1)*unit);
             break;
         case 3:
-            plane.position.set((-(unit/2) - (horizontal-1)*unit), 0.011, (unit/2) + vertical*unit);
+            object.position.set((-(unit/2) - (horizontal-1)*unit), 0.011, (unit/2) + vertical*unit);
             break;
         default:
             break;
         }
     }
 
-    function getQuad(x, y){
+    function getQuad(x, y, mid){
         if(x > mid && y > mid-1)
         return 0;
         else if(x > mid-1 && y < mid)
@@ -76,9 +75,9 @@ function createHighlights(scene, heightMap, mapVerts, obstacles){
         else    
             return int1 - int2;
     }
-}
 
-export{createHighlights};
+
+export{createHighlights, placeObject };
 
     
 
