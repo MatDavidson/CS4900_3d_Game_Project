@@ -5,17 +5,20 @@ function createHighlights(scene, heightMap, mapVerts){
 
     for (let i = 0; i < heightMap.length-1; i++) {
         for (let j = 0; j < heightMap.length-1; j++) {
-            let temp = createHighlight(j,i);
-            temp.name = "highlight - " + j + " - " + i;
+            let temp = createHighlight(j,i, "#eb1409"/*red*/);
+            let temp2 = createHighlight(j,i, "#0d3bd4"/*blue*/);
+            temp.name = "highlightR - " + j + " - " + i;
+            temp2.name = "highlightB - " + j + " - " + i;
             scene.add(temp);
+            scene.add(temp2);
         }
     }
 
     //
-    function createHighlight(y, x){
+    function createHighlight(y, x, col){
         var highlightPlane = new THREE.PlaneBufferGeometry(unit, unit, 1, 1);
         var highlightMaterial = new THREE.MeshBasicMaterial({
-        color: "#FFD700",
+        color: col,
         transparent: true,
         opacity: 0.5
         });
@@ -41,16 +44,16 @@ function createHighlights(scene, heightMap, mapVerts){
 
         switch(quad){
         case 0:
-            object.position.set((unit/2) + horizontal*unit, 0.011, (unit/2) + vertical*unit);
+            object.position.set((unit/2) + horizontal*unit, 0.01, (unit/2) + vertical*unit);
             break;
         case 1:
-            object.position.set((unit/2) + horizontal*unit, 0.011, -(unit/2) - (vertical - 1)*unit);
+            object.position.set((unit/2) + horizontal*unit, 0.01, -(unit/2) - (vertical - 1)*unit);
             break;
         case 2:
-            object.position.set((-(unit/2) - (horizontal-1)*unit), 0.011, -(unit/2) - (vertical - 1)*unit);
+            object.position.set((-(unit/2) - (horizontal-1)*unit), 0.01, -(unit/2) - (vertical - 1)*unit);
             break;
         case 3:
-            object.position.set((-(unit/2) - (horizontal-1)*unit), 0.011, (unit/2) + vertical*unit);
+            object.position.set((-(unit/2) - (horizontal-1)*unit), 0.01, (unit/2) + vertical*unit);
             break;
         default:
             break;

@@ -42,9 +42,16 @@ function init(){
 
     for (let i = 0; i < heightMap.length-1; i++) {
         for (let j = 0; j < heightMap.length-1; j++) {
-            if(obstacles[i][j] == 1)
-                scene.getObjectByName("highlight - " + i + " - " + j).visible = false;
+            if(obstacles[i][j] == 1){
+                scene.getObjectByName("highlightR - " + i + " - " + j).visible = false;
+                scene.getObjectByName("highlightB - " + i + " - " + j).visible = false;
+            }    
         }
+    }
+    for (let i = 0; i < heightMap.length-1; i++) {
+        scene.getObjectByName("highlightB - 5 - " + i).visible = false;
+        scene.getObjectByName("highlightR - 6 - " + i).visible = false;
+
     }
     animate1();
 }
