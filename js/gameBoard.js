@@ -58,5 +58,49 @@ function boardGen(scene, heightMap, obstacles) {
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
 }
-export{boardGen, getRandomInt};
+//set the position of an object. Method exported for use in other files
+function placeObject(object, x, y, mapVerts){
+  let unit = mapVerts/(mapVerts - 1);
+  let mid = (mapVerts - 1)/2;
+  let quad = getQuad(x, y, mid);
+  let horizontal = getDiff(mid, x);
+  let vertical = getDiff(mid, y);
+
+  switch(quad){
+  case 0:
+      object.position.set((unit/2) + horizontal*unit, 0.01, (unit/2) + vertical*unit);
+      break;
+  case 1:
+      object.position.set((unit/2) + horizontal*unit, 0.01, -(unit/2) - (vertical - 1)*unit);
+      break;
+  case 2:
+      object.position.set((-(unit/2) - (horizontal-1)*unit), 0.01, -(unit/2) - (vertical - 1)*unit);
+      break;
+  case 3:
+      object.position.set((-(unit/2) - (horizontal-1)*unit), 0.01, (unit/2) + vertical*unit);
+      break;
+  default:
+      break;
+  }
+}
+
+function getQuad(x, y, mid){
+  if(x > mid && y > mid-1)
+  return 0;
+  else if(x > mid-1 && y < mid)
+  return 1;
+  else if(x < mid && y < mid)
+  return 2;
+  else 
+  return 3;
+}
+
+//Get the difference between two ints
+function getDiff(int1, int2){
+  if(int2 > int1)
+      return int2 - int1;
+  else    
+      return int1 - int2;
+}
+export{boardGen, getRandomInt, placeObject, getQuad};
 

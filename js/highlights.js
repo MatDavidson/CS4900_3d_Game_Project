@@ -1,8 +1,10 @@
+import {placeObject} from './gameBoard.js';
+
 //Create the highlights for the gameboard
 function createHighlights(scene, heightMap, mapVerts){
     let unit = mapVerts/(mapVerts - 1);
-    let mid = (mapVerts - 1)/2;
 
+    //For every tile on the map, create a red and blue highlight that adheres to the surface.
     for (let i = 0; i < heightMap.length-1; i++) {
         for (let j = 0; j < heightMap.length-1; j++) {
             let temp = createHighlight(j,i, "#eb1409"/*red*/);
@@ -14,7 +16,7 @@ function createHighlights(scene, heightMap, mapVerts){
         }
     }
 
-    //
+    //Create a single highlight object and set its position
     function createHighlight(y, x, col){
         var highlightPlane = new THREE.PlaneBufferGeometry(unit, unit, 1, 1);
         var highlightMaterial = new THREE.MeshBasicMaterial({
@@ -22,6 +24,8 @@ function createHighlights(scene, heightMap, mapVerts){
         transparent: true,
         opacity: 0.5
         });
+
+        //Set the height for each corner of the highlight
         let positions = highlightPlane.getAttribute('position').array;
 
         positions[2] = heightMap[y][x];
@@ -33,54 +37,12 @@ function createHighlights(scene, heightMap, mapVerts){
         var highlightMesh = new THREE.Mesh(highlightPlane, highlightMaterial);
         
         highlightMesh.rotation.x -= Math.PI / 2;
-        placeObject(highlightMesh, x, y, mid, unit);
+        placeObject(highlightMesh, x, y, mapVerts);
         return highlightMesh;
     }
 }
-    function placeObject(object, x, y, mid, unit){
-        let quad = getQuad(x, y, mid);
-        let horizontal = getDiff(mid, x);
-        let vertical = getDiff(mid, y);
 
-        switch(quad){
-        case 0:
-            object.position.set((unit/2) + horizontal*unit, 0.01, (unit/2) + vertical*unit);
-            break;
-        case 1:
-            object.position.set((unit/2) + horizontal*unit, 0.01, -(unit/2) - (vertical - 1)*unit);
-            break;
-        case 2:
-            object.position.set((-(unit/2) - (horizontal-1)*unit), 0.01, -(unit/2) - (vertical - 1)*unit);
-            break;
-        case 3:
-            object.position.set((-(unit/2) - (horizontal-1)*unit), 0.01, (unit/2) + vertical*unit);
-            break;
-        default:
-            break;
-        }
-    }
-
-    function getQuad(x, y, mid){
-        if(x > mid && y > mid-1)
-        return 0;
-        else if(x > mid-1 && y < mid)
-        return 1;
-        else if(x < mid && y < mid)
-        return 2;
-        else 
-        return 3;
-    }
-
-    //Get the difference between two ints
-    function getDiff(int1, int2){
-        if(int2 > int1)
-            return int2 - int1;
-        else    
-            return int1 - int2;
-    }
-
-
-export{createHighlights, placeObject };
+export{createHighlights};
 
     
 
