@@ -26,38 +26,33 @@ function createModels(manager, managerEnemies, scene, heightMap, charactersArray
   for (const model of Object.values(characters)) {
     gltfLoader.load(model.url, (gltf) => {
       const root = gltf.scene;
-      root.name = model.name;
-      root.turns = 5; //determines the number of moves; will need to relocate
+      scene.add(root);
 
-      mixer = new THREE.AnimationMixer(root);
-      root.mixer = mixer;
-      let animations = gltf.animations;
-      //var clip = THREE.AnimationClip.findByName( root.animations, 'Idle' );
-      var action = mixer.clipAction(animations[0]);
-      action.play();
+      //create characters 
+      let mike = new Melee("Mike");
+      let rachel = new Ranged("Rachel");
+      let joe = new Defender("Joe");
 
-
-      root.position.set(model.pos, 1.5, -3.75);
-      //root.rotation.y += Math.PI;
-      root.scale.set(.34, .34, .34)
-      //root.visible = false;
-
-      if (root.name === "melee") {
-        console.log("melee");
-        let mike = new Melee("Mike");///////////////////////use obj location for actor; stay away from duplicate info
-        root.actor = mike;
-      } else if (root.name === "ranged") {
-        console.log("ranged");
-        let rachel = new Ranged("Rachel");
-        root.actor = rachel;
-      } else if (root.name === "defender") {
-        console.log("defender");
-        let joe = new Defender("Joe");
-        root.actor = joe;
+      switch(model.name){
+          case "melee":   
+            gltf.asset = mike;
+            //console.log(gltf.asset);
+            break;
+          case "ranged":  
+            gltf.asset = rachel;
+            //console.log(gltf.asset);
+            break;
+          case "defender": 
+            gltf.asset = joe;
+            //console.log(gltf.asset);
+            break;
       }
 
-      charactersArray.push(root);
-      scene.add(root);
+      root.position.set(model.pos, 1.5, -3.75);
+      root.scale.set(.34, .34, .34);
+
+      charactersArray.push(gltf.asset);
+      //console.log(charactersArray[0]);
 
     });
   }//end for
@@ -90,6 +85,12 @@ function createModels(manager, managerEnemies, scene, heightMap, charactersArray
     });
   }//end for
 }
+
+function onLoad(gltf){
+  console.log(gltf);
+  scene.add(gltf.scene.children);
+}
+
 
 function loadCat() {  
   const gltfLoader = new THREE.GLTFLoader();

@@ -97,9 +97,10 @@ manager.onLoad = function () {
     // }
 
     function onMouseDown(event){
-
+        for(var i =0; i < charactersArray.length; i++){
+            console.log(charactersArray[i]);
+        }
         event.preventDefault();
-
         
         mouse.set((event.clientX / window.innerWidth) * 2 -1, - (event.clientY / window.innerHeight ) * 2 + 1);
         raycaster.setFromCamera(mouse, camera);
@@ -107,12 +108,15 @@ manager.onLoad = function () {
         //IN PROGRESS - it is not getting the correct object values we need
         // Example: name is Body_0 (maybe need to access it through root?? Not sure)
         // The object type is Skinned Mesh
-        var intersects = raycaster.intersectObjects(scene.children, true);
-
-        //testing purposes
+        var intersects = raycaster.intersectObjects(scene.children, true);          //https://stackoverflow.com/questions/55462615/three-js-raycast-on-skinning-mesh
+                                                                                    // may need to utilize "picking" in order for raycaster to behave correctly
+        console.log(intersects);                                                    //                          OR
+        //testing purposes                                                          //              we use bounding boxes
          if(intersects.length > 0){
              var intersect = intersects[0];
-             console.log(intersect);
+             console.log(intersect.object);
+             if (intersect.object.name == "Body_6") //clicked on the pirate
+                console.log("yup");
         //     var cubeGeo = new THREE.BoxBufferGeometry(50, 50, 50);
         //     var cubeMaterial = new THREE.MeshBasicMaterial({
         //         color: 0xfeb74c
