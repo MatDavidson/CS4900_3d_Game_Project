@@ -11,6 +11,8 @@ function createHighlights(scene, heightMap, mapVerts){
             let temp2 = createHighlight(j,i, "#0d3bd4"/*blue*/);
             temp.name = "highlightR - " + j + " - " + i;
             temp2.name = "highlightB - " + j + " - " + i;
+            temp.visible = false;
+            temp2.visible = false;
             scene.add(temp);
             scene.add(temp2);
         }

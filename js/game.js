@@ -27,7 +27,7 @@ var controls = addCameraControls(camera, renderer);
 
 const manager = new THREE.LoadingManager();
 manager.onLoad = init;
-createModels(manager,scene, heightMap);
+createModels(manager,scene, heightMap, obstacles);
 
 function init(){
     var def = new Defender('Dan');
@@ -48,11 +48,7 @@ function init(){
             }    
         }
     }
-    for (let i = 0; i < heightMap.length-1; i++) {
-        scene.getObjectByName("highlightB - 5 - " + i).visible = false;
-        scene.getObjectByName("highlightR - 6 - " + i).visible = false;
 
-    }
     animate1();
 }
 

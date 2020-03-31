@@ -97,7 +97,7 @@ function layer1(scene, obstacles, mapVerts){
 }
 //Helper that returns true if the specified location is occupied
 function isOccupied(obstacles,y,x){
-  if(obstacles[y][x] == 1){
+  if(obstacles[y][x] != 0){
     return true;
   }
   return false;
