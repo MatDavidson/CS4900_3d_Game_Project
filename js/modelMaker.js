@@ -1,14 +1,13 @@
 import { Actor, Defender, Melee, Ranged } from './actors.js';
 
-function createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray){
+function createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, box, boxHelper){
   //scene, arr) {
   // var redMat = new THREE.MeshLambertMaterial({color:0xF7573E});
   // var blueMat = new THREE.MeshLambertMaterial({color:0x2194ce});
   // var greenMat = new THREE.MeshLambertMaterial({color:0x11E020});
   var mixer;
 
-  //create bounding box for raycaster to work
-  var box = new THREE.Box3();
+
   //to view bounding box
 
   //load the obj
@@ -55,14 +54,18 @@ function createModels(manager, managerEnemies, scene, heightMap, charactersArray
             break;
       }
 
-      box.setFromObject(root);
-      var boxHelper = new THREE.BoxHelper(root, 0xffff00 );
-      scene.add(boxHelper);
       root.position.set(model.pos, 1.5, -3.75);
       root.scale.set(.34, .34, .34);
 
+      //create bounding box
+      box.setFromObject(root);
+      scene.add(box);
+      root.boundingBox = box;
+      //add box helper so we can see the bounding box
+      boxHelper = new THREE.BoxHelper(root, 0xffff00 );
+      scene.add(boxHelper);
+      //add character to array
       charactersArray.push(gltf.scene);
-      console.log(charactersArray[0]);
       scene.add(root);
     });
   }//end for

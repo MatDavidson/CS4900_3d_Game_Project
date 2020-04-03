@@ -1,6 +1,6 @@
 import { boardGen, fillBoard, generateSkybox, characterRadius } from './js/gameBoard.js';
 import {createCamera, addCameraControls} from'./js/camera.js';
-import {createModels } from './js/modelMaker.js';
+import {createModels, loadCat} from './js/modelMaker.js';
 import { keyLifted, movePlayer, changeCharacter, } from './js/objectGeneration.js';
 import {HeightMap} from './js/heightMap.js';
 import {Melee, Defender, Ranged} from './js/actors.js';
@@ -55,7 +55,10 @@ var managerEnemies = new THREE.LoadingManager();
 var enemiesArray = [];
 var enemyCount = 0;
 
-createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray);
+  //create bounding box for raycaster to work
+  var box = new THREE.Box3();
+  var boxHelper;
+createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, box, boxHelper);
 
 managerEnemies.onLoad = function() {
     console.log("enemies loaded");
@@ -71,9 +74,12 @@ manager.onLoad = function () {
     var handler = function (charactersArray) {
         return function (event) {
             if (event.key === 'w' || event.key === 'a' || event.key === 's' || event.key === 'd' || event.key === 'c')
-                movePlayer(event.key, charactersArray);
+                movePlayer(event.key, charactersArray, box, boxHelper);
             else if (event.key === 'r')
                 changeCharacter();
+            else if (event.key == 'r')
+                //cat
+                loadCat();  //will fix funtionality later
         };
     };
 

@@ -27,7 +27,7 @@ function changeCharacter() {
 }
 
 //create event handler to move the banana along with a highlight square
-function movePlayer(key, charactersArray) {
+function movePlayer(key, charactersArray, box, boxHelper) {
 
     let currentCharacter = scene.getObjectByName(charactersArray[characterCount].name);     //this gets the current character model
     console.log(currentCharacter);
@@ -79,6 +79,13 @@ function movePlayer(key, charactersArray) {
         }
 
         --currentCharacterObj.movement; //decrement the associated obj's movement number
+        box.min.sub(currentCharacter.position);
+        box.max.sub(currentCharacter.position);
+        box.position;
+        boxHelper = new THREE.BoxHelper(currentCharacter, 0xffff00 );
+        scene.add(box);
+        scene.add(boxHelper);
+
         characterRadius(scene, currentCharacter.position.x, currentCharacter.position.z, currentCharacterObj.movement);
 
     } //end while(player movement > 0)
