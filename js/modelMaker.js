@@ -6,6 +6,11 @@ function createModels(manager, managerEnemies, scene, heightMap, charactersArray
   // var blueMat = new THREE.MeshLambertMaterial({color:0x2194ce});
   // var greenMat = new THREE.MeshLambertMaterial({color:0x11E020});
   var mixer;
+
+  //create bounding box for raycaster to work
+  var box = new THREE.Box3();
+  //to view bounding box
+
   //load the obj
   //floodfill uses the positions of the models
   const characters = {
@@ -26,7 +31,8 @@ function createModels(manager, managerEnemies, scene, heightMap, charactersArray
   for (const model of Object.values(characters)) {
     gltfLoader.load(model.url, (gltf) => {
       const root = gltf.scene;
-      scene.add(root);
+      root.name = model.name;
+      //movement is attached to the asset
 
       //create characters 
       let mike = new Melee("Mike");
@@ -35,25 +41,29 @@ function createModels(manager, managerEnemies, scene, heightMap, charactersArray
 
       switch(model.name){
           case "melee":   
-            gltf.asset = mike;
+            root.asset = mike;
+            //console.log(gltf.asset.movement);
             //console.log(gltf.asset);
             break;
           case "ranged":  
-            gltf.asset = rachel;
+            root.asset = rachel;
             //console.log(gltf.asset);
             break;
           case "defender": 
-            gltf.asset = joe;
+            root.asset = joe;
             //console.log(gltf.asset);
             break;
       }
 
+      box.setFromObject(root);
+      var boxHelper = new THREE.BoxHelper(root, 0xffff00 );
+      scene.add(boxHelper);
       root.position.set(model.pos, 1.5, -3.75);
       root.scale.set(.34, .34, .34);
 
-      charactersArray.push(gltf.asset);
-      //console.log(charactersArray[0]);
-
+      charactersArray.push(gltf.scene);
+      console.log(charactersArray[0]);
+      scene.add(root);
     });
   }//end for
 

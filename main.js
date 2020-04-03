@@ -82,57 +82,45 @@ manager.onLoad = function () {
 
     //Check this example for reference: https://threejs.org/examples/#webgl_interactive_lines
     //event handler when clicking an enemy to attack (or possibly a teammate to heal?)
-    document.addEventListener('mousedown', onMouseDown, false);
-    //create different looking highlight based on if something is in range
-    /////////// vv see below vv document.addEventListener('mousemove', onMouseMove, false);
+    //document.addEventListener('mousedown', onMouseDown, false);
 
-    // function onMouseMove(event){
+    // function onMouseDown(event){
+    //     // for(var i =0; i < charactersArray.length; i++){
+    //     //     console.log(charactersArray[i]);
+    //     // }
     //     event.preventDefault();
+        
     //     mouse.set((event.clientX / window.innerWidth) * 2 -1, - (event.clientY / window.innerHeight ) * 2 + 1);
     //     raycaster.setFromCamera(mouse, camera);
-    
-    //     var intersects = raycaster.intersectObjects(enemiesArray);
 
-    //     /////in progress
+    //     //IN PROGRESS - it is not getting the correct object values we need
+    //     // Example: name is Body_0 (maybe need to access it through root?? Not sure)
+    //     // The object type is Skinned Mesh
+    //     var intersects = raycaster.intersectObjects(scene.children, true);          //https://stackoverflow.com/questions/55462615/three-js-raycast-on-skinning-mesh
+    //                                                                                 // may need to utilize "picking" in order for raycaster to behave correctly
+    //     console.log(intersects);                                                    //                          OR
+    //     //testing purposes                                                          //              we use bounding boxes
+    //      if(intersects.length > 0){
+    //          var intersect = intersects[0];
+    //          console.log(intersect.object);
+    //          if (intersect.object.name == "Body_6") //clicked on the pirate
+    //             console.log("yup");
+    //     //     var cubeGeo = new THREE.BoxBufferGeometry(50, 50, 50);
+    //     //     var cubeMaterial = new THREE.MeshBasicMaterial({
+    //     //         color: 0xfeb74c
+    //     //     });
+    //     //     var placeholder = new THREE.Mesh(cubeGeo, cubeMaterial);
+    //     //     placeholder.position.copy(intersect.point);
+    //     //     //.add(intersect.face.normal);
+    //     //     scene.add(placeholder);
+    //     }
+
+    //     //render();
+
+    //     // console.log(intersects[0]);
+    //     // console.log(intersects[0].object);
+    //     // console.log(intersects[0].object.name);
     // }
-
-    function onMouseDown(event){
-        for(var i =0; i < charactersArray.length; i++){
-            console.log(charactersArray[i]);
-        }
-        event.preventDefault();
-        
-        mouse.set((event.clientX / window.innerWidth) * 2 -1, - (event.clientY / window.innerHeight ) * 2 + 1);
-        raycaster.setFromCamera(mouse, camera);
-
-        //IN PROGRESS - it is not getting the correct object values we need
-        // Example: name is Body_0 (maybe need to access it through root?? Not sure)
-        // The object type is Skinned Mesh
-        var intersects = raycaster.intersectObjects(scene.children, true);          //https://stackoverflow.com/questions/55462615/three-js-raycast-on-skinning-mesh
-                                                                                    // may need to utilize "picking" in order for raycaster to behave correctly
-        console.log(intersects);                                                    //                          OR
-        //testing purposes                                                          //              we use bounding boxes
-         if(intersects.length > 0){
-             var intersect = intersects[0];
-             console.log(intersect.object);
-             if (intersect.object.name == "Body_6") //clicked on the pirate
-                console.log("yup");
-        //     var cubeGeo = new THREE.BoxBufferGeometry(50, 50, 50);
-        //     var cubeMaterial = new THREE.MeshBasicMaterial({
-        //         color: 0xfeb74c
-        //     });
-        //     var placeholder = new THREE.Mesh(cubeGeo, cubeMaterial);
-        //     placeholder.position.copy(intersect.point);
-        //     //.add(intersect.face.normal);
-        //     scene.add(placeholder);
-        }
-
-        //render();
-
-        // console.log(intersects[0]);
-        // console.log(intersects[0].object);
-        // console.log(intersects[0].object.name);
-    }
 
     window.addEventListener('keydown', handler(charactersArray), false);
     window.addEventListener('keyup', keyLifted, false);

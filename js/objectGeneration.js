@@ -22,62 +22,54 @@ function changeCharacter() {
         characterCount++;
     else
         characterCount = 0;
+
     return;
 }
 
 //create event handler to move the banana along with a highlight square
 function movePlayer(key, charactersArray) {
 
-    let currentCharacter = scene.getObjectByName(charactersArray[characterCount].name);
+    let currentCharacter = scene.getObjectByName(charactersArray[characterCount].name);     //this gets the current character model
+    console.log(currentCharacter);
     var cat = scene.getObjectByName("cat");
-
-    //LinkedList Implementation
-    //while (current != null) { //while the list is not null (no chars left) --- can edit this to continue
-    //var currentCharacter = charactersArray[characterCount];
 
     //create vector to hold object's location
     var positionVector = new THREE.Vector3();
-    var currentCharacterObj = scene.getObjectByName(currentCharacter.name);
-    // console.log(currentCharacterObj.name);
-    // console.log(currentCharacterObj.turns);
-    //console.log(currentCharacterObj.position.x);
+    var currentCharacterObj = currentCharacter.asset;   //this gets the current model's attached obj
+    console.log(currentCharacterObj);
 
-
-    while (currentCharacterObj.turns > 0) {
+    while (currentCharacterObj.movement > 0) {
         if (down) //prevents obj from moving multiple spaces when key is held down
             return;
         down = true;
 
         if (event.key === 'w') { //w is pressed
-            positionVector = currentCharacterObj.position;
+            positionVector = currentCharacter.position;  //hmm
             //limit movement if out of bounds
             if (!(positionVector.z >= mapTopZ)) {
-                clearRadius(scene, currentCharacterObj.position.x, currentCharacterObj.position.z, currentCharacterObj.turns);
-                currentCharacterObj.position.z += 1;
-                console.log(positionVector.z);
+                clearRadius(scene, currentCharacter.position.x, currentCharacter.position.z, currentCharacterObj.movement);
+                currentCharacter.position.z += 1;
             }
         } else if (event.key === 'a') { //a is pressed
-            positionVector = currentCharacterObj.position;
+            positionVector = currentCharacter.position;
             console.log(positionVector);
             if (!(positionVector.x >= mapLeftX)) {
-                clearRadius(scene, currentCharacterObj.position.x, currentCharacterObj.position.z, currentCharacterObj.turns);
-                currentCharacterObj.position.x += 1;
-                console.log(positionVector.x);
-
+                clearRadius(scene, currentCharacter.position.x, currentCharacter.position.z, currentCharacterObj.movement);
+                currentCharacter.position.x += 1;
             }
         } else if (event.key === 's') { //s is pressed
-            positionVector = currentCharacterObj.position;
+            positionVector = currentCharacter.position;
             console.log(positionVector);
             if (!(positionVector.z <= mapBottomZ)) {
-                clearRadius(scene, currentCharacterObj.position.x, currentCharacterObj.position.z, currentCharacterObj.turns);
-                currentCharacterObj.position.z += -1;
+                clearRadius(scene, currentCharacter.position.x, currentCharacter.position.z, currentCharacterObj.movement);
+                currentCharacter.position.z += -1;
             }
         } else if (event.key === 'd') { //d is pressed
-            positionVector = currentCharacterObj.position;
+            positionVector = currentCharacter.position;
             console.log(positionVector);
             if (!(positionVector.x <= mapRightX)) {
-                clearRadius(scene, currentCharacterObj.position.x, currentCharacterObj.position.z, currentCharacterObj.turns);
-                currentCharacterObj.position.x += -1;
+                clearRadius(scene, currentCharacter.position.x, currentCharacter.position.z, currentCharacterObj.movement);
+                currentCharacter.position.x += -1;
             }
             //The following can be used to manually swap characters, skipping moves
         } else if (event.key == 'c') { //cat easter egg
@@ -86,19 +78,16 @@ function movePlayer(key, charactersArray) {
             return;
         }
 
-        --currentCharacterObj.turns;
-        characterRadius(scene, currentCharacterObj.position.x, currentCharacterObj.position.z, currentCharacterObj.turns);
+        --currentCharacterObj.movement; //decrement the associated obj's movement number
+        characterRadius(scene, currentCharacter.position.x, currentCharacter.position.z, currentCharacterObj.movement);
 
-        //console.log(player);
-        //console.log(player.turns);
-        //console.log(player);
-
-    } //end while(player turns > 0)
+    } //end while(player movement > 0)
 
     if (characterCount < 2)
         characterCount++;
     else
         characterCount = 0;
+    console.log(characterCount);
 
     if (down)
         return;
