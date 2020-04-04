@@ -69,6 +69,24 @@ managerEnemies.onLoad = function() {
     console.log("enemies loaded");
 }
 
+//add test cube to see bb functionality
+var geometry = new THREE.BoxGeometry(1,1,1);
+var material = new THREE.MeshPhongMaterial({
+    color:'#FF99FF'
+});
+
+var cube = new THREE.Mesh(geometry, material);
+scene.add(cube);
+
+cube.position.set(2, 1.5, -3.75);
+cube.name = "cube boi";
+
+var boundingTestBox = new THREE.Box3();
+//cube.geometry.computeBoundingBox();
+boundingTestBox.setFromObject(cube);
+
+console.log(boundingTestBox.distanceToPoint(2, 1.5, -3.75));
+
 manager.onLoad = function () {
     console.log(characterCount);
 

@@ -31,6 +31,7 @@ function createModels(manager, managerEnemies, scene, heightMap, charactersArray
     gltfLoader.load(model.url, (gltf) => {
       const root = gltf.scene;
       root.name = model.name;
+      gltf.name = model.name;
       //movement is attached to the asset
 
       //create characters 
@@ -58,9 +59,11 @@ function createModels(manager, managerEnemies, scene, heightMap, charactersArray
       root.scale.set(.34, .34, .34);
 
       //create bounding box
+      //box.computeBoundingBox(root);
       box.setFromObject(root);
       //scene.add(box);
       root.boundingBox = box;
+      console.log(root.boundingBox);
       //add box helper so we can see the bounding box
       //boxHelper = new THREE.BoxHelper(root, 0xffff00 );
       //scene.add(boxHelper);
