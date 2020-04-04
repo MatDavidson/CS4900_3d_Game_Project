@@ -1,6 +1,6 @@
 import { Actor, Defender, Melee, Ranged } from './actors.js';
 
-function createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, box, boxHelper){
+function createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, box, boxHelper, boundingBoxArray){
   //scene, arr) {
   // var redMat = new THREE.MeshLambertMaterial({color:0xF7573E});
   // var blueMat = new THREE.MeshLambertMaterial({color:0x2194ce});
@@ -59,13 +59,15 @@ function createModels(manager, managerEnemies, scene, heightMap, charactersArray
 
       //create bounding box
       box.setFromObject(root);
-      scene.add(box);
+      //scene.add(box);
       root.boundingBox = box;
       //add box helper so we can see the bounding box
-      boxHelper = new THREE.BoxHelper(root, 0xffff00 );
-      scene.add(boxHelper);
+      //boxHelper = new THREE.BoxHelper(root, 0xffff00 );
+      //scene.add(boxHelper);
+
       //add character to array
       charactersArray.push(gltf.scene);
+      boundingBoxArray.push(box);
       scene.add(root);
     });
   }//end for

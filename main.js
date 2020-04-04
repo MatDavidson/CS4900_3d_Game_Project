@@ -41,6 +41,9 @@ const mapBottomZ = -7.5;
 const mapLeftX = 7.5;
 
 function animate() { //returns void
+    //update bounding boxes
+    //box.copy( mesh.geometry.boundingBox ).applyMatrix4( mesh.matrixWorld ); //import bounding boxes, apply to each model???
+
     requestAnimationFrame(animate);
     // Rerenders the scene
     renderer.render(scene, camera);
@@ -55,10 +58,12 @@ var managerEnemies = new THREE.LoadingManager();
 var enemiesArray = [];
 var enemyCount = 0;
 
+var boundingBoxArray = [];
+
   //create bounding box for raycaster to work
   var box = new THREE.Box3();
   var boxHelper;
-createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, box, boxHelper);
+createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, box, boxHelper, boundingBoxArray);
 
 managerEnemies.onLoad = function() {
     console.log("enemies loaded");
@@ -74,7 +79,7 @@ manager.onLoad = function () {
     var handler = function (charactersArray) {
         return function (event) {
             if (event.key === 'w' || event.key === 'a' || event.key === 's' || event.key === 'd' || event.key === 'c')
-                movePlayer(event.key, charactersArray, box, boxHelper);
+                movePlayer(event.key, charactersArray, box, boxHelper, boundingBoxArray);
             else if (event.key === 'r')
                 changeCharacter();
             else if (event.key == 'r')
@@ -88,45 +93,45 @@ manager.onLoad = function () {
 
     //Check this example for reference: https://threejs.org/examples/#webgl_interactive_lines
     //event handler when clicking an enemy to attack (or possibly a teammate to heal?)
-    //document.addEventListener('mousedown', onMouseDown, false);
+    document.addEventListener('mousedown', onMouseDown, false);
 
-    // function onMouseDown(event){
-    //     // for(var i =0; i < charactersArray.length; i++){
-    //     //     console.log(charactersArray[i]);
-    //     // }
-    //     event.preventDefault();
+    function onMouseDown(event){
+        // for(var i =0; i < charactersArray.length; i++){
+        //     console.log(charactersArray[i]);
+        // }
+        event.preventDefault();
         
-    //     mouse.set((event.clientX / window.innerWidth) * 2 -1, - (event.clientY / window.innerHeight ) * 2 + 1);
-    //     raycaster.setFromCamera(mouse, camera);
+        mouse.set((event.clientX / window.innerWidth) * 2 -1, - (event.clientY / window.innerHeight ) * 2 + 1);
+        raycaster.setFromCamera(mouse, camera);
 
-    //     //IN PROGRESS - it is not getting the correct object values we need
-    //     // Example: name is Body_0 (maybe need to access it through root?? Not sure)
-    //     // The object type is Skinned Mesh
-    //     var intersects = raycaster.intersectObjects(scene.children, true);          //https://stackoverflow.com/questions/55462615/three-js-raycast-on-skinning-mesh
-    //                                                                                 // may need to utilize "picking" in order for raycaster to behave correctly
-    //     console.log(intersects);                                                    //                          OR
-    //     //testing purposes                                                          //              we use bounding boxes
-    //      if(intersects.length > 0){
-    //          var intersect = intersects[0];
-    //          console.log(intersect.object);
-    //          if (intersect.object.name == "Body_6") //clicked on the pirate
-    //             console.log("yup");
-    //     //     var cubeGeo = new THREE.BoxBufferGeometry(50, 50, 50);
-    //     //     var cubeMaterial = new THREE.MeshBasicMaterial({
-    //     //         color: 0xfeb74c
-    //     //     });
-    //     //     var placeholder = new THREE.Mesh(cubeGeo, cubeMaterial);
-    //     //     placeholder.position.copy(intersect.point);
-    //     //     //.add(intersect.face.normal);
-    //     //     scene.add(placeholder);
-    //     }
+        //IN PROGRESS - it is not getting the correct object values we need
+        // Example: name is Body_0 (maybe need to access it through root?? Not sure)
+        // The object type is Skinned Mesh
+        var intersects = raycaster.intersectObjects(scene.children, true);          //https://stackoverflow.com/questions/55462615/three-js-raycast-on-skinning-mesh
+                                                                                    // may need to utilize "picking" in order for raycaster to behave correctly
+        console.log(intersects);                                                    //                          OR
+        //testing purposes                                                          //              we use bounding boxes
+         if(intersects.length > 0){
+             var intersect = intersects[0];
+             console.log(intersect.object);
+             if (intersect.object.name == "Body_6") //clicked on the pirate
+                console.log("yup");
+        //     var cubeGeo = new THREE.BoxBufferGeometry(50, 50, 50);
+        //     var cubeMaterial = new THREE.MeshBasicMaterial({
+        //         color: 0xfeb74c
+        //     });
+        //     var placeholder = new THREE.Mesh(cubeGeo, cubeMaterial);
+        //     placeholder.position.copy(intersect.point);
+        //     //.add(intersect.face.normal);
+        //     scene.add(placeholder);
+        }
 
-    //     //render();
+        //render();
 
-    //     // console.log(intersects[0]);
-    //     // console.log(intersects[0].object);
-    //     // console.log(intersects[0].object.name);
-    // }
+        // console.log(intersects[0]);
+        // console.log(intersects[0].object);
+        // console.log(intersects[0].object.name);
+    }
 
     window.addEventListener('keydown', handler(charactersArray), false);
     window.addEventListener('keyup', keyLifted, false);
