@@ -1,7 +1,7 @@
 import {getRandomInt, placeObject} from './gameBoard.js';
 import {isOccupied} from './layer1.js';
 
-function createModels(manager, scene, heightMap, obstacles){
+function createModels(manager, scene, heightMap, obstacles, mixers){
   //setup units for setting positions
   let mapVerts = heightMap.length;
 
@@ -18,12 +18,11 @@ function createModels(manager, scene, heightMap, obstacles){
   var yCap = [3,6];
   var caster = new THREE.Raycaster(new THREE.Vector3(0,0,0), down);
   caster.far = .05;
-  var floorMesh = scene.getObjectByName('floorMesh');
-  var mixer;
+  var floorMesh = scene.getObjectByName('floorMesh'); 
 
   //Setup an array of model paths
   const models = ['./models/Pirate_Male.glb', './models/Ninja_Male.glb', './models/BlueSoldier_Female.glb',
-                  './models/Cowgirl.glb', './models/Goblin_Male_Red.glb', './models/Viking.glb'];
+                  './models/Cowgirl.glb', './models/Goblin_Male.glb', './models/Viking.glb'];
 
   //create the gltfLoader passing it the loading manager as an argument
   const gltfLoader = new THREE.GLTFLoader(manager);
@@ -62,10 +61,10 @@ function createModels(manager, scene, heightMap, obstacles){
           x = getRandomInt(xCap[orientation]) + xStart[orientation];
           y = getRandomInt(yCap[orientation]) + yStart[orientation]; 
 
-          if(orientation == 0)
-          y += 9*a;
-        else
-          x += 9*a;
+          if(orientation == 0)  //North/South
+            y += 9*a;
+          else                    //East/West
+            x += 9*a;
         }
 
         placeObject(root, x, y, mapVerts);
@@ -88,7 +87,22 @@ function createModels(manager, scene, heightMap, obstacles){
         }
 
         //move the model up so that it is above the ground
-        root.position.y += .95;
+        root.position.y += .99;
+
+        //Add animations by creating an animation mixer. assign the model it's mixer and place the mixer in the array
+        var mixer = new THREE.AnimationMixer(root);
+        root.mixer = mixer;
+        mixers.push(mixer);
+
+        //Have the model play the ide animation 
+        let animations = gltf.animations;
+        root.animations = animations;
+        var action = mixer.clipAction( root.animations[1]); //Idle
+        action.play();
+        
+        //name the model for easy access
+        root.name = 'model - ' + a + ' - ' + i;
+
         scene.add(root);        
       });//End GLTF loader
     } //End for (Models)
@@ -97,9 +111,16 @@ function createModels(manager, scene, heightMap, obstacles){
 
   export {createModels};
 
-  // mixer = new THREE.AnimationMixer(root);
-        // root.mixer = mixer;
-        // let animations = gltf.animations;
-        // //var clip = THREE.AnimationClip.findByName( root.animations, 'Idle' );
-        // var action = mixer.clipAction( animations[0] );
-        // action.play();
+/*  Model animations by index
+    0:  defeat?
+    1:  idle
+    2:  pick up object
+    3:  melee attack 
+    4:  take damage
+    5:  gun shot/ ranged attack
+    6:  sit down
+    7:  stand up (from seat)
+    8:  victory
+    9:  walk
+    10: walk while pushing something
+*/

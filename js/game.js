@@ -25,29 +25,37 @@ boardGen(scene, heightMap, obstacles);
 var camera = createCamera(width, height, renderer, scene);
 var controls = addCameraControls(camera, renderer);
 
+var clock = new THREE.Clock();
 const manager = new THREE.LoadingManager();
 manager.onLoad = init;
-createModels(manager,scene, heightMap, obstacles);
+var mixers = [];
+createModels(manager, scene, heightMap, obstacles, mixers);
 
 function init(){
-    var def = new Defender('Dan');
-    def.model = scene.getObjectByName('defender');
-    var mel = new Melee('Mike');
-    mel.model = scene.getObjectByName('melee');
-    var ran = new Range('Rick');
-    ran.model = scene.getObjectByName('ranged');
     for(let i = 0; i < obstacles.length;i++){
         console.log(obstacles[i].toString());
     }
+    
+    //playing with animations
+    let model = scene.getObjectByName('model - 0 - 0');
+    var action = model.mixer.clipAction( model.animations[0]);
+    action.play();
 
-    for (let i = 0; i < heightMap.length-1; i++) {
-        for (let j = 0; j < heightMap.length-1; j++) {
-            if(obstacles[i][j] == 1){
-                scene.getObjectByName("highlightR - " + i + " - " + j).visible = false;
-                scene.getObjectByName("highlightB - " + i + " - " + j).visible = false;
-            }    
-        }
-    }
+    model = scene.getObjectByName('model - 0 - 1');
+    action = model.mixer.clipAction( model.animations[9]);
+    action.play();
+
+    model = scene.getObjectByName('model - 0 - 2');
+    action = model.mixer.clipAction( model.animations[3]);
+    action.play();
+
+    model = scene.getObjectByName('model - 0 - 3');
+    action = model.mixer.clipAction( model.animations[4]); //Take damage
+    action.play();
+
+    model = scene.getObjectByName('model - 0 - 4');
+    action = model.mixer.clipAction( model.animations[5]);
+    action.play();
 
     animate1();
 }
@@ -62,8 +70,18 @@ function animate1() {
     requestAnimationFrame(animate1);
 
     // Rerenders the scene
-    renderer.render(scene, camera);
+    render();
     //update the controls
     controls.update();
 }
 
+function render() {
+
+    var delta = clock.getDelta();
+
+    for ( const mixer of mixers ) {
+        mixer.update( delta );    
+      }
+
+    renderer.render( scene, camera );
+}
