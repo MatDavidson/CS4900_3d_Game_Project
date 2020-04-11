@@ -1,14 +1,20 @@
 import { Actor, Defender, Melee, Ranged } from './actors.js';
 
-function createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, box, boxHelper, boundingBoxArray){
+var meleeBox = new THREE.Box3();
+var rangedBox = new THREE.Box3();
+var defenderBox = new THREE.Box3();
+
+var enemyMeleeBox = new THREE.Box3();
+var enemyRangedBox = new THREE.Box3();
+var enemyDefenderBox = new THREE.Box3();
+
+function createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, boundingBoxArray){
   //scene, arr) {
   // var redMat = new THREE.MeshLambertMaterial({color:0xF7573E});
   // var blueMat = new THREE.MeshLambertMaterial({color:0x2194ce});
   // var greenMat = new THREE.MeshLambertMaterial({color:0x11E020});
   var mixer;
 
-
-  //to view bounding box
 
   //load the obj
   //floodfill uses the positions of the models
@@ -44,14 +50,20 @@ function createModels(manager, managerEnemies, scene, heightMap, charactersArray
             root.asset = mike;
             //console.log(gltf.asset.movement);
             //console.log(gltf.asset);
+            meleeBox.setFromObject(root);
+            boundingBoxArray.push(meleeBox);
             break;
           case "ranged":  
             root.asset = rachel;
             //console.log(gltf.asset);
+            rangedBox.setFromObject(root);
+            boundingBoxArray.push(rangedBox);
             break;
           case "defender": 
             root.asset = joe;
             //console.log(gltf.asset);
+            defenderBox.setFromObject(root);
+            boundingBoxArray.push(defenderBox);
             break;
       }
 
@@ -59,18 +71,21 @@ function createModels(manager, managerEnemies, scene, heightMap, charactersArray
       root.scale.set(.34, .34, .34);
 
       //create bounding box
+      //var box = new THREE.Box3();
       //box.computeBoundingBox(root);
-      box.setFromObject(root);
+      //box.setFromObject(root);
       //scene.add(box);
-      root.boundingBox = box;
-      console.log(root.boundingBox);
+      //root.boundingBox = box;
+      //console.log(root.boundingBox);
       //add box helper so we can see the bounding box
       //boxHelper = new THREE.BoxHelper(root, 0xffff00 );
       //scene.add(boxHelper);
 
+      console.log(boundingBoxArray);
+
       //add character to array
       charactersArray.push(gltf.scene);
-      boundingBoxArray.push(box);
+      //boundingBoxArray.push(box);
       scene.add(root);
     });
   }//end for
@@ -124,4 +139,4 @@ function loadCat() {
   });
 }
 
-export { createModels, loadCat };
+export { createModels, loadCat, meleeBox, rangedBox, defenderBox, enemyMeleeBox, enemyRangedBox, enemyDefenderBox };

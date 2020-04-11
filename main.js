@@ -1,6 +1,6 @@
 import { boardGen, fillBoard, generateSkybox, characterRadius } from './js/gameBoard.js';
 import {createCamera, addCameraControls} from'./js/camera.js';
-import {createModels, loadCat} from './js/modelMaker.js';
+import {createModels, loadCat, meleeBox, rangedBox, defenderBox, enemyMeleeBox, enemyRangedBox, enemyDefenderBox} from './js/modelMaker.js';
 import { keyLifted, movePlayer, changeCharacter, } from './js/objectGeneration.js';
 import {HeightMap} from './js/heightMap.js';
 import {Melee, Defender, Ranged} from './js/actors.js';
@@ -40,16 +40,6 @@ const mapRightX = -7.5;
 const mapBottomZ = -7.5;
 const mapLeftX = 7.5;
 
-function animate() { //returns void
-    //update bounding boxes
-    //box.copy( mesh.geometry.boundingBox ).applyMatrix4( mesh.matrixWorld ); //import bounding boxes, apply to each model???
-
-    requestAnimationFrame(animate);
-    // Rerenders the scene
-    renderer.render(scene, camera);
-    //console.log(camera.position);
-}
-
 var manager = new THREE.LoadingManager();
 var charactersArray = [];
 var characterCount = 0;
@@ -61,9 +51,11 @@ var enemyCount = 0;
 var boundingBoxArray = [];
 
   //create bounding box for raycaster to work
-  var box = new THREE.Box3();
-  var boxHelper;
-createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, box, boxHelper, boundingBoxArray);
+  //var box = new THREE.Box3();
+  //var boxHelper;
+//createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, box, boxHelper, boundingBoxArray);
+createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, boundingBoxArray);
+
 
 managerEnemies.onLoad = function() {
     console.log("enemies loaded");
@@ -82,10 +74,12 @@ cube.position.set(2, 1.5, -3.75);
 cube.name = "cube boi";
 
 var boundingTestBox = new THREE.Box3();
-//cube.geometry.computeBoundingBox();
+cube.geometry.computeBoundingBox();
 boundingTestBox.setFromObject(cube);
 
-console.log(boundingTestBox.distanceToPoint(2, 1.5, -3.75));
+//boundingTestBox.expandByObject(cube);
+
+//console.log(boundingTestBox.distanceToPoint(2, 1.5, -3.75));
 
 manager.onLoad = function () {
     console.log(characterCount);
@@ -155,6 +149,26 @@ manager.onLoad = function () {
     window.addEventListener('keyup', keyLifted, false);
     console.log(characterCount);
     animate();
+}
+
+function animate() {
+    //update bounding boxes
+    updateBoundingBoxes();
+    requestAnimationFrame(animate);
+    // Rerenders the scene
+    renderer.render(scene, camera);
+    //console.log(camera.position);
+}
+
+//called within the animate function to update bounding box locations
+function updateBoundingBoxes(){
+    for(var i = 0; i < 3; i++){
+        if(charactersArray[i].name === "melee")
+        ;
+            //meleeBox.copy( scene.getObjectByName("melee").boundingBox ).applyMatrix4( mesh.matrixWorld );
+
+    }
+
 }
 
 export {
