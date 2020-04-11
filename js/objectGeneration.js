@@ -79,9 +79,9 @@ function movePlayer(key, charactersArray, box, boxHelper, boundingBoxArray) {
         }
 
         --currentCharacterObj.movement; //decrement the associated obj's movement number
-        box.min.sub(currentCharacter.position);
-        box.max.sub(currentCharacter.position);
-        console.log(box.distanceToPoint(currentCharacter.position));
+        // box.min.sub(currentCharacter.position);
+        // box.max.sub(currentCharacter.position);
+        //console.log(box.distanceToPoint(currentCharacter.position));
         //boxHelper = new THREE.BoxHelper(currentCharacter, 0xffff00 );
         //scene.add(box);
         //scene.add(boxHelper);

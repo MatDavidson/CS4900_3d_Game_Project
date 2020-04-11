@@ -91,7 +91,7 @@ manager.onLoad = function () {
     var handler = function (charactersArray) {
         return function (event) {
             if (event.key === 'w' || event.key === 'a' || event.key === 's' || event.key === 'd' || event.key === 'c')
-                movePlayer(event.key, charactersArray, box, boxHelper, boundingBoxArray);
+                movePlayer(event.key, charactersArray, boundingBoxArray);
             else if (event.key === 'r')
                 changeCharacter();
             else if (event.key == 'r')
