@@ -32,9 +32,9 @@ function boardGen(scene, heightMap) {
 
     for (let i = 0; i < (mapVerts * mapVerts); i++) {
         positions[(i * 3) + 2] = parseFloat(hM[i]);
-        console.log(i, hM[i])
+        //console.log(i, hM[i])
     }
-    console.log(positions.toString())
+    //console.log(positions.toString())
     var wireframe = new THREE.WireframeGeometry(floorGeom);
 
     var line = new THREE.LineSegments(wireframe);

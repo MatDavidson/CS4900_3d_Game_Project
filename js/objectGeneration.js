@@ -27,9 +27,11 @@ function changeCharacter() {
 }
 
 //create event handler to move the banana along with a highlight square
-function movePlayer(key, charactersArray, box, boxHelper, boundingBoxArray) {
+function movePlayer(key, charactersArray, boxHelper, bbox) {
 
     let currentCharacter = scene.getObjectByName(charactersArray[characterCount].name);     //this gets the current character model
+    //let bbox = boundingBoxArray[characterCount];
+
     console.log(currentCharacter);
     var cat = scene.getObjectByName("cat");
 
@@ -82,11 +84,18 @@ function movePlayer(key, charactersArray, box, boxHelper, boundingBoxArray) {
         // box.min.sub(currentCharacter.position);
         // box.max.sub(currentCharacter.position);
         //console.log(box.distanceToPoint(currentCharacter.position));
-        //boxHelper = new THREE.BoxHelper(currentCharacter, 0xffff00 );
-        //scene.add(box);
-        //scene.add(boxHelper);
+        // console.log(boundingBoxArray[1]);
 
-        characterRadius(scene, currentCharacter.position.x, currentCharacter.position.z, currentCharacterObj.movement);
+        // bbox.setFromObject(currentCharacter);
+        // boundingBoxArray[1] = bbox;
+        // console.log(boundingBoxArray[1]);
+        bbox = new THREE.Box3();
+        bbox.setFromObject(currentCharacter);
+        ///////boxHelper = new THREE.BoxHelper(currentCharacter, 0xffff00 );
+        //scene.add(box);
+        ///////scene.add(boxHelper);
+
+        //characterRadius(scene, currentCharacter.position.x, currentCharacter.position.z, currentCharacterObj.movement);
 
     } //end while(player movement > 0)
 

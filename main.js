@@ -49,12 +49,14 @@ var enemiesArray = [];
 var enemyCount = 0;
 
 var boundingBoxArray = [];
+var boxHelper;
+var bbox;
 
   //create bounding box for raycaster to work
   //var box = new THREE.Box3();
   //var boxHelper;
 //createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, box, boxHelper, boundingBoxArray);
-createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, boundingBoxArray);
+createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, boundingBoxArray, boxHelper);
 
 
 managerEnemies.onLoad = function() {
@@ -91,7 +93,7 @@ manager.onLoad = function () {
     var handler = function (charactersArray) {
         return function (event) {
             if (event.key === 'w' || event.key === 'a' || event.key === 's' || event.key === 'd' || event.key === 'c')
-                movePlayer(event.key, charactersArray, boundingBoxArray);
+                movePlayer(event.key, charactersArray, boxHelper, bbox);
             else if (event.key === 'r')
                 changeCharacter();
             else if (event.key == 'r')
@@ -123,9 +125,10 @@ manager.onLoad = function () {
                                                                                     // may need to utilize "picking" in order for raycaster to behave correctly
         console.log(intersects);                                                    //                          OR
         //testing purposes                                                          //              we use bounding boxes
+        //console.log(intersects[0].object.asset.name);
          if(intersects.length > 0){
              var intersect = intersects[0];
-             console.log(intersect.object);
+             //console.log(intersect.object.object.name);
              if (intersect.object.name == "Body_6") //clicked on the pirate
                 console.log("yup");
         //     var cubeGeo = new THREE.BoxBufferGeometry(50, 50, 50);
@@ -155,6 +158,7 @@ function animate() {
     //update bounding boxes
     updateBoundingBoxes();
     requestAnimationFrame(animate);
+    //raycaster.setFromCamera(mouse, camera);
     // Rerenders the scene
     renderer.render(scene, camera);
     //console.log(camera.position);
@@ -162,12 +166,17 @@ function animate() {
 
 //called within the animate function to update bounding box locations
 function updateBoundingBoxes(){
-    for(var i = 0; i < 3; i++){
-        if(charactersArray[i].name === "melee")
-        ;
-            //meleeBox.copy( scene.getObjectByName("melee").boundingBox ).applyMatrix4( mesh.matrixWorld );
+    //console.log(charactersArray[0].name);
+    //console.log(boundingBoxArray);
+    // if(charactersArray[0].name === "melee"){
+    //     boundingBoxArray[0].setFromObject(scene.getObjectByName("melee"));
+    // }
+    // for(var i = 0; i < 3; i++){
+    //     if(charactersArray[i].name === "melee")  //doesn't recognize it within the for loop
+    //     ;
+    //         //meleeBox.copy( scene.getObjectByName("melee").boundingBox ).applyMatrix4( mesh.matrixWorld );
 
-    }
+    // }
 
 }
 

@@ -1,20 +1,25 @@
 import { Actor, Defender, Melee, Ranged } from './actors.js';
 
 var meleeBox = new THREE.Box3();
+meleeBox.name = "meleeBBox";
 var rangedBox = new THREE.Box3();
+rangedBox.name = "rangedBBox";
 var defenderBox = new THREE.Box3();
+defenderBox.name = "defenderBBox";
 
 var enemyMeleeBox = new THREE.Box3();
 var enemyRangedBox = new THREE.Box3();
 var enemyDefenderBox = new THREE.Box3();
 
-function createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, boundingBoxArray){
+function createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, boundingBoxArray, boxHelper){
   //scene, arr) {
   // var redMat = new THREE.MeshLambertMaterial({color:0xF7573E});
   // var blueMat = new THREE.MeshLambertMaterial({color:0x2194ce});
   // var greenMat = new THREE.MeshLambertMaterial({color:0x11E020});
   var mixer;
 
+  // This pls
+  //https://stackoverflow.com/questions/41023160/can-i-add-an-invisible-bounding-box-to-a-three-js-scene
 
   //load the obj
   //floodfill uses the positions of the models
@@ -50,38 +55,45 @@ function createModels(manager, managerEnemies, scene, heightMap, charactersArray
             root.asset = mike;
             //console.log(gltf.asset.movement);
             //console.log(gltf.asset);
+
             meleeBox.setFromObject(root);
-            boundingBoxArray.push(meleeBox);
+            console.log(meleeBox.getCenter());
+            //boundingBoxArray.push(meleeBox);
             break;
           case "ranged":  
             root.asset = rachel;
             //console.log(gltf.asset);
             rangedBox.setFromObject(root);
-            boundingBoxArray.push(rangedBox);
+            //boundingBoxArray.push(rangedBox);
             break;
           case "defender": 
             root.asset = joe;
             //console.log(gltf.asset);
             defenderBox.setFromObject(root);
-            boundingBoxArray.push(defenderBox);
+            //boundingBoxArray.push(defenderBox);
             break;
       }
 
       root.position.set(model.pos, 1.5, -3.75);
       root.scale.set(.34, .34, .34);
+      var plsHelp = new THREE.Geometry();
+      plsHelp.vertices.push(
+        new THREE.Vector3( -1,  1, 0 ),
+        new THREE.Vector3( -1, -1, 0 ),
+        new THREE.Vector3(  1, -1, 0 )
+      );      
+      plsHelp.faces.push( new THREE.Face3( 0, 1, 2 ) );
+      plsHelp.computeBoundingBox();
+      //scene.add(plsHelp);
 
-      //create bounding box
-      //var box = new THREE.Box3();
-      //box.computeBoundingBox(root);
-      //box.setFromObject(root);
       //scene.add(box);
       //root.boundingBox = box;
       //console.log(root.boundingBox);
       //add box helper so we can see the bounding box
-      //boxHelper = new THREE.BoxHelper(root, 0xffff00 );
-      //scene.add(boxHelper);
+     // boxHelper = new THREE.BoxHelper(root, 0xffff00 );///////////////
+     // scene.add(boxHelper);                             /////////////////////
 
-      console.log(boundingBoxArray);
+      //console.log(boundingBoxArray);
 
       //add character to array
       charactersArray.push(gltf.scene);

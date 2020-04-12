@@ -3,11 +3,11 @@
  * @author Mugen87 / http://github.com/Mugen87
  */
 
-import { Box3 } from '../math/Box3.js';
-import { LineSegments } from '../objects/LineSegments.js';
-import { LineBasicMaterial } from '../materials/LineBasicMaterial.js';
-import { BufferAttribute } from '../core/BufferAttribute.js';
-import { BufferGeometry } from '../core/BufferGeometry.js';
+import { Box3 } from './Box3.js';
+import { LineSegments } from './LineSegments.js';
+import { LineBasicMaterial } from './LineBasicMaterial.js';
+import { BufferAttribute } from './BufferAttribute.js';
+import { BufferGeometry } from './BufferGeometry.js';
 
 var _box = new Box3();
 
