@@ -35,6 +35,10 @@ fillBoard(scene);
 
 //loadCat();
 
+var meleeBox;
+var rangedBox;
+var defenderBox;
+
 const mapTopZ = 7.5;
 const mapRightX = -7.5;
 const mapBottomZ = -7.5;
@@ -56,7 +60,7 @@ var boxHelperDefender;
 boundingBoxArray.push(boxHelperMelee, boxHelperRanged, boxHelperDefender);
 
 //createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, box, boxHelper, boundingBoxArray);
-createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, boundingBoxArray);
+createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, boundingBoxArray, meleeBox);
 
 managerEnemies.onLoad = function() {
     console.log("enemies loaded");
@@ -65,7 +69,7 @@ managerEnemies.onLoad = function() {
 manager.onLoad = function () {
     console.log(characterCount);
 
-    addButtons(charactersArray, enemiesArray);
+    //addButtons(charactersArray, enemiesArray);
 
     //Reference: https://stackoverflow.com/questions/8941183/pass-multiple-arguments-along-with-an-event-object-to-an-event-handler
     //var handler = function (character, linked) {
@@ -90,10 +94,15 @@ manager.onLoad = function () {
 
     function onMouseDown(event){
         event.preventDefault();
+
+        //https://stackoverflow.com/questions/34831626/three-js-raycaster-is-offset-when-scollt-the-page
+        // mouse.x = ( ( event.clientX - rect.left ) / ( rect.right - rect.left ) ) * 2 - 1;
+        // mouse.y = - ( ( event.clientY - rect.top ) / ( rect.bottom - rect.top) ) * 2 + 1;
+
         //set the mouse location to be accurate based on window size
-        mouse.set((event.clientX / window.innerWidth) * 2 - 1, - (event.clientY / window.innerHeight ) * 2 + 1);
+       mouse.set((event.clientX / window.innerWidth) * 2 - 1, - (event.clientY / window.innerHeight ) * 2 + 1);
         //print for testing
-        console.log("x: " + mouse.x + "\ny: " + mouse.y);
+        //////console.log("x: " + mouse.x + "\ny: " + mouse.y);
 
         //set the raycaster
         raycaster.setFromCamera(mouse, camera);
@@ -103,22 +112,29 @@ manager.onLoad = function () {
         //make the raycaster visible
         scene.add(new THREE.ArrowHelper(raycaster.ray.direction, raycaster.ray.origin, 300, 0xff0000) );
 
-        //tell the raycaster to only pay attention to the bounding boxes within the bb array
-        var intersects = raycaster.intersectObjects(boundingBoxArray, true);          //https://stackoverflow.com/questions/55462615/three-js-raycast-on-skinning-mesh
-        console.log(intersects);                                                 
-
-        //output the corresponding bounding box that has been selected
-         if(intersects.length > 0){
-             var intersect = intersects[0];
-             //console.log(intersect.object.object.name);
-             if (intersect.object.name == "melee")
-                console.log("pirate");
-            else if(intersect.object.name == "ranged")
-                console.log("archer");
-            else if(intersect.object.name == "defender")
-                console.log("tank");
+        console.log(boundingBoxArray);
+        
+        if(raycaster.ray.intersectsBox(boundingBoxArray[0]) === true){
+            console.log("I am the pirate");
+        }else if(raycaster.ray.intersectsBox(boundingBoxArray[1]) === true){
+            console.log("I am the archer")
+        }else if(raycaster.ray.intersectsBox(boundingBoxArray[2]) === true){
+            console.log("I am the woman tank")
         }
-        //render();
+        // console.log(intersects);                                                 
+
+        // //output the corresponding bounding box that has been selected
+        //  if(intersects.length > 0){
+        //      var intersect = intersects[0];
+        //      //console.log(intersect.object.object.name);
+        //      if (intersect.object.name == "melee")
+        //         console.log("pirate");
+        //     else if(intersect.object.name == "ranged")
+        //         console.log("archer");
+        //     else if(intersect.object.name == "defender")
+        //         console.log("tank");
+        // }
+        /////render();
     }
 
     window.addEventListener('keydown', handler(charactersArray), false);

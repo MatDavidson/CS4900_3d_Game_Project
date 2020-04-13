@@ -1,6 +1,6 @@
 import { Actor, Defender, Melee, Ranged } from './actors.js';
 
-function createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, boundingBoxArray) {
+function createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, boundingBoxArray, meleeBox, rangedBox, defenderBox) {
   //scene, arr) {
   // var redMat = new THREE.MeshLambertMaterial({color:0xF7573E});
   // var blueMat = new THREE.MeshLambertMaterial({color:0x2194ce});
@@ -57,26 +57,40 @@ function createModels(manager, managerEnemies, scene, heightMap, charactersArray
 
       switch (model.name) {
         case "melee":
-          boundingBoxArray[0] = new THREE.BoxHelper(root, 0xffff00);
+          meleeBox = new THREE.Box3().setFromObject(root);
+          //meleeBox.setFromObject(root);
+          boundingBoxArray[0] = meleeBox;
           boundingBoxArray[0].name = "melee";
-          scene.add(boundingBoxArray[0]);
+          //scene.add(boundingBoxArray[0]);
           break;
         case "ranged":
-          boundingBoxArray[1] = new THREE.BoxHelper(root, 0xffff00);
+          rangedBox = new THREE.Box3().setFromObject(root);
+          //meleeBox.setFromObject(root);
+          boundingBoxArray[1] = rangedBox;
           boundingBoxArray[1].name = "ranged";
-          scene.add(boundingBoxArray[1]);
+
+          // boundingBoxArray[1] = new THREE.BoxHelper(root, 0xffff00);
+          // boundingBoxArray[1].name = "ranged";
+          // scene.add(boundingBoxArray[1]);
           break;
         case "defender":
-          boundingBoxArray[2] = new THREE.BoxHelper(root, 0xffff00);
+          defenderBox = new THREE.Box3().setFromObject(root);
+          //meleeBox.setFromObject(root);
+          boundingBoxArray[2] = defenderBox;
           boundingBoxArray[2].name = "defender";
-          scene.add(boundingBoxArray[2]);
+
+          // boundingBoxArray[2] = new THREE.BoxHelper(root, 0xffff00);
+          // boundingBoxArray[2].name = "defender";
+          // scene.add(boundingBoxArray[2]);
           break;
       }
 
+      console.log(boundingBoxArray);
       //add character to array
       charactersArray.push(gltf.scene);
       //boundingBoxArray.push(box);
       scene.add(root);
+      scene.updateMatrixWorld();
     });
   }//end for
 
