@@ -1,6 +1,6 @@
 import { boardGen, fillBoard, generateSkybox, characterRadius } from './js/gameBoard.js';
 import {createCamera, addCameraControls} from'./js/camera.js';
-import {createModels, loadCat, meleeBox, rangedBox, defenderBox, enemyMeleeBox, enemyRangedBox, enemyDefenderBox} from './js/modelMaker.js';
+import {createModels, loadCat } from './js/modelMaker.js';
 import { keyLifted, movePlayer, changeCharacter, } from './js/objectGeneration.js';
 import {HeightMap} from './js/heightMap.js';
 import {Melee, Defender, Ranged} from './js/actors.js';
@@ -55,12 +55,8 @@ var boxHelperDefender;
 
 boundingBoxArray.push(boxHelperMelee, boxHelperRanged, boxHelperDefender);
 
-  //create bounding box for raycaster to work
-  //var box = new THREE.Box3();
-  //var boxHelper;
 //createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, box, boxHelper, boundingBoxArray);
 createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, boundingBoxArray);
-
 
 managerEnemies.onLoad = function() {
     console.log("enemies loaded");
@@ -69,7 +65,7 @@ managerEnemies.onLoad = function() {
 manager.onLoad = function () {
     console.log(characterCount);
 
-    /////////////////addButtons(charactersArray, enemiesArray);
+    addButtons(charactersArray, enemiesArray);
 
     //Reference: https://stackoverflow.com/questions/8941183/pass-multiple-arguments-along-with-an-event-object-to-an-event-handler
     //var handler = function (character, linked) {
@@ -93,31 +89,36 @@ manager.onLoad = function () {
     document.addEventListener('mousedown', onMouseDown, false);
 
     function onMouseDown(event){
-        // for(var i =0; i < charactersArray.length; i++){
-        //     console.log(charactersArray[i]);
-        // }
         event.preventDefault();
-        
+        //set the mouse location to be accurate based on window size
         mouse.set((event.clientX / window.innerWidth) * 2 - 1, - (event.clientY / window.innerHeight ) * 2 + 1);
-        raycaster.setFromCamera(mouse, camera);
+        //print for testing
+        console.log("x: " + mouse.x + "\ny: " + mouse.y);
 
+        //set the raycaster
+        raycaster.setFromCamera(mouse, camera);
+        //raycaster direction for testing
+        console.log(raycaster.ray.direction);
+
+        //make the raycaster visible
+        scene.add(new THREE.ArrowHelper(raycaster.ray.direction, raycaster.ray.origin, 300, 0xff0000) );
+
+        //tell the raycaster to only pay attention to the bounding boxes within the bb array
         var intersects = raycaster.intersectObjects(boundingBoxArray, true);          //https://stackoverflow.com/questions/55462615/three-js-raycast-on-skinning-mesh
         console.log(intersects);                                                 
-        //testing purposes
-        //console.log(intersects[0].object.asset.name);
+
+        //output the corresponding bounding box that has been selected
          if(intersects.length > 0){
              var intersect = intersects[0];
              //console.log(intersect.object.object.name);
-             if (intersect.object.name == "melee") //clicked on the pirate
+             if (intersect.object.name == "melee")
                 console.log("pirate");
             else if(intersect.object.name == "ranged")
                 console.log("archer");
             else if(intersect.object.name == "defender")
                 console.log("tank");
         }
-
         //render();
-
     }
 
     window.addEventListener('keydown', handler(charactersArray), false);
@@ -130,13 +131,12 @@ function animate() {
     //update bounding boxes
     updateBoundingBoxes();
     requestAnimationFrame(animate);
-    //raycaster.setFromCamera(mouse, camera);
     // Rerenders the scene
     renderer.render(scene, camera);
     //console.log(camera.position);
 }
 
-//called within the animate function to update bounding box locations
+//IN PROGRESS - called within the animate function to update bounding box locations
 function updateBoundingBoxes(){
     //console.log(charactersArray[0].name);
     //console.log(boundingBoxArray);

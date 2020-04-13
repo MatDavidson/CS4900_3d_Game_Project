@@ -1,16 +1,5 @@
 import { Actor, Defender, Melee, Ranged } from './actors.js';
 
-var meleeBox = new THREE.Box3();
-meleeBox.name = "meleeBBox";
-var rangedBox = new THREE.Box3();
-rangedBox.name = "rangedBBox";
-var defenderBox = new THREE.Box3();
-defenderBox.name = "defenderBBox";
-
-var enemyMeleeBox = new THREE.Box3();
-var enemyRangedBox = new THREE.Box3();
-var enemyDefenderBox = new THREE.Box3();
-
 function createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, boundingBoxArray) {
   //scene, arr) {
   // var redMat = new THREE.MeshLambertMaterial({color:0xF7573E});
@@ -22,7 +11,7 @@ function createModels(manager, managerEnemies, scene, heightMap, charactersArray
   //https://stackoverflow.com/questions/41023160/can-i-add-an-invisible-bounding-box-to-a-three-js-scene
 
   //load the obj
-  //floodfill uses the positions of the models
+  // !floodfill uses the positions of the models!
   const characters = {
     melee: { url: './models/Pirate_Male.glb', name: 'melee', pos: 0 },
     ranged: { url: './models/Ninja_Male.glb', name: 'ranged', pos: 1 },
@@ -56,24 +45,15 @@ function createModels(manager, managerEnemies, scene, heightMap, charactersArray
           break;
         case "ranged":
           root.asset = rachel;
-          //console.log(gltf.asset);
-          //////////////////////////rangedBox.setFromObject(root);
-          //boundingBoxArray.push(rangedBox);
           break;
         case "defender":
           root.asset = joe;
-          //console.log(gltf.asset);
-          ////////////////////////defenderBox.setFromObject(root);
-          //boundingBoxArray.push(defenderBox);
           break;
       }
 
       //need to set the model scale and position BEFORE bounding box
       root.position.set(model.pos, 1.5, -3.75);
       root.scale.set(.34, .34, .34);
-
-
-      //boxHelper = new THREE.BoxHelper(root, 0xffff00 );
 
       switch (model.name) {
         case "melee":
@@ -149,4 +129,5 @@ function loadCat() {
   });
 }
 
-export { createModels, loadCat, meleeBox, rangedBox, defenderBox, enemyMeleeBox, enemyRangedBox, enemyDefenderBox };
+export { createModels, loadCat };
+//export { createModels, loadCat, meleeBox, rangedBox, defenderBox, enemyMeleeBox, enemyRangedBox, enemyDefenderBox };
