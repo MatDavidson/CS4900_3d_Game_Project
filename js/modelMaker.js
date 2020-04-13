@@ -11,7 +11,7 @@ var enemyMeleeBox = new THREE.Box3();
 var enemyRangedBox = new THREE.Box3();
 var enemyDefenderBox = new THREE.Box3();
 
-function createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, boundingBoxArray, boxHelper){
+function createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, boundingBoxArray) {
   //scene, arr) {
   // var redMat = new THREE.MeshLambertMaterial({color:0xF7573E});
   // var blueMat = new THREE.MeshLambertMaterial({color:0x2194ce});
@@ -50,50 +50,48 @@ function createModels(manager, managerEnemies, scene, heightMap, charactersArray
       let rachel = new Ranged("Rachel");
       let joe = new Defender("Joe");
 
-      switch(model.name){
-          case "melee":   
-            root.asset = mike;
-            //console.log(gltf.asset.movement);
-            //console.log(gltf.asset);
-
-            meleeBox.setFromObject(root);
-            console.log(meleeBox.getCenter());
-            //boundingBoxArray.push(meleeBox);
-            break;
-          case "ranged":  
-            root.asset = rachel;
-            //console.log(gltf.asset);
-            rangedBox.setFromObject(root);
-            //boundingBoxArray.push(rangedBox);
-            break;
-          case "defender": 
-            root.asset = joe;
-            //console.log(gltf.asset);
-            defenderBox.setFromObject(root);
-            //boundingBoxArray.push(defenderBox);
-            break;
+      switch (model.name) {
+        case "melee":
+          root.asset = mike;
+          break;
+        case "ranged":
+          root.asset = rachel;
+          //console.log(gltf.asset);
+          //////////////////////////rangedBox.setFromObject(root);
+          //boundingBoxArray.push(rangedBox);
+          break;
+        case "defender":
+          root.asset = joe;
+          //console.log(gltf.asset);
+          ////////////////////////defenderBox.setFromObject(root);
+          //boundingBoxArray.push(defenderBox);
+          break;
       }
 
+      //need to set the model scale and position BEFORE bounding box
       root.position.set(model.pos, 1.5, -3.75);
       root.scale.set(.34, .34, .34);
-      var plsHelp = new THREE.Geometry();
-      plsHelp.vertices.push(
-        new THREE.Vector3( -1,  1, 0 ),
-        new THREE.Vector3( -1, -1, 0 ),
-        new THREE.Vector3(  1, -1, 0 )
-      );      
-      plsHelp.faces.push( new THREE.Face3( 0, 1, 2 ) );
-      plsHelp.computeBoundingBox();
-      //scene.add(plsHelp);
 
-      //scene.add(box);
-      //root.boundingBox = box;
-      //console.log(root.boundingBox);
-      //add box helper so we can see the bounding box
-     // boxHelper = new THREE.BoxHelper(root, 0xffff00 );///////////////
-     // scene.add(boxHelper);                             /////////////////////
 
-      //console.log(boundingBoxArray);
+      //boxHelper = new THREE.BoxHelper(root, 0xffff00 );
+
+      switch (model.name) {
+        case "melee":
+          boundingBoxArray[0] = new THREE.BoxHelper(root, 0xffff00);
+          boundingBoxArray[0].name = "melee";
+          scene.add(boundingBoxArray[0]);
+          break;
+        case "ranged":
+          boundingBoxArray[1] = new THREE.BoxHelper(root, 0xffff00);
+          boundingBoxArray[1].name = "ranged";
+          scene.add(boundingBoxArray[1]);
+          break;
+        case "defender":
+          boundingBoxArray[2] = new THREE.BoxHelper(root, 0xffff00);
+          boundingBoxArray[2].name = "defender";
+          scene.add(boundingBoxArray[2]);
+          break;
+      }
 
       //add character to array
       charactersArray.push(gltf.scene);
@@ -114,15 +112,15 @@ function createModels(manager, managerEnemies, scene, heightMap, charactersArray
       //root.visible = false;
       if (root.name === "meleeEnemy") {
         console.log("meleeEnemy");
-        let makayla = new Melee("Makayla");
+        let makayla = new Melee("Shrek");
         root.actor = makayla;
       } else if (root.name === "rangedEnemy") {
         console.log("rangedEnemy");
-        let lkay = new Ranged("LKay");
+        let lkay = new Ranged("Hawkeye");
         root.actor = lkay;
       } else if (root.name === "defenderEnemy") {
         console.log("defenderEnemy");
-        let denise = new Defender("Denise");
+        let denise = new Defender("Carole Baskins");
         root.actor = denise;
       }
       enemiesArray.push(root);
@@ -131,23 +129,23 @@ function createModels(manager, managerEnemies, scene, heightMap, charactersArray
   }//end for
 }
 
-function onLoad(gltf){
+function onLoad(gltf) {
   console.log(gltf);
   scene.add(gltf.scene.children);
 }
 
 
-function loadCat() {  
+function loadCat() {
   const gltfLoader = new THREE.GLTFLoader();
   gltfLoader.load('./models/Felixx.glb', function (gltf) {
-      const root = gltf.scene;
-      root.name = "cat";
-      root.visible = false;
-      //root.turns = 5; //determines the number of moves; will need to relocate
-      root.position.set(-0.25, 0.01, 2);
-      root.rotation.y += Math.PI;
-      root.scale.set(10, 10, 10);
-      scene.add(root);
+    const root = gltf.scene;
+    root.name = "cat";
+    root.visible = false;
+    //root.turns = 5; //determines the number of moves; will need to relocate
+    root.position.set(-0.25, 0.01, 2);
+    root.rotation.y += Math.PI;
+    root.scale.set(10, 10, 10);
+    scene.add(root);
   });
 }
 

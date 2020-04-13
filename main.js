@@ -49,39 +49,22 @@ var enemiesArray = [];
 var enemyCount = 0;
 
 var boundingBoxArray = [];
-var boxHelper;
-var bbox;
+var boxHelperMelee;
+var boxHelperRanged;
+var boxHelperDefender;
+
+boundingBoxArray.push(boxHelperMelee, boxHelperRanged, boxHelperDefender);
 
   //create bounding box for raycaster to work
   //var box = new THREE.Box3();
   //var boxHelper;
 //createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, box, boxHelper, boundingBoxArray);
-createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, boundingBoxArray, boxHelper);
+createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, boundingBoxArray);
 
 
 managerEnemies.onLoad = function() {
     console.log("enemies loaded");
 }
-
-//add test cube to see bb functionality
-var geometry = new THREE.BoxGeometry(1,1,1);
-var material = new THREE.MeshPhongMaterial({
-    color:'#FF99FF'
-});
-
-var cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
-
-cube.position.set(2, 1.5, -3.75);
-cube.name = "cube boi";
-
-var boundingTestBox = new THREE.Box3();
-cube.geometry.computeBoundingBox();
-boundingTestBox.setFromObject(cube);
-
-//boundingTestBox.expandByObject(cube);
-
-//console.log(boundingTestBox.distanceToPoint(2, 1.5, -3.75));
 
 manager.onLoad = function () {
     console.log(characterCount);
@@ -93,7 +76,7 @@ manager.onLoad = function () {
     var handler = function (charactersArray) {
         return function (event) {
             if (event.key === 'w' || event.key === 'a' || event.key === 's' || event.key === 'd' || event.key === 'c')
-                movePlayer(event.key, charactersArray, boxHelper, bbox);
+                movePlayer(event.key, charactersArray, boxHelper, bbox);//needs fix
             else if (event.key === 'r')
                 changeCharacter();
             else if (event.key == 'r')
@@ -115,37 +98,26 @@ manager.onLoad = function () {
         // }
         event.preventDefault();
         
-        mouse.set((event.clientX / window.innerWidth) * 2 -1, - (event.clientY / window.innerHeight ) * 2 + 1);
+        mouse.set((event.clientX / window.innerWidth) * 2 - 1, - (event.clientY / window.innerHeight ) * 2 + 1);
         raycaster.setFromCamera(mouse, camera);
 
-        //IN PROGRESS - it is not getting the correct object values we need
-        // Example: name is Body_0 (maybe need to access it through root?? Not sure)
-        // The object type is Skinned Mesh
-        var intersects = raycaster.intersectObjects(scene.children, true);          //https://stackoverflow.com/questions/55462615/three-js-raycast-on-skinning-mesh
-                                                                                    // may need to utilize "picking" in order for raycaster to behave correctly
-        console.log(intersects);                                                    //                          OR
-        //testing purposes                                                          //              we use bounding boxes
+        var intersects = raycaster.intersectObjects(boundingBoxArray, true);          //https://stackoverflow.com/questions/55462615/three-js-raycast-on-skinning-mesh
+        console.log(intersects);                                                 
+        //testing purposes
         //console.log(intersects[0].object.asset.name);
          if(intersects.length > 0){
              var intersect = intersects[0];
              //console.log(intersect.object.object.name);
-             if (intersect.object.name == "Body_6") //clicked on the pirate
-                console.log("yup");
-        //     var cubeGeo = new THREE.BoxBufferGeometry(50, 50, 50);
-        //     var cubeMaterial = new THREE.MeshBasicMaterial({
-        //         color: 0xfeb74c
-        //     });
-        //     var placeholder = new THREE.Mesh(cubeGeo, cubeMaterial);
-        //     placeholder.position.copy(intersect.point);
-        //     //.add(intersect.face.normal);
-        //     scene.add(placeholder);
+             if (intersect.object.name == "melee") //clicked on the pirate
+                console.log("pirate");
+            else if(intersect.object.name == "ranged")
+                console.log("archer");
+            else if(intersect.object.name == "defender")
+                console.log("tank");
         }
 
         //render();
 
-        // console.log(intersects[0]);
-        // console.log(intersects[0].object);
-        // console.log(intersects[0].object.name);
     }
 
     window.addEventListener('keydown', handler(charactersArray), false);
