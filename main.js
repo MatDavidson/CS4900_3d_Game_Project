@@ -5,6 +5,7 @@ import { keyLifted, movePlayer, changeCharacter, } from './js/objectGeneration.j
 import {HeightMap} from './js/heightMap.js';
 import {Melee, Defender, Ranged} from './js/actors.js';
 import { addButtons, onEndTurnClick } from './js/HUD.js';
+import { addTitle, createTitle } from './titleScreen.html';
 
 //set window size
 var height = window.innerHeight;
@@ -18,6 +19,21 @@ document.body.append(renderer.domElement);
 //create scene
 var scene = new THREE.Scene();
 scene.background = new THREE.Color("#C0C0C0");
+
+//create title screen scene
+
+var titleScreen = new THREE.Scene();
+titleScreen.background = new THREE.Color("#C0C0C0");
+
+var planeGeometry = new THREE.PlaneGeometry( 50, 50 );
+var planeTexture = new THREE.TextureLoader().load( 'textures/rabbit-9.jpg' );
+var planeMaterial = new THREE.MeshBasicMaterial( { map: planeTexture } );
+var titlePlane = new THREE.Mesh( planeGeometry, planeMaterial );
+titlePlane.position.set(-1, 1.5, -3.75);
+titlePlane.rotation.x = -1 * Math.PI;
+scene.add( titlePlane );
+//grab button functionality
+//addTitle();
 
 //Generate height map
 var heightMap = new HeightMap(4,3,5,1,-1).map;
@@ -69,7 +85,7 @@ managerEnemies.onLoad = function() {
 manager.onLoad = function () {
     console.log(characterCount);
 
-    //addButtons(charactersArray, enemiesArray);
+    addButtons(charactersArray, enemiesArray);
 
     //Reference: https://stackoverflow.com/questions/8941183/pass-multiple-arguments-along-with-an-event-object-to-an-event-handler
     //var handler = function (character, linked) {
@@ -119,7 +135,7 @@ manager.onLoad = function () {
         }else if(raycaster.ray.intersectsBox(boundingBoxArray[1]) === true){
             console.log("I am the archer")
         }else if(raycaster.ray.intersectsBox(boundingBoxArray[2]) === true){
-            console.log("I am the woman tank")
+            console.log("I am the tank")
         }
         // console.log(intersects);                                                 
 

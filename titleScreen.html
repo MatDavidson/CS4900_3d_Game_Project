@@ -1,0 +1,23 @@
+
+<body>
+    <div id="title_screen">
+        testing
+    </div>
+    <script>
+    function addTitle() { 
+        document.getElementById("title_screen").innerHTML;
+    } 
+
+    function createTitle(){
+        //create the title screen
+        var buttons = document.getElementsByTagName("button");
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].addEventListener("click", onButtonClick, false);
+        };
+    
+        function onButtonClick(event) {
+        alert(event.target.id);
+        }
+    }
+    </script>
+</body>
