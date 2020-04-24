@@ -1,79 +1,59 @@
 var down;
-const mapTopZ = 4.5;
-const mapRightX = -4.5;
-const mapBottomZ = -4.5;
-const mapLeftX = 4.5;
+let unit = 17/16;
+let increment = unit/60;
 
-function moveActor(event){
+function keyMove(key, actor, obstacles){
     if(down)
         return;
-   // down = true;
-    //used to reference the created object
-    var banana = scene.getObjectByName("defender");
-    
-    //create vector to hold object's location
-    var positionVector = new THREE.Vector3();
-    
-    if (event.key === 'w') { //w is pressed
-        positionVector = banana.position;
-        //limit movement if out of bounds
-        console.log(positionVector);
-        if(!(positionVector.z >= mapTopZ)){
-            banana.position.z += 1;
-            //change location of highlight squares
-            // highlights.forEach(function(highlight){
-            //     highlight.position.z += 1;
-            // });
-        }
-    } else if (event.key === 'a') { //a is pressed
-        positionVector = banana.position;
-        console.log(positionVector);
-        if(!(positionVector.x >= mapLeftX)){
-            banana.position.x += 1;
-            // highlights.forEach(function(highlight){
-            //     highlight.position.x += 1;
-            // });
-        }
-    } else if (event.key === 's') { //s is pressed
-        positionVector = banana.position;
-        console.log(positionVector);
-        if(!(positionVector.z <= mapBottomZ)){
-            banana.position.z += -1;
-            // highlights.forEach(function(highlight){
-            //     highlight.position.z += -1;
-            // });      
-        }
-    } else if (event.key === 'd') { //d is pressed
-        positionVector = banana.position;
-        console.log(positionVector);
-        if(!(positionVector.x <= mapRightX)){
-            banana.position.x += -1;
-            // highlights.forEach(function(highlight){
-            //     highlight.position.x += -1;
-            // });        
-        }
+    down = true;
+
+    let currentPos = actor.position;
+    let endPos = actor.position;
+
+    //Determine which direction to move
+    switch(key){
+        case 'w':
+            endPos.z = endPos.z + unit;
+            break;
+        case 'a':
+            endPos.x = endPos.x + unit;
+            break;
+        case 's':
+            endPos.z = endPos.z - unit;
+            break;
+        case 'd':
+            endPos.x = endPos.x - unit;
+            break;
     }
-    //set highlight visibility
-    // if(banana.position.z === (mapTopZ)){
-    //     highlights[0].visible = false;
-    // }else
-    //     highlights[0].visible = true;
-    // if(banana.position.x === (mapLeftX)){
-    //     highlights[3].visible = false;
-    // }else
-    //     highlights[3].visible = true;
-    // if(banana.position.z === (mapBottomZ)){
-    //     highlights[2].visible = false;
-    // }else
-    //     highlights[2].visible = true;    
-    // if(banana.position.x === (mapRightX)){
-    //     highlights[1].visible = false;
-    // }else
-    //     highlights[1].visible = true;   
-}
-//https://stackoverflow.com/questions/17514798/how-to-disable-repetitive-keydown-in-javascript
-function bananaUp(){
-    down = false;
+    actor.actor.inTransit = true;
+    actor.actor.destination = endPos;
+    moveActor(actor, currentPos, endPos);
     
-    return down;
+    down = false;
 }
+
+function moveActor(actor, currentPos, endPos){
+    if(currentPos == endPos){
+        actor.actor.inTransit = false;
+        return;
+    }
+
+    let xDir = 0;
+    if(currentPos.x > endPos.x)
+        xDir = 1;
+
+    let xDiff = 0;
+    if(currentPos.x != endPos.x)
+        xDiff = 1;
+
+    let yDir = 0;
+    if(currentPos.z > endPos.z)
+        yDir = 1;
+
+    let yDiff = 0;
+    if(currentPos.z != endPos.z)
+        yDiff = 1;
+
+    actor.position.set(currentPos.x + Math.pow(-1, xDir)*increment*xDiff, currentPos.y, currentPos.z + Math.pow(-1, zDir)*increment*zDiff);
+}
+export{keyMove};

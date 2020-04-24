@@ -1,7 +1,8 @@
 import {getRandomInt, placeObject} from './gameBoard.js';
 import {isOccupied} from './layer1.js';
+//import {Melee, Ranged, Defender} from './actors.js';
 
-function createModels(manager, scene, heightMap, obstacles, mixers){
+function createModels(manager, scene, heightMap, obstacles, mixers, actors){
   //setup units for setting positions
   let mapVerts = heightMap.length;
 
@@ -18,7 +19,7 @@ function createModels(manager, scene, heightMap, obstacles, mixers){
   var yCap = [3,6];
   var caster = new THREE.Raycaster(new THREE.Vector3(0,0,0), down);
   caster.far = .05;
-  var floorMesh = scene.getObjectByName('floorMesh'); 
+  
 
   //Setup an array of model paths
   const models = ['./models/Pirate_Male.glb', './models/Ninja_Male.glb', './models/BlueSoldier_Female.glb',
@@ -102,6 +103,29 @@ function createModels(manager, scene, heightMap, obstacles, mixers){
         
         //name the model for easy access
         root.name = 'model - ' + a + ' - ' + i;
+        //Create an actor object and bind it to the model
+        let team = 'Player-';
+        if(a == 10)
+          team = 'Enemy-';
+
+
+        let job = getRandomInt(3);
+        let modelJob;
+        switch(job){
+          case 0:
+            modelJob = new Melee(team + (i+1));
+            break;
+          case 1:
+            modelJob = new Ranged(team + (i+1));
+            break;
+          case 2:
+            modelJob = new Defender(team + (i+1));
+            break;
+        }
+
+        root.actor = modelJob;
+        modelJob.model = root;
+        actors.push(root);
 
         scene.add(root);        
       });//End GLTF loader

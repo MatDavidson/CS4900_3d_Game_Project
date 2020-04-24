@@ -1,4 +1,5 @@
 import { boardGen } from './gameBoard.js';
+import {keyMove} from './moveActor.js';
 import {createCamera, addCameraControls} from'./camera.js';
 import {createModels } from './modelMaker.js';
 import {HeightMap, VanillaRandomHeightMap} from './heightMap.js';
@@ -29,46 +30,41 @@ var clock = new THREE.Clock();
 const manager = new THREE.LoadingManager();
 manager.onLoad = init;
 var mixers = [];
-createModels(manager, scene, heightMap, obstacles, mixers);
+var actors = [];
+var currentActor;
+createModels(manager, scene, heightMap, obstacles, mixers, actors);
 
 function init(){
     for(let i = 0; i < obstacles.length;i++){
         console.log(obstacles[i].toString());
     }
     
-    //playing with animations
-    let model = scene.getObjectByName('model - 0 - 0');
-    var action = model.mixer.clipAction( model.animations[0]);
-    action.play();
-
-    model = scene.getObjectByName('model - 0 - 1');
-    action = model.mixer.clipAction( model.animations[9]);
-    action.play();
-
-    model = scene.getObjectByName('model - 0 - 2');
-    action = model.mixer.clipAction( model.animations[3]);
-    action.play();
-
-    model = scene.getObjectByName('model - 0 - 3');
-    action = model.mixer.clipAction( model.animations[4]); //Take damage
-    action.play();
-
-    model = scene.getObjectByName('model - 0 - 4');
-    action = model.mixer.clipAction( model.animations[5]);
-    action.play();
-
+    currentActor = actors[0];
+    currentActor.actor.inTransit = false;
     animate1();
 }
 
 //add event listeners
 //window.addEventListener('keypress', cameraRotation, false);
-window.addEventListener('keypress', moveActor, false);
+window.addEventListener('keypress', keySwitch, false);
+
+function keySwitch(event){
+    switch(event.key){
+        case 'w':
+        case 'a':
+        case 's':
+        case 'd':
+            keyMove(event.key, currentActor, obstacles);
+            break;
+    }
+}
+
 //call animate function
 
 //animation loop
 function animate1() {
     requestAnimationFrame(animate1);
-
+    currentActor.actor.update();
     // Rerenders the scene
     render();
     //update the controls
