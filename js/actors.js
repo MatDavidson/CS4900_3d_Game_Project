@@ -8,13 +8,17 @@ class Actor{   //Base character object
         this.exp = 0;           //Experience points
         this.movement = 5;      //How far a unit can move in one turn
         this.range = 1;         //How far the unit can reach
-
+        this.inTransit = false;
+        this.destination = null;
         this.resist = null;     //Resistances, weakness and attack type are declared 
         this.weakness = null;   //-->as null here for the following basic functions 
         this.attType = null;    //-->that all ACTOR subclasses will have 
         this.model = null;      //String that holds the model's name
     }
-
+    update(){
+        if(this.inTransit)
+            moveActor(this, model.position, destination);
+    }
     //Function for changing the the position of an actor
     move(x, y){ 
         this.xPos = x;

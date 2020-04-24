@@ -1,4 +1,5 @@
 import { boardGen } from './gameBoard.js';
+import {keyMove} from './moveActor.js';
 import {createCamera, addCameraControls} from'./camera.js';
 import {createModels } from './modelMaker.js';
 import {HeightMap, VanillaRandomHeightMap} from './heightMap.js';
@@ -25,45 +26,58 @@ boardGen(scene, heightMap, obstacles);
 var camera = createCamera(width, height, renderer, scene);
 var controls = addCameraControls(camera, renderer);
 
+var clock = new THREE.Clock();
 const manager = new THREE.LoadingManager();
 manager.onLoad = init;
-createModels(manager,scene, heightMap, obstacles);
+var mixers = [];
+var actors = [];
+var currentActor;
+createModels(manager, scene, heightMap, obstacles, mixers, actors);
 
 function init(){
-    var def = new Defender('Dan');
-    def.model = scene.getObjectByName('defender');
-    var mel = new Melee('Mike');
-    mel.model = scene.getObjectByName('melee');
-    var ran = new Range('Rick');
-    ran.model = scene.getObjectByName('ranged');
     for(let i = 0; i < obstacles.length;i++){
         console.log(obstacles[i].toString());
     }
-
-    for (let i = 0; i < heightMap.length-1; i++) {
-        for (let j = 0; j < heightMap.length-1; j++) {
-            if(obstacles[i][j] == 1){
-                scene.getObjectByName("highlightR - " + i + " - " + j).visible = false;
-                scene.getObjectByName("highlightB - " + i + " - " + j).visible = false;
-            }    
-        }
-    }
-
+    
+    currentActor = actors[0];
+    currentActor.actor.inTransit = false;
     animate1();
 }
 
 //add event listeners
 //window.addEventListener('keypress', cameraRotation, false);
-window.addEventListener('keypress', moveActor, false);
+window.addEventListener('keypress', keySwitch, false);
+
+function keySwitch(event){
+    switch(event.key){
+        case 'w':
+        case 'a':
+        case 's':
+        case 'd':
+            keyMove(event.key, currentActor, obstacles);
+            break;
+    }
+}
+
 //call animate function
 
 //animation loop
 function animate1() {
     requestAnimationFrame(animate1);
-
+    currentActor.actor.update();
     // Rerenders the scene
-    renderer.render(scene, camera);
+    render();
     //update the controls
     controls.update();
 }
 
+function render() {
+
+    var delta = clock.getDelta();
+
+    for ( const mixer of mixers ) {
+        mixer.update( delta );    
+      }
+
+    renderer.render( scene, camera );
+}
