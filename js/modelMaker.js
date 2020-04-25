@@ -2,7 +2,7 @@ import {getRandomInt, placeObject} from './gameBoard.js';
 import {isOccupied} from './layer1.js';
 //import {Melee, Ranged, Defender} from './actors.js';
 
-function createModels(manager, scene, heightMap, obstacles, mixers, actors){
+function createModels(manager, scene, heightMap, obstacles, mixers, actors, boxes){
   //setup units for setting positions
   let mapVerts = heightMap.length;
 
@@ -103,9 +103,10 @@ function createModels(manager, scene, heightMap, obstacles, mixers, actors){
         
         //name the model for easy access
         root.name = 'model - ' + a + ' - ' + i;
+
         //Create an actor object and bind it to the model
         let team = 'Player-';
-        if(a == 10)
+        if(a == 1)
           team = 'Enemy-';
 
 
@@ -125,7 +126,18 @@ function createModels(manager, scene, heightMap, obstacles, mixers, actors){
 
         root.actor = modelJob;
         modelJob.model = root;
+        modelJob.xPos = x;
+        modelJob.yPos = y;
         actors.push(root);
+
+        //Create the bounding box for the model
+        let box = new THREE.Box3().setFromObject(root);
+        box.name = "BB-" + modelJob.name;
+
+        //Bind the model and the bounding box, add the box to the box array
+        root.bBox = box;
+        box.model = root;
+        boxes.push(box);
 
         scene.add(root);        
       });//End GLTF loader

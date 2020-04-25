@@ -10,6 +10,7 @@ function layer1(scene, obstacles, mapVerts){
   let manager = new THREE.LoadingManager();
   let down = new THREE.Vector3(0,-1,0);
   let caster = new THREE.Raycaster(new THREE.Vector3(0,0,0), down);
+  caster.far = .05;
   let max = mapVerts - 1; 
   let mid = (mapVerts - 1)/2;
   let highest = 0;
