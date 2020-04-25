@@ -5,7 +5,6 @@ import { keyLifted, movePlayer, changeCharacter, } from './js/objectGeneration.j
 import {HeightMap} from './js/heightMap.js';
 import {Melee, Defender, Ranged} from './js/actors.js';
 import { addButtons, onEndTurnClick } from './js/HUD.js';
-import { addTitle, createTitle } from './titleScreen.html';
 
 //set window size
 var height = window.innerHeight;
@@ -20,18 +19,6 @@ document.body.append(renderer.domElement);
 var scene = new THREE.Scene();
 scene.background = new THREE.Color("#C0C0C0");
 
-//create title screen scene
-
-var titleScreen = new THREE.Scene();
-titleScreen.background = new THREE.Color("#C0C0C0");
-
-var planeGeometry = new THREE.PlaneGeometry( 50, 50 );
-var planeTexture = new THREE.TextureLoader().load( 'textures/rabbit-9.jpg' );
-var planeMaterial = new THREE.MeshBasicMaterial( { map: planeTexture } );
-var titlePlane = new THREE.Mesh( planeGeometry, planeMaterial );
-titlePlane.position.set(-1, 1.5, -3.75);
-titlePlane.rotation.x = -1 * Math.PI;
-scene.add( titlePlane );
 //grab button functionality
 //addTitle();
 
@@ -41,9 +28,25 @@ var heightMap = new HeightMap(4,3,5,1,-1).map;
 //call method from worldGeneration.js
 boardGen(scene, heightMap);
 
+//changed camera for title plane adjustment - see camera.js
 var camera = createCamera(width, height, renderer, scene);
-//scene.add(camera);
-var controls = addCameraControls(camera, renderer);
+
+//create title screen scene
+var planeGeometry = new THREE.PlaneGeometry( 50, 50 );
+var planeTexture = new THREE.TextureLoader().load( 'textures/rabbit-9.jpg' );
+var planeMaterial = new THREE.MeshBasicMaterial( { map: planeTexture } );
+planeMaterial.side = THREE.DoubleSide;
+var titlePlane = new THREE.Mesh( planeGeometry, planeMaterial );
+titlePlane.position.set(-1, 1.5, -3.75);
+//var rotateVector = new THREE.Vector3(-1, 0, -1);
+//titlePlane.rotateOnWorldAxis(rotateVector, Math.PI);
+// titlePlane.rotateZ = 2 * Math.PI;
+titlePlane.lookAt(camera.position);
+scene.add( titlePlane );
+
+scene.add(camera);
+//removed for title screen plane
+//var controls = addCameraControls(camera, renderer);
 
 // worldCreation(scene);
 generateSkybox(scene);
@@ -85,7 +88,7 @@ managerEnemies.onLoad = function() {
 manager.onLoad = function () {
     console.log(characterCount);
 
-    addButtons(charactersArray, enemiesArray);
+    //addButtons(charactersArray, enemiesArray);
 
     //Reference: https://stackoverflow.com/questions/8941183/pass-multiple-arguments-along-with-an-event-object-to-an-event-handler
     //var handler = function (character, linked) {
@@ -190,5 +193,5 @@ export {
     mapRightX,
     mapBottomZ,
     mapLeftX,
-    controls
+    //controls
 };
