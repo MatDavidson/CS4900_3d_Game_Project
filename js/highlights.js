@@ -37,6 +37,10 @@ function createHighlights(scene, heightMap, mapVerts){
 
         // Creating highlight
         var highlightMesh = new THREE.Mesh(highlightPlane, highlightMaterial);
+
+        //Give the highlight access to its abstract x and y
+        highlightMesh.xPos = x;
+        highlightMesh.yPos = y;
         
         highlightMesh.rotation.x -= Math.PI / 2;
         placeObject(highlightMesh, x, y, mapVerts);

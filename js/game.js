@@ -1,10 +1,13 @@
-import { boardGen } from './gameBoard.js';
+import { boardGen, generateSkybox } from './gameBoard.js';
 import {keyMove} from './moveActor.js';
 import {createCamera, addCameraControls} from'./camera.js';
 import {createModels } from './modelMaker.js';
 import {HeightMap, VanillaRandomHeightMap} from './heightMap.js';
+
+//set window size
 var height = window.innerHeight;
 var width = window.innerWidth;
+
 //create renderer
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(width, height);
@@ -29,11 +32,14 @@ var controls = addCameraControls(camera, renderer);
 var clock = new THREE.Clock();
 const manager = new THREE.LoadingManager();
 manager.onLoad = init;
-var mixers = [];
-var actors = [];
-var currentActor;
-createModels(manager, scene, heightMap, obstacles, mixers, actors);
+var mixers = []; //hold all animation mixers
+var actors = []; //hold all models
+var bBoxes = []; //hold all bouding boxes
 
+createModels(manager, scene, heightMap, obstacles, mixers, actors, bBoxes);
+
+
+var currentActor;
 function init(){
     for(let i = 0; i < obstacles.length;i++){
         console.log(obstacles[i].toString());

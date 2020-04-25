@@ -7,6 +7,9 @@ function keyMove(key, actor, obstacles){
         return;
     down = true;
 
+    let xChange = 0;
+    let yChange = 0;
+
     let currentPos = actor.position;
     let endPos = actor.position;
 
@@ -14,27 +17,38 @@ function keyMove(key, actor, obstacles){
     switch(key){
         case 'w':
             endPos.z = endPos.z + unit;
+            yChange = 1;
             break;
         case 'a':
             endPos.x = endPos.x + unit;
+            xChange = 1;
             break;
         case 's':
             endPos.z = endPos.z - unit;
+            yChange = -1;
             break;
         case 'd':
             endPos.x = endPos.x - unit;
+            xChange = -1;
             break;
     }
-    actor.actor.inTransit = true;
-    actor.actor.destination = endPos;
+
+    let job = actor.actor;
+
+    job.inTransit = true;
+    job.destination = endPos;
+    job.move(job.xPos + xChange, job.yPos + yChange);
     moveActor(actor, currentPos, endPos);
     
+    console.log(job.name + " - (" + job.xPos + "," + job.yPos + ")");
+
     down = false;
 }
 
 function moveActor(actor, currentPos, endPos){
     if(currentPos == endPos){
         actor.actor.inTransit = false;
+        actor.bBox.setFromObject(actor);
         return;
     }
 

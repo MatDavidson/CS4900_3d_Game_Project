@@ -47,13 +47,14 @@ function boardGen(scene, heightMap, obstacles) {
   line.rotation.x -= Math.PI / 2;
   
   floorMesh.name = 'floorMesh';
-  
+
   //add natural terrain objects to the map
   layer1(scene, obstacles, mapVerts);
   //add elements
   scene.add(light, floorMesh, line);
   //add the highlight layers
   createHighlights(scene, heightMap, mapVerts);
+  generateSkybox(scene);
 }
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
@@ -102,5 +103,43 @@ function getDiff(int1, int2){
   else    
       return int1 - int2;
 }
-export{boardGen, getRandomInt, placeObject, getQuad};
+
+// !REPLACE with new skybox!
+function generateSkybox(scene) {
+  var materialArray = [];
+  var texture_ft = new THREE.TextureLoader().load('../textures/front.png');
+  var texture_bk = new THREE.TextureLoader().load('../textures/back.png');
+  var texture_up = new THREE.TextureLoader().load('../textures/top.png');
+  var texture_dn = new THREE.TextureLoader().load('../textures/bottom.png');
+  var texture_rt = new THREE.TextureLoader().load('../textures/right.png');
+  var texture_lf = new THREE.TextureLoader().load('../textures/left.png');
+
+  materialArray.push(new THREE.MeshBasicMaterial({
+      map: texture_ft
+  }));
+  materialArray.push(new THREE.MeshBasicMaterial({
+      map: texture_bk
+  }));
+  materialArray.push(new THREE.MeshBasicMaterial({
+      map: texture_up
+  }));
+  materialArray.push(new THREE.MeshBasicMaterial({
+      map: texture_dn
+  }));
+  materialArray.push(new THREE.MeshBasicMaterial({
+      map: texture_rt
+  }));
+  materialArray.push(new THREE.MeshBasicMaterial({
+      map: texture_lf
+  }));
+
+  for (var i = 0; i < 6; i++)
+      materialArray[i].side = THREE.BackSide;
+
+  var skyboxGeo = new THREE.BoxGeometry(10000, 10000, 10000);
+  var skybox = new THREE.Mesh(skyboxGeo, materialArray);
+  scene.add(skybox);
+}
+
+export{boardGen, getRandomInt, placeObject, getQuad, generateSkybox};
 
