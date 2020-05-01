@@ -1,3 +1,5 @@
+import {moveActor} from './moveActor.js';
+
 class Actor{   //Base character object
     constructor(name){
         this.name = name;
@@ -7,6 +9,7 @@ class Actor{   //Base character object
         this.yPos = 0;          //Y position
         this.exp = 0;           //Experience points
         this.movement = 5;      //How far a unit can move in one turn
+        this.moveLeft = 5;
         this.range = 1;         //How far the unit can reach
         this.inTransit = false;
         this.destination = null;
@@ -16,8 +19,7 @@ class Actor{   //Base character object
         this.model = null;      //String that holds the model's name
     }
     update(){
-        if(this.inTransit)
-            moveActor(this, model.position, destination);
+        
     }
     //Function for changing the the position of an actor
     move(x, y){ 
@@ -126,6 +128,7 @@ class Ranged extends Actor{
         this.attType = ['Ranged'];
     }
 }
+export {Actor, Melee, Defender, Ranged};
 // module.exports.Actor = Actor;
 // module.exports.Melee = Melee; 
 // module.exports.Defender = Defender;

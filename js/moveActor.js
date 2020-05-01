@@ -1,3 +1,5 @@
+import { characterRadius} from './highlights.js';
+
 var down;
 let unit = 17/16;
 let increment = unit/60;
@@ -37,7 +39,10 @@ function keyMove(key, actor, obstacles){
 
     job.inTransit = true;
     job.destination = endPos;
+
     job.move(job.xPos + xChange, job.yPos + yChange);
+    job.moveLeft -= 1;
+    characterRadius(actor.scene, job.xPos, job.yPos, job.moveLeft)
     moveActor(actor, currentPos, endPos);
     
     console.log(job.name + " - (" + job.xPos + "," + job.yPos + ")");
@@ -48,6 +53,7 @@ function keyMove(key, actor, obstacles){
 function moveActor(actor, currentPos, endPos){
     if(currentPos == endPos){
         actor.actor.inTransit = false;
+        actor.actor.destinatin = null;
         actor.bBox.setFromObject(actor);
         return;
     }
@@ -70,4 +76,4 @@ function moveActor(actor, currentPos, endPos){
 
     actor.position.set(currentPos.x + Math.pow(-1, xDir)*increment*xDiff, currentPos.y, currentPos.z + Math.pow(-1, zDir)*increment*zDiff);
 }
-export{keyMove};
+export{keyMove, moveActor};

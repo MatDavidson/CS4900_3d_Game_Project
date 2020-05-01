@@ -4,8 +4,9 @@ import {createModels} from './js/modelMaker.js';
 // import { keyLifted, movePlayer, changeCharacter, } from './js/objectGeneration.js';
  import {HeightMap,VanillaRandomHeightMap} from './js/heightMap.js';
 // import {Melee, Defender, Ranged} from './js/actors.js';
-//import { addButtons, onEndTurnClick } from './js/HUD.js';
+import { addButtons, onEndTurnClick } from './js/HUD.js';
 import {keyMove} from './js/moveActor.js';
+import {moveRadius, characterRadius, clearRadius} from './js/highlights.js';
 
 //set window size
 var height = window.innerHeight;
@@ -27,9 +28,14 @@ scene.background = new THREE.Color("#C0C0C0");
 var heightMap = new VanillaRandomHeightMap(4).map;
 let mapVerts = heightMap.length;
 var obstacles = [...Array(mapVerts-1)].map((_, i) => [...Array(mapVerts-1)].map((_, i) => 0));
+var highlights = [...Array(mapVerts-1)].map((_, i) => [...Array(mapVerts-1)].map((_, i) => null));
+var nodes = [...Array(16)].map((_, i) => [...Array(16)].map((_, j) => null));
+scene.nodes = nodes;
+scene.highlights = highlights;
+scene.obstacles = obstacles;
 
 //call method from worldGeneration.js
-boardGen(scene, heightMap, obstacles);
+boardGen(scene, heightMap, obstacles, highlights, nodes);
 
 //changed camera for title plane adjustment - see camera.js
 var camera = createCamera(width, height, renderer, scene);
@@ -175,9 +181,11 @@ createModels(manager, scene, heightMap, obstacles, mixers, actors, bBoxes);
 }*/
 
 var currentActor;
+
 function init(){
     currentActor = actors[0];
-    currentActor.actor.inTransit = false;
+    moveRadius(scene, currentActor, obstacles);
+
     animate();
 }
 
@@ -189,6 +197,7 @@ function keySwitch(event){
         case 'a':
         case 's':
         case 'd':
+            clearRadius(scene);
             keyMove(event.key, currentActor, obstacles);
             break;
     }
@@ -226,8 +235,11 @@ function onMouseDown(event){
     //     console.log("I am the tank")
     // }
     for(let i = 0; i < actors.length; i ++){
-        if(raycaster.ray.intersectsBox(bBoxes[i]))
+        if(raycaster.ray.intersectsBox(bBoxes[i])){
             console.log(bBoxes[i].name);
+            currentActor = bBoxes[i].model;
+            break;
+        }
     }
 }
 
@@ -235,7 +247,11 @@ function animate() {
     //update bounding boxes
     //updateBoundingBoxes();
     requestAnimationFrame(animate);
-    // Rerenders the scene
+    if(currentActor.actor.inTransit === true){
+        moveActor(currentActor, currentActor.position, currentActor.actor.destination);
+        console.log("Moving...");
+    } 
+    // Rerenders the scene  
     render();
     //console.log(camera.position);
     controls.update();
@@ -247,10 +263,11 @@ function render() {
 
     for ( const mixer of mixers ) {
         mixer.update( delta );    
-      }
+    } 
 
     renderer.render( scene, camera );
 }
+
 
 //IN PROGRESS - called within the animate function to update bounding box locations
 function updateBoundingBoxes(){

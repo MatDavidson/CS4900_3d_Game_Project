@@ -2,7 +2,7 @@ import {layer1} from './layer1.js';
 import {createHighlights} from './highlights.js';
 
 //This file creates the layout of the scene
-function boardGen(scene, heightMap, obstacles) {
+function boardGen(scene, heightMap, obstacles, highlights, nodes) {
   var mapVerts = heightMap.length;
   
   //add lighting
@@ -53,8 +53,10 @@ function boardGen(scene, heightMap, obstacles) {
   //add elements
   scene.add(light, floorMesh, line);
   //add the highlight layers
-  createHighlights(scene, heightMap, mapVerts);
+  createHighlights(scene, heightMap, mapVerts, highlights, nodes);
   generateSkybox(scene);
+
+
 }
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
@@ -140,6 +142,7 @@ function generateSkybox(scene) {
   var skybox = new THREE.Mesh(skyboxGeo, materialArray);
   scene.add(skybox);
 }
+
 
 export{boardGen, getRandomInt, placeObject, getQuad, generateSkybox};
 
