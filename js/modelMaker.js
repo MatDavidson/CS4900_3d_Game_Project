@@ -1,5 +1,6 @@
 import {getRandomInt, placeObject} from './gameBoard.js';
 import {isOccupied} from './layer1.js';
+import {Actor, Melee, Defender, Ranged} from './actors.js';
 //import {Melee, Ranged, Defender} from './actors.js';
 
 function createModels(manager, scene, heightMap, obstacles, mixers, actors, boxes){
@@ -138,6 +139,8 @@ function createModels(manager, scene, heightMap, obstacles, mixers, actors, boxe
         root.bBox = box;
         box.model = root;
         boxes.push(box);
+
+        root.scene = scene;
 
         scene.add(root);        
       });//End GLTF loader

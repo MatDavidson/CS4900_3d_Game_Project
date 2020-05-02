@@ -31,18 +31,54 @@
     <script type="module" src="./js/layer1.js"></script>
     <script type="module" src="./js/highlights.js"></script>
     <script type="module" src="./js/modelMaker.js"></script>
-    <script src="./js/actors.js"></script>
+    <script type='module' src="./js/actors.js"></script>
     <script type="module" src="./js/moveActor.js"></script>
     <script type="module" src="./js/heightMap.js"></script>
-1    
+    <script type="module" src="./js/astar.js"></script>
     <script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/loaders/GLTFLoader.js"></script>
 
     <title>Senior Seminar Project</title>
+    <!-- <script>
+        // reference: https://stackoverflow.com/questions/8211128/multiple-distinct-pages-in-one-html-file
+// function show(shown, hidden) {
+//     //make a pane with a picture on it
+//   document.getElementById(shown).style.display='block';
+//   document.getElementById(hidden).style.display='none';
+//   return false;
+// }
+//    </script> -->
 </head>
 
 <body>
-    
-    
+    <!-- <div class="title_screen" id="titleScreen">
+        <table>
+            <th>
+                Doughta
+            </th>
+            <tr>
+                <td>            
+                    <button id="start">
+                        <a href="#"  onclick="return show('HUD','titleScreen');">Get This Bread</a>
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>        
+                    <button id="instructions">How do I get bread?</button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button id="about">Who made this bread?</button>
+                </td>
+            </tr>
+        </table>
+    </div>  -->
+    <div id="HUD" style="display:none">
+        <button style="bottom:0" id="endTurn" class="ui">End Turn</button>
+        <button style="bottom:1" id="attack" class="ui">Attack</button>
+        <a href="#" onclick="return show('titleScreen','HUD');">Quit</a>
+    </div>  
 </body>
 
 </html>
