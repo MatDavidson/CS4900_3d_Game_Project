@@ -1,5 +1,5 @@
-import { scene, enemiesArray, charactersArray } from "../main.js";
-import { enemiesTurn, enemyCount, characterCount } from "./objectGeneration.js";
+//import { scene, enemiesArray, charactersArray } from "../main.js";
+//import { enemiesTurn, enemyCount, characterCount } from "./objectGeneration.js";
 import { Actor, Melee, Defender, Ranged } from "./actors.js";
 
 //this file contains HUD elements

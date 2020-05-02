@@ -1,10 +1,12 @@
-import { boardGen, fillBoard, generateSkybox, characterRadius } from './js/gameBoard.js';
+import { boardGen} from './js/gameBoard.js';
 import {createCamera, addCameraControls} from'./js/camera.js';
-import {createModels, loadCat } from './js/modelMaker.js';
-import { keyLifted, movePlayer, changeCharacter, } from './js/objectGeneration.js';
-import {HeightMap} from './js/heightMap.js';
-import {Melee, Defender, Ranged} from './js/actors.js';
+import {createModels} from './js/modelMaker.js';
+// import { keyLifted, movePlayer, changeCharacter, } from './js/objectGeneration.js';
+ import {HeightMap,VanillaRandomHeightMap} from './js/heightMap.js';
+// import {Melee, Defender, Ranged} from './js/actors.js';
 import { addButtons, onEndTurnClick } from './js/HUD.js';
+import {keyMove, changeCharacter, keyLifted} from './js/moveActor.js';
+import {moveRadius, characterRadius, clearRadius} from './js/highlights.js';
 
 //set window size
 var height = window.innerHeight;
@@ -22,11 +24,18 @@ scene.background = new THREE.Color("#C0C0C0");
 //grab button functionality
 //addTitle();
 
-//Generate height map
-var heightMap = new HeightMap(4,3,5,1,-1).map;
+//Generate height map and obstacles array 
+var heightMap = new VanillaRandomHeightMap(4).map;
+let mapVerts = heightMap.length;
+var obstacles = [...Array(mapVerts-1)].map((_, i) => [...Array(mapVerts-1)].map((_, i) => 0));
+var highlights = [...Array(mapVerts-1)].map((_, i) => [...Array(mapVerts-1)].map((_, i) => null));
+var nodes = [...Array(16)].map((_, i) => [...Array(16)].map((_, j) => null));
+scene.nodes = nodes;
+scene.highlights = highlights;
+scene.obstacles = obstacles;
 
 //call method from worldGeneration.js
-boardGen(scene, heightMap);
+boardGen(scene, heightMap, obstacles, highlights, nodes);
 
 //changed camera for title plane adjustment - see camera.js
 var camera = createCamera(width, height, renderer, scene);
@@ -42,17 +51,16 @@ titlePlane.position.set(-1, 1.5, -3.75);
 //titlePlane.rotateOnWorldAxis(rotateVector, Math.PI);
 // titlePlane.rotateZ = 2 * Math.PI;
 titlePlane.lookAt(camera.position);
-scene.add( titlePlane );
+
+//blocked for merging
+//scene.add( titlePlane );
 
 scene.add(camera);
-//removed for title screen plane
-//var controls = addCameraControls(camera, renderer);
-
-// worldCreation(scene);
-generateSkybox(scene);
-fillBoard(scene);
+//removed for title screen plane - readded for merging
+var controls = addCameraControls(camera, renderer);
 
 //loadCat();
+
 
 var meleeBox;
 var rangedBox;
@@ -63,7 +71,7 @@ const mapRightX = -7.5;
 const mapBottomZ = -7.5;
 const mapLeftX = 7.5;
 
-var manager = new THREE.LoadingManager();
+//var manager = new THREE.LoadingManager();
 var charactersArray = [];
 var characterCount = 0;
 
@@ -78,98 +86,102 @@ var boxHelperDefender;
 
 boundingBoxArray.push(boxHelperMelee, boxHelperRanged, boxHelperDefender);
 
-//createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, box, boxHelper, boundingBoxArray);
-createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, boundingBoxArray, meleeBox);
+var clock = new THREE.Clock();
+const manager = new THREE.LoadingManager();
+manager.onLoad = init;
+var mixers = []; //hold all animation mixers
+var actors = []; //hold all models
+var bBoxes = []; //hold all bounding boxes
 
-managerEnemies.onLoad = function() {
-    console.log("enemies loaded");
+createModels(manager, scene, heightMap, obstacles, mixers, actors, bBoxes);
+
+var currentActor;
+
+function init(){
+    currentActor = actors[0];
+    moveRadius(scene, currentActor, obstacles);
+
+    animate();
 }
 
-manager.onLoad = function () {
-    console.log(characterCount);
+window.addEventListener('keypress', keySwitch, false);
+window.addEventListener('keyup', keyLifted, false);
 
-    //addButtons(charactersArray, enemiesArray);
-
-    //Reference: https://stackoverflow.com/questions/8941183/pass-multiple-arguments-along-with-an-event-object-to-an-event-handler
-    //var handler = function (character, linked) {
-    var handler = function (charactersArray) {
-        return function (event) {
-            if (event.key === 'w' || event.key === 'a' || event.key === 's' || event.key === 'd' || event.key === 'c')
-                movePlayer(event.key, charactersArray, boxHelper, bbox);//needs fix
-            else if (event.key === 'r')
-                changeCharacter();
-            else if (event.key == 'r')
-                //cat
-                loadCat();  //will fix funtionality later
-        };
-    };
-
-    let raycaster = new THREE.Raycaster();
-    let mouse = new THREE.Vector2();
-
-    //Check this example for reference: https://threejs.org/examples/#webgl_interactive_lines
-    //event handler when clicking an enemy to attack (or possibly a teammate to heal?)
-    document.addEventListener('mousedown', onMouseDown, false);
-
-    function onMouseDown(event){
-        event.preventDefault();
-
-        //https://stackoverflow.com/questions/34831626/three-js-raycaster-is-offset-when-scollt-the-page
-        // mouse.x = ( ( event.clientX - rect.left ) / ( rect.right - rect.left ) ) * 2 - 1;
-        // mouse.y = - ( ( event.clientY - rect.top ) / ( rect.bottom - rect.top) ) * 2 + 1;
-
-        //set the mouse location to be accurate based on window size
-       mouse.set((event.clientX / window.innerWidth) * 2 - 1, - (event.clientY / window.innerHeight ) * 2 + 1);
-        //print for testing
-        //////console.log("x: " + mouse.x + "\ny: " + mouse.y);
-
-        //set the raycaster
-        raycaster.setFromCamera(mouse, camera);
-        //raycaster direction for testing
-        console.log(raycaster.ray.direction);
-
-        //make the raycaster visible
-        scene.add(new THREE.ArrowHelper(raycaster.ray.direction, raycaster.ray.origin, 300, 0xff0000) );
-
-        console.log(boundingBoxArray);
-        
-        if(raycaster.ray.intersectsBox(boundingBoxArray[0]) === true){
-            console.log("I am the pirate");
-        }else if(raycaster.ray.intersectsBox(boundingBoxArray[1]) === true){
-            console.log("I am the archer")
-        }else if(raycaster.ray.intersectsBox(boundingBoxArray[2]) === true){
-            console.log("I am the tank")
-        }
-        // console.log(intersects);                                                 
-
-        // //output the corresponding bounding box that has been selected
-        //  if(intersects.length > 0){
-        //      var intersect = intersects[0];
-        //      //console.log(intersect.object.object.name);
-        //      if (intersect.object.name == "melee")
-        //         console.log("pirate");
-        //     else if(intersect.object.name == "ranged")
-        //         console.log("archer");
-        //     else if(intersect.object.name == "defender")
-        //         console.log("tank");
-        // }
-        /////render();
+function keySwitch(event){
+    switch(event.key){
+        case 'w':
+        case 'a':
+        case 's':
+        case 'd':
+            clearRadius(scene);
+            keyMove(event.key, currentActor, obstacles);
+            break;
+        //adding swap implementation
+        case 'r':
+            currentActor = changeCharacter(actors.indexOf(currentActor));
+            //console.log(currentActor);
+            break;
     }
+}
 
-    window.addEventListener('keydown', handler(charactersArray), false);
-    window.addEventListener('keyup', keyLifted, false);
-    console.log(characterCount);
-    animate();
+var raycaster = new THREE.Raycaster();
+var mouse = new THREE.Vector2();
+
+//Check this example for reference: https://threejs.org/examples/#webgl_interactive_lines
+//event handler when clicking an enemy to attack (or possibly a teammate to heal?)
+document.addEventListener('mousedown', onMouseDown, false);
+
+function onMouseDown(event){
+    event.preventDefault();
+
+    //set the mouse location to be accurate based on window size
+    mouse.set((event.clientX / window.innerWidth) * 2 - 1, - (event.clientY / window.innerHeight ) * 2 + 1);
+    
+    //set the raycaster
+    raycaster.setFromCamera(mouse, camera);
+    
+    //raycaster direction for testing
+    console.log(raycaster.ray.direction);
+
+    //make the raycaster visible
+    scene.add(new THREE.ArrowHelper(raycaster.ray.direction, raycaster.ray.origin, 300, 0xff0000) );
+
+    //console.log(boundingBoxArray);
+    
+    for(let i = 0; i < actors.length; i ++){
+        if(raycaster.ray.intersectsBox(bBoxes[i])){
+            console.log(bBoxes[i].name);
+            currentActor = bBoxes[i].model;
+            break;
+        }
+    }
 }
 
 function animate() {
     //update bounding boxes
-    updateBoundingBoxes();
+    //updateBoundingBoxes();
     requestAnimationFrame(animate);
-    // Rerenders the scene
-    renderer.render(scene, camera);
+    if(currentActor.actor.inTransit === true){
+        moveActor(currentActor, currentActor.position, currentActor.actor.destination);
+        console.log("Moving...");
+    } 
+    // Rerenders the scene  
+    render();
     //console.log(camera.position);
+    controls.update();
 }
+
+function render() {
+
+    var delta = clock.getDelta();
+
+    for ( const mixer of mixers ) {
+        mixer.update( delta );    
+    } 
+
+    renderer.render( scene, camera );
+}
+
 
 //IN PROGRESS - called within the animate function to update bounding box locations
 function updateBoundingBoxes(){
@@ -188,10 +200,12 @@ function updateBoundingBoxes(){
 }
 
 export {
-    scene, charactersArray, enemiesArray,
+    scene
+    , charactersArray, enemiesArray,
     mapTopZ,
     mapRightX,
     mapBottomZ,
     mapLeftX,
     //controls
+    actors
 };

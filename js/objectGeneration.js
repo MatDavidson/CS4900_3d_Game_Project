@@ -1,3 +1,4 @@
+
 import {
     scene, //charactersArray, 
     mapTopZ,

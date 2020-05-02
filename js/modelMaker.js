@@ -1,147 +1,165 @@
-import { Actor, Defender, Melee, Ranged } from './actors.js';
+import {getRandomInt, placeObject} from './gameBoard.js';
+import {isOccupied} from './layer1.js';
+import {Actor, Melee, Defender, Ranged} from './actors.js';
+//import {Melee, Ranged, Defender} from './actors.js';
 
-function createModels(manager, managerEnemies, scene, heightMap, charactersArray, enemiesArray, boundingBoxArray, meleeBox, rangedBox, defenderBox) {
-  //scene, arr) {
-  // var redMat = new THREE.MeshLambertMaterial({color:0xF7573E});
-  // var blueMat = new THREE.MeshLambertMaterial({color:0x2194ce});
-  // var greenMat = new THREE.MeshLambertMaterial({color:0x11E020});
-  var mixer;
+function createModels(manager, scene, heightMap, obstacles, mixers, actors, boxes){
+  //setup units for setting positions
+  let mapVerts = heightMap.length;
 
-  // This pls
-  //https://stackoverflow.com/questions/41023160/can-i-add-an-invisible-bounding-box-to-a-three-js-scene
+  //Create a global variable for the down direction, cardinal directions, starting points, the raycaster and the map
+  var down = new THREE.Vector3(0,-1,0);
+  var north = 2*Math.PI;
+  var south = Math.PI;
+  var east = 1.5*Math.PI;
+  var west = .5*Math.PI;
+  var direction = [north, south, west, east];
+  var xStart = [5,2];
+  var xCap = [6,3];
+  var yStart = [2,5];
+  var yCap = [3,6];
+  var caster = new THREE.Raycaster(new THREE.Vector3(0,0,0), down);
+  caster.far = .05;
+  
 
-  //load the obj
-  // !floodfill uses the positions of the models!
-  const characters = {
-    melee: { url: './models/Pirate_Male.glb', name: 'melee', pos: 0 },
-    ranged: { url: './models/Ninja_Male.glb', name: 'ranged', pos: 1 },
-    defender: { url: './models/BlueSoldier_Female.glb', name: 'defender', pos: -1 },
-  };
+  //Setup an array of model paths
+  const models = ['./models/Pirate_Male.glb', './models/Ninja_Male.glb', './models/BlueSoldier_Female.glb',
+                  './models/Cowgirl.glb', './models/Goblin_Male.glb', './models/Viking.glb'];
 
-  const enemies = {
-    meleeEnemy: { url: './models/Goblin_Male_Red.glb', name: 'meleeEnemy', pos: 0.5 },
-    rangedEnemy: { url: './models/Cowgirl.glb', name: 'rangedEnemy', pos: 1.5 },
-    defenderEnemy: { url: './models/Viking.glb', name: 'defenderEnemy', pos: -0.5 },
-  };
-
+  //create the gltfLoader passing it the loading manager as an argument
   const gltfLoader = new THREE.GLTFLoader(manager);
-  const gltfLoaderEnemies = new THREE.GLTFLoader(managerEnemies);
 
-  for (const model of Object.values(characters)) {
-    gltfLoader.load(model.url, (gltf) => {
-      const root = gltf.scene;
-      root.name = model.name;
-      gltf.name = model.name;
-      //movement is attached to the asset
+  //Set the orientation f the parties. 0 = North/South
+  let orientation = getRandomInt(2);
+  
+  //Place models for both parties. 
+  for(let a = 0; a < 2; a++){
+    //Set the direction each model with face
+    let dirChoice = a;
+    if(orientation == 1) //For parties facing East and West
+      dirChoice += 2;
 
-      //create characters 
-      let mike = new Melee("Mike");
-      let rachel = new Ranged("Rachel");
-      let joe = new Defender("Joe");
+  //loop through the model array assigning parameters
+    for (let i = 0; i < 5; i++){
+      let choice = getRandomInt(models.length);
 
-      switch (model.name) {
-        case "melee":
-          root.asset = mike;
-          break;
-        case "ranged":
-          root.asset = rachel;
-          break;
-        case "defender":
-          root.asset = joe;
-          break;
-      }
+      gltfLoader.load(models[choice], (gltf) => {
+        const root = gltf.scene;
+        //root.name = model.name;
 
-      //need to set the model scale and position BEFORE bounding box
-      root.position.set(model.pos, 1.5, -3.75);
-      root.scale.set(.34, .34, .34);
+        
 
-      switch (model.name) {
-        case "melee":
-          meleeBox = new THREE.Box3().setFromObject(root);
-          //meleeBox.setFromObject(root);
-          boundingBoxArray[0] = meleeBox;
-          boundingBoxArray[0].name = "melee";
-          //scene.add(boundingBoxArray[0]);
-          break;
-        case "ranged":
-          rangedBox = new THREE.Box3().setFromObject(root);
-          //meleeBox.setFromObject(root);
-          boundingBoxArray[1] = rangedBox;
-          boundingBoxArray[1].name = "ranged";
+        //Place the model, "root" at the proper coordinates
+        let x = getRandomInt(xCap[orientation]) + xStart[orientation];
+        let y = getRandomInt(yCap[orientation]) + yStart[orientation]; 
+        
+        if(orientation == 0)
+          y += 9*a;
+        else
+          x += 9*a;
 
-          // boundingBoxArray[1] = new THREE.BoxHelper(root, 0xffff00);
-          // boundingBoxArray[1].name = "ranged";
-          // scene.add(boundingBoxArray[1]);
-          break;
-        case "defender":
-          defenderBox = new THREE.Box3().setFromObject(root);
-          //meleeBox.setFromObject(root);
-          boundingBoxArray[2] = defenderBox;
-          boundingBoxArray[2].name = "defender";
+        //Ensure the spaces are not occupied
+        while(isOccupied(obstacles, y, x)){
+          x = getRandomInt(xCap[orientation]) + xStart[orientation];
+          y = getRandomInt(yCap[orientation]) + yStart[orientation]; 
 
-          // boundingBoxArray[2] = new THREE.BoxHelper(root, 0xffff00);
-          // boundingBoxArray[2].name = "defender";
-          // scene.add(boundingBoxArray[2]);
-          break;
-      }
+          if(orientation == 0)  //North/South
+            y += 9*a;
+          else                    //East/West
+            x += 9*a;
+        }
 
-      console.log(boundingBoxArray);
-      //add character to array
-      charactersArray.push(gltf.scene);
-      //boundingBoxArray.push(box);
-      scene.add(root);
-      scene.updateMatrixWorld();
-    });
-  }//end for
+        placeObject(root, x, y, mapVerts);
+        obstacles[y][x] = 2;
+        
+        //Set the direction the model is facing
+        root.rotation.y = direction[dirChoice];
+        root.scale.set(.34,.34,.34);
+        
 
-  //load enemies and populate enemies array
-  for (const model of Object.values(enemies)) {
-    gltfLoaderEnemies.load(model.url, (gltf) => {
-      const root = gltf.scene;
-      root.name = model.name;
-      root.turns = 5; //determines the number of moves; will need to relocate
-      root.position.set(model.pos, 0.01, 3.5);
-      root.rotation.y += Math.PI;
-      root.scale.set(.34, .34, .34);
-      //root.visible = false;
-      if (root.name === "meleeEnemy") {
-        console.log("meleeEnemy");
-        let makayla = new Melee("Shrek");
-        root.actor = makayla;
-      } else if (root.name === "rangedEnemy") {
-        console.log("rangedEnemy");
-        let lkay = new Ranged("Hawkeye");
-        root.actor = lkay;
-      } else if (root.name === "defenderEnemy") {
-        console.log("defenderEnemy");
-        let denise = new Defender("Carole Baskins");
-        root.actor = denise;
-      }
-      enemiesArray.push(root);
-      scene.add(root);
-    });
-  }//end for
+        //place the raycaster at the same location as the model
+        caster.set(root.position, down);
+        let intersects = caster.intersectObjects(scene.children);
+        
+        //bump the model up until the raycaster intersects the ground
+        while(intersects.length < 1){
+          caster.set(root.position, down);
+          root.position.y += .05;
+          intersects = caster.intersectObjects(scene.children);
+        }
+
+        //move the model up so that it is above the ground
+        root.position.y += .99;
+
+        //Add animations by creating an animation mixer. assign the model it's mixer and place the mixer in the array
+        var mixer = new THREE.AnimationMixer(root);
+        root.mixer = mixer;
+        mixers.push(mixer);
+
+        //Have the model play the ide animation 
+        let animations = gltf.animations;
+        root.animations = animations;
+        var action = mixer.clipAction( root.animations[1]); //Idle
+        action.play();
+        
+        //name the model for easy access
+        root.name = 'model - ' + a + ' - ' + i;
+
+        //Create an actor object and bind it to the model
+        let team = 'Player-';
+        if(a == 1)
+          team = 'Enemy-';
+
+
+        let job = getRandomInt(3);
+        let modelJob;
+        switch(job){
+          case 0:
+            modelJob = new Melee(team + (i+1));
+            break;
+          case 1:
+            modelJob = new Ranged(team + (i+1));
+            break;
+          case 2:
+            modelJob = new Defender(team + (i+1));
+            break;
+        }
+
+        root.actor = modelJob;
+        modelJob.model = root;
+        modelJob.xPos = x;
+        modelJob.yPos = y;
+        actors.push(root);
+
+        //Create the bounding box for the model
+        let box = new THREE.Box3().setFromObject(root);
+        box.name = "BB-" + modelJob.name;
+
+        //Bind the model and the bounding box, add the box to the box array
+        root.bBox = box;
+        box.model = root;
+        boxes.push(box);
+
+        root.scene = scene;
+
+        scene.add(root);        
+      });//End GLTF loader
+    } //End for (Models)
+  }//End for (Parties)
 }
 
-function onLoad(gltf) {
-  console.log(gltf);
-  scene.add(gltf.scene.children);
-}
+  export {createModels};
 
-
-function loadCat() {
-  const gltfLoader = new THREE.GLTFLoader();
-  gltfLoader.load('./models/Felixx.glb', function (gltf) {
-    const root = gltf.scene;
-    root.name = "cat";
-    root.visible = false;
-    //root.turns = 5; //determines the number of moves; will need to relocate
-    root.position.set(-0.25, 0.01, 2);
-    root.rotation.y += Math.PI;
-    root.scale.set(10, 10, 10);
-    scene.add(root);
-  });
-}
-
-export { createModels, loadCat };
-//export { createModels, loadCat, meleeBox, rangedBox, defenderBox, enemyMeleeBox, enemyRangedBox, enemyDefenderBox };
+/*  Model animations by index
+    0:  defeat?
+    1:  idle
+    2:  pick up object
+    3:  melee attack 
+    4:  take damage
+    5:  gun shot/ ranged attack
+    6:  sit down
+    7:  stand up (from seat)
+    8:  victory
+    9:  walk
+    10: walk while pushing something
+*/
