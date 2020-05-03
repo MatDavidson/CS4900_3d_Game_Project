@@ -8,10 +8,7 @@ class Actor{   //Base character object
         this.xPos = 0;          //X position 
         this.yPos = 0;          //Y position
         this.exp = 0;           //Experience points
-<<<<<<< HEAD
         this.movement = 5;      //How far a unit can move in one turn
-=======
->>>>>>> 169c1ac4246865ee0c3cdb9c9edc273295321631
         this.moveLeft = 5;
         this.range = 1;         //How far the unit can reach
         this.inTransit = false;

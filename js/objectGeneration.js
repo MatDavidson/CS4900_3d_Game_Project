@@ -16,16 +16,16 @@ var down = false;
 var characterCount = 0;
 var enemyCount = 0;
 
-// Changes the seleceted character for the player
-function changeCharacter() {
-    //console.log(characterCount);
-    if (characterCount < 2)
-        characterCount++;
-    else
-        characterCount = 0;
+// // Changes the seleceted character for the player
+// function changeCharacter() {
+//     //console.log(characterCount);
+//     if (characterCount < 2)
+//         characterCount++;
+//     else
+//         characterCount = 0;
 
-    return;
-}
+//     return;
+// }
 
 //create event handler to move the banana along with a highlight square
 function movePlayer(key, charactersArray, boxHelper, bbox) {

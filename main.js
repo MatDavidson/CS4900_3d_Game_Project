@@ -1,16 +1,12 @@
-import { boardGen} from './js/gameBoard.js';
-import {createCamera, addCameraControls} from'./js/camera.js';
-import {createModels} from './js/modelMaker.js';
+import { boardGen } from './js/gameBoard.js';
+import { createCamera, addCameraControls } from './js/camera.js';
+import { createModels } from './js/modelMaker.js';
 // import { keyLifted, movePlayer, changeCharacter, } from './js/objectGeneration.js';
- import {HeightMap,VanillaRandomHeightMap} from './js/heightMap.js';
+import { HeightMap, VanillaRandomHeightMap } from './js/heightMap.js';
 // import {Melee, Defender, Ranged} from './js/actors.js';
 import { addButtons, onEndTurnClick } from './js/HUD.js';
-<<<<<<< HEAD
-import {keyMove} from './js/moveActor.js';
-=======
-import {keyMove, changeCharacter, keyLifted} from './js/moveActor.js';
->>>>>>> 169c1ac4246865ee0c3cdb9c9edc273295321631
-import {moveRadius, characterRadius, clearRadius} from './js/highlights.js';
+import { keyMove, changeCharacter, keyLifted } from './js/moveActor.js';
+import { moveRadius, characterRadius, clearRadius } from './js/highlights.js';
 
 //set window size
 var height = window.innerHeight;
@@ -25,14 +21,11 @@ document.body.append(renderer.domElement);
 var scene = new THREE.Scene();
 scene.background = new THREE.Color("#C0C0C0");
 
-//grab button functionality
-//addTitle();
-
 //Generate height map and obstacles array 
 var heightMap = new VanillaRandomHeightMap(4).map;
 let mapVerts = heightMap.length;
-var obstacles = [...Array(mapVerts-1)].map((_, i) => [...Array(mapVerts-1)].map((_, i) => 0));
-var highlights = [...Array(mapVerts-1)].map((_, i) => [...Array(mapVerts-1)].map((_, i) => null));
+var obstacles = [...Array(mapVerts - 1)].map((_, i) => [...Array(mapVerts - 1)].map((_, i) => 0));
+var highlights = [...Array(mapVerts - 1)].map((_, i) => [...Array(mapVerts - 1)].map((_, i) => null));
 var nodes = [...Array(16)].map((_, i) => [...Array(16)].map((_, j) => null));
 scene.nodes = nodes;
 scene.highlights = highlights;
@@ -45,16 +38,16 @@ boardGen(scene, heightMap, obstacles, highlights, nodes);
 var camera = createCamera(width, height, renderer, scene);
 
 //create title screen scene
-var planeGeometry = new THREE.PlaneGeometry( 50, 50 );
-var planeTexture = new THREE.TextureLoader().load( 'textures/rabbit-9.jpg' );
-var planeMaterial = new THREE.MeshBasicMaterial( { map: planeTexture } );
-planeMaterial.side = THREE.DoubleSide;
-var titlePlane = new THREE.Mesh( planeGeometry, planeMaterial );
-titlePlane.position.set(-1, 1.5, -3.75);
-//var rotateVector = new THREE.Vector3(-1, 0, -1);
-//titlePlane.rotateOnWorldAxis(rotateVector, Math.PI);
-// titlePlane.rotateZ = 2 * Math.PI;
-titlePlane.lookAt(camera.position);
+// var planeGeometry = new THREE.PlaneGeometry(50, 50);
+// var planeTexture = new THREE.TextureLoader().load('textures/rabbit-9.jpg');
+// var planeMaterial = new THREE.MeshBasicMaterial({ map: planeTexture });
+// planeMaterial.side = THREE.DoubleSide;
+// var titlePlane = new THREE.Mesh(planeGeometry, planeMaterial);
+// titlePlane.position.set(-1, 1.5, -3.75);
+// //var rotateVector = new THREE.Vector3(-1, 0, -1);
+// //titlePlane.rotateOnWorldAxis(rotateVector, Math.PI);
+// // titlePlane.rotateZ = 2 * Math.PI;
+// titlePlane.lookAt(camera.position);
 
 //blocked for merging
 //scene.add( titlePlane );
@@ -64,7 +57,6 @@ scene.add(camera);
 var controls = addCameraControls(camera, renderer);
 
 //loadCat();
-
 
 var meleeBox;
 var rangedBox;
@@ -76,12 +68,13 @@ const mapBottomZ = -7.5;
 const mapLeftX = 7.5;
 
 //var manager = new THREE.LoadingManager();
-var charactersArray = [];
-var characterCount = 0;
+//var characterCount = 0;
 
-var managerEnemies = new THREE.LoadingManager();
+//var managerEnemies = new THREE.LoadingManager();
+//var enemyCount = 0;
+
+var charactersArray = [];
 var enemiesArray = [];
-var enemyCount = 0;
 
 var boundingBoxArray = [];
 var boxHelperMelee;
@@ -97,12 +90,27 @@ var mixers = []; //hold all animation mixers
 var actors = []; //hold all models
 var bBoxes = []; //hold all bounding boxes
 
+//grab button functionality
+////////addButtons(actors);
+//addTitle();
+
 createModels(manager, scene, heightMap, obstacles, mixers, actors, bBoxes);
+
+//function that places the player characters and enemy characters in the appropriate arrays
+function populateArrays(actors, charactersArray, enemiesArray) {
+    for (var i = 0; i < actors.length; i++) {
+        if (actors[i].actor.name.includes("Enemy"))
+            enemiesArray.push(actors[i]);
+        else
+            charactersArray.push(actors[i]);
+    }
+}
 
 var currentActor;
 
-function init(){
-    currentActor = actors[0];
+function init() {
+    populateArrays(actors, charactersArray, enemiesArray);
+    currentActor = charactersArray[0];
     moveRadius(scene, currentActor, obstacles);
 
     animate();
@@ -111,8 +119,8 @@ function init(){
 window.addEventListener('keypress', keySwitch, false);
 window.addEventListener('keyup', keyLifted, false);
 
-function keySwitch(event){
-    switch(event.key){
+function keySwitch(event) {
+    switch (event.key) {
         case 'w':
         case 'a':
         case 's':
@@ -122,7 +130,7 @@ function keySwitch(event){
             break;
         //adding swap implementation
         case 'r':
-            currentActor = changeCharacter(actors.indexOf(currentActor));
+            currentActor = changeCharacter(charactersArray.indexOf(currentActor));
             //console.log(currentActor);
             break;
     }
@@ -135,25 +143,25 @@ var mouse = new THREE.Vector2();
 //event handler when clicking an enemy to attack (or possibly a teammate to heal?)
 document.addEventListener('mousedown', onMouseDown, false);
 
-function onMouseDown(event){
+function onMouseDown(event) {
     event.preventDefault();
 
     //set the mouse location to be accurate based on window size
-    mouse.set((event.clientX / window.innerWidth) * 2 - 1, - (event.clientY / window.innerHeight ) * 2 + 1);
-    
+    mouse.set((event.clientX / window.innerWidth) * 2 - 1, - (event.clientY / window.innerHeight) * 2 + 1);
+
     //set the raycaster
     raycaster.setFromCamera(mouse, camera);
-    
+
     //raycaster direction for testing
     console.log(raycaster.ray.direction);
 
     //make the raycaster visible
-    scene.add(new THREE.ArrowHelper(raycaster.ray.direction, raycaster.ray.origin, 300, 0xff0000) );
+    scene.add(new THREE.ArrowHelper(raycaster.ray.direction, raycaster.ray.origin, 300, 0xff0000));
 
     //console.log(boundingBoxArray);
-    
-    for(let i = 0; i < actors.length; i ++){
-        if(raycaster.ray.intersectsBox(bBoxes[i])){
+
+    for (let i = 0; i < actors.length; i++) {
+        if (raycaster.ray.intersectsBox(bBoxes[i])) {
             console.log(bBoxes[i].name);
             currentActor = bBoxes[i].model;
             break;
@@ -165,10 +173,10 @@ function animate() {
     //update bounding boxes
     //updateBoundingBoxes();
     requestAnimationFrame(animate);
-    if(currentActor.actor.inTransit === true){
+    if (currentActor.actor.inTransit === true) {
         moveActor(currentActor, currentActor.position, currentActor.actor.destination);
         console.log("Moving...");
-    } 
+    }
     // Rerenders the scene  
     render();
     //console.log(camera.position);
@@ -179,16 +187,16 @@ function render() {
 
     var delta = clock.getDelta();
 
-    for ( const mixer of mixers ) {
-        mixer.update( delta );    
-    } 
+    for (const mixer of mixers) {
+        mixer.update(delta);
+    }
 
-    renderer.render( scene, camera );
+    renderer.render(scene, camera);
 }
 
 
 //IN PROGRESS - called within the animate function to update bounding box locations
-function updateBoundingBoxes(){
+function updateBoundingBoxes() {
     //console.log(charactersArray[0].name);
     //console.log(boundingBoxArray);
     // if(charactersArray[0].name === "melee"){

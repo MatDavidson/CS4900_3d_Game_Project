@@ -1,13 +1,6 @@
-<<<<<<< HEAD
-import { characterRadius} from './highlights.js';
 
-var down;
-let unit = 17/16;
-let increment = unit/60;
-=======
 import { characterRadius } from './highlights.js';
-import { actors } from '../main.js';
->>>>>>> 169c1ac4246865ee0c3cdb9c9edc273295321631
+import { actors, charactersArray } from '../main.js';
 
 var down = false;
 let unit = 17 / 16;
@@ -27,17 +20,6 @@ function keyMove(key, actor, obstacles) {
         let xChange = 0;
         let yChange = 0;
 
-<<<<<<< HEAD
-    job.inTransit = true;
-    job.destination = endPos;
-
-    job.move(job.xPos + xChange, job.yPos + yChange);
-    job.moveLeft -= 1;
-    characterRadius(actor.scene, job.xPos, job.yPos, job.moveLeft)
-    moveActor(actor, currentPos, endPos);
-    
-    console.log(job.name + " - (" + job.xPos + "," + job.yPos + ")");
-=======
         let currentPos = actor.position;
         let endPos = actor.position;
 
@@ -71,18 +53,17 @@ function keyMove(key, actor, obstacles) {
 
         console.log(job.name + " - (" + job.xPos + "," + job.yPos + ")");
     }
->>>>>>> 169c1ac4246865ee0c3cdb9c9edc273295321631
 
     console.log(job.moveLeft);
-    if(job.movement == 0)
+    if (job.movement == 0)
         actor = changeCharacter(actors.indexOf(actor));
 
-    if(down)
+    if (down)
         return;
 }
 
 //used when making sure one key press only performs one movement
-function keyLifted(){
+function keyLifted() {
     down = false;
     return down;
 }
@@ -113,22 +94,15 @@ function moveActor(actor, currentPos, endPos) {
 
     actor.position.set(currentPos.x + Math.pow(-1, xDir) * increment * xDiff, currentPos.y, currentPos.z + Math.pow(-1, zDir) * increment * zDiff);
 }
-<<<<<<< HEAD
-export{keyMove, moveActor};
-=======
 
 // Changes the seleceted character for the player
 function changeCharacter(characterCount) {
-    do {
-        if (characterCount < 9)
-            characterCount++;
-        else
-            characterCount = 0;
-    } while (actors[characterCount].actor.name.includes("Enemy"));
+    if (characterCount < 9)
+        characterCount++;
+    else
+        characterCount = 0;
 
-
-    return actors[characterCount];
+    return charactersArray[characterCount];
 }
 
 export { keyMove, moveActor, changeCharacter, keyLifted };
->>>>>>> 169c1ac4246865ee0c3cdb9c9edc273295321631
