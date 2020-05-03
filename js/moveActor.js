@@ -1,11 +1,14 @@
 
 import { moveRadius, clearRadius } from './highlights.js';
 import { actors, charactersArray, scene } from '../main.js';
-import { placeObject } from './gameBoard.js';
 
 var down = false;
 let unit = 17 / 16;
-let increment = unit / 20;
+let increment = unit / 30;
+var north = 2*Math.PI;
+var south = Math.PI;
+var east = 1.5*Math.PI;
+var west = .5*Math.PI;
 
 function keyMove(key, actor, obstacles) {
     console.log(actor.actor.moveLeft);
@@ -21,7 +24,6 @@ function keyMove(key, actor, obstacles) {
         let xChange = 0;
         let yChange = 0;
 
-        let currentPos = actor.position;
         job.source = new THREE.Vector3(actor.position);
         let endPos = new THREE.Vector3(actor.position);
         console.log(job.source);
@@ -31,24 +33,31 @@ function keyMove(key, actor, obstacles) {
             case 'w':
                 endPos.z = endPos.z + unit;
                 yChange = 1;
+                actor.rotation.y = north;
                 break;
             case 'a':
                 endPos.x = endPos.x + unit;
                 xChange = 1;
+                actor.rotation.y = west;
                 break;
             case 's':
                 endPos.z = endPos.z - unit;
                 yChange = -1;
+                actor.rotation.y = south;
                 break;
             case 'd':
                 endPos.x = endPos.x - unit;
                 xChange = -1;
+                actor.rotation.y = east;
                 break;
         }
 
         clearRadius(scene);
-        job.moveDelay = 20;
+        job.moveDelay = 30;
         job.inTransit = true;
+        let action = actor.mixer.clipAction( actor.animations[9]); //Walk
+        actor.action = action;
+        action.play();
         job.destination = endPos;
 
         job.move(job.xPos + xChange, job.yPos + yChange);
@@ -75,7 +84,9 @@ function keyLifted() {
 
 function moveActor(actor, currentPos, endPos) {
     if (actor.actor.moveDelay < 1) {
-        //actor.position.set(endPos.x, endPos.y, endPos.z);
+        actor.action.stop();
+        actor.action = actor.mixer.clipAction( actor.animations[1]); //Idle
+        actor.action.play();
         actor.actor.inTransit = false;
         
         actor.actor.destination = null;
