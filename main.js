@@ -91,7 +91,6 @@ var actors = []; //hold all models
 var bBoxes = []; //hold all bounding boxes
 
 //grab button functionality
-////////addButtons(actors);
 //addTitle();
 
 createModels(manager, scene, heightMap, obstacles, mixers, actors, bBoxes);
@@ -107,10 +106,14 @@ function populateArrays(actors, charactersArray, enemiesArray) {
 }
 
 var currentActor;
+var currentEnemy;
 
 function init() {
     populateArrays(actors, charactersArray, enemiesArray);
     currentActor = charactersArray[0];
+    currentEnemy = enemiesArray[0];
+    addButtons(charactersArray, enemiesArray);
+
     moveRadius(scene, currentActor, obstacles);
 
     animate();
@@ -160,13 +163,23 @@ function onMouseDown(event) {
 
     //console.log(boundingBoxArray);
 
+    //allows you to select a character to move them or an enemy to attack
     for (let i = 0; i < actors.length; i++) {
         if (raycaster.ray.intersectsBox(bBoxes[i])) {
-            console.log(bBoxes[i].name);
-            currentActor = bBoxes[i].model;
-            break;
+            if(bBoxes[i].name.includes("Player")){
+                console.log(bBoxes[i].name);
+                currentActor = bBoxes[i].model;
+                //break;
+            }
+            else{
+                currentEnemy = bBoxes[i].model;
+                //break;
+            }
         }
     }
+    // console.log(currentEnemy);
+    // console.log(currentActor);
+
 }
 
 function animate() {
@@ -225,6 +238,8 @@ function changeCharacter(characterCount) {
 export {
     scene, changeCharacter
     , charactersArray, enemiesArray,
+    currentActor,
+    currentEnemy,
     mapTopZ,
     mapRightX,
     mapBottomZ,
