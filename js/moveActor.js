@@ -1,6 +1,7 @@
 
 import { moveRadius, clearRadius } from './highlights.js';
 import { actors, charactersArray, scene } from '../main.js';
+import { isOccupied } from './layer1.js';
 
 var down = false;
 let unit = 17 / 16;
@@ -15,7 +16,7 @@ function keyMove(key, actor, obstacles) {
     let job = actor.actor;
     //console.log(actors.indexOf(actor));
 
-    //while (job.moveLeft > 0) {
+    if(job.moveLeft > 0) {
         if (down || job.inTransit == true)
             return;
 
@@ -52,6 +53,12 @@ function keyMove(key, actor, obstacles) {
                 break;
         }
 
+        if(job.xPos + xChange > 16 || job.xPos + xChange < 0 || job.yPos + yChange > 16 || job.yPos + yChange < 0)
+            return;
+
+        if(isOccupied(obstacles, job.yPos + yChange, job.xPos + xChange))
+            return;
+
         clearRadius(scene);
         job.moveDelay = 30;
         job.inTransit = true;
@@ -60,15 +67,16 @@ function keyMove(key, actor, obstacles) {
         action.play();
         job.destination = endPos;
 
+        obstacles[job.yPos][job.xPos] = 0;
         job.move(job.xPos + xChange, job.yPos + yChange);
+        obstacles[job.yPos][job.xPos] = 2;
         job.moveLeft -= 1;
         moveRadius(actor.scene, actor, obstacles)
         //moveActor(actor, currentPos, endPos);
 
         console.log(job.name + " - (" + job.xPos + "," + job.yPos + ")");
-    //}
+    }
 
-    console.log(job.moveLeft);
     if (job.moveLeft == 0)
         actor = changeCharacter(actors.indexOf(actor));
 
@@ -111,11 +119,6 @@ function moveActor(actor, currentPos, endPos) {
         yDiff = 1;
     actor.actor.moveDelay -= 1;
     actor.position.set(actor.position.x + Math.pow(-1, xDir) * (increment * xDiff), actor.position.y, actor.position.z + Math.pow(-1, yDir) * (increment * yDiff));
-
-    if (actor.actor.moveDelay < 1) {
-        console.log(actor.actor.source, actor.actor.destination)
-        //placeObject(actor, actor.actor.xPos, actor.actor.yPos, 17)
-    }
 }
 
 // Changes the seleceted character for the player
