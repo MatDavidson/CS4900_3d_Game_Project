@@ -22,6 +22,7 @@ function addButtons(charactersArray, enemiesArray){
             //console.log(currentEnemy);
             player.attack(target);
 
+            
             //this is to see the health going down
             console.log(player);
             console.log(target);

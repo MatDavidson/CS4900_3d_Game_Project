@@ -1,6 +1,7 @@
 import {getRandomInt, placeObject} from './gameBoard.js';
 import {isOccupied} from './layer1.js';
 import {Actor, Melee, Defender, Ranged} from './actors.js';
+import { currentActor } from '../main.js';
 //import {Melee, Ranged, Defender} from './actors.js';
 
 function createModels(manager, scene, heightMap, obstacles, mixers, actors, boxes){
@@ -130,6 +131,8 @@ function createModels(manager, scene, heightMap, obstacles, mixers, actors, boxe
         modelJob.xPos = x;
         modelJob.yPos = y;
         actors.push(root);
+
+
 
         //Create the bounding box for the model
         let box = new THREE.Box3().setFromObject(root);

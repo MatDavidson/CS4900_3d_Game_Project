@@ -96,7 +96,7 @@ function moveActor(actor, currentPos, endPos) {
 
 // Changes the seleceted character for the player
 function changeCharacter(characterCount) {
-    if (characterCount < 9)
+    if (characterCount < 4)
         characterCount++;
     else
         characterCount = 0;

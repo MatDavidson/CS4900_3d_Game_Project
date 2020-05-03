@@ -7,6 +7,8 @@ import { HeightMap, VanillaRandomHeightMap } from './js/heightMap.js';
 import { addButtons, onEndTurnClick } from './js/HUD.js';
 import { keyMove, changeCharacter, keyLifted } from './js/moveActor.js';
 import { moveRadius, characterRadius, clearRadius } from './js/highlights.js';
+// import { CSS2DRenderer, CSS2DObject } from './js/CSS2DRenderer.js';
+
 
 //set window size
 var height = window.innerHeight;
@@ -36,6 +38,9 @@ boardGen(scene, heightMap, obstacles, highlights, nodes);
 
 //changed camera for title plane adjustment - see camera.js
 var camera = createCamera(width, height, renderer, scene);
+
+
+
 
 //create title screen scene
 // var planeGeometry = new THREE.PlaneGeometry(50, 50);
@@ -93,6 +98,8 @@ var bBoxes = []; //hold all bounding boxes
 //grab button functionality
 //addTitle();
 
+var labelRenderer;
+
 createModels(manager, scene, heightMap, obstacles, mixers, actors, bBoxes);
 
 //function that places the player characters and enemy characters in the appropriate arrays
@@ -108,10 +115,30 @@ function populateArrays(actors, charactersArray, enemiesArray) {
 var currentActor;
 var currentEnemy;
 
+//console.log(currentActor);
+var playerDiv = document.createElement('div');
+playerDiv.className = 'label';
+
 function init() {
     populateArrays(actors, charactersArray, enemiesArray);
     currentActor = charactersArray[0];
     currentEnemy = enemiesArray[0];
+    //console.log(currentActor);
+
+    //trying to add health labels above characters
+    // playerDiv.textContent = "";
+    // playerDiv.textContent = currentActor.actor.hitPts;
+    // var playerLabel = new THREE.CSS2DObject(  );
+    // playerLabel.position.set( 0, 1, 0 );
+    // currentActor.add( playerLabel );
+
+    // labelRenderer = new THREE.CSS2DRenderer();
+    // labelRenderer.setSize( window.innerWidth, window.innerHeight );
+    // labelRenderer.domElement.style.position = 'absolute';
+    // labelRenderer.domElement.style.top = '0px';
+    // document.body.appendChild( labelRenderer.domElement );
+
+
     addButtons(charactersArray, enemiesArray);
 
     moveRadius(scene, currentActor, obstacles);
@@ -139,8 +166,20 @@ function keySwitch(event) {
     }
 }
 
-var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
+
+var raycaster = new THREE.Raycaster();
+//set the raycaster
+raycaster.setFromCamera(mouse, camera);
+console.log(raycaster.camera);
+
+//maybe this will help? https://discourse.threejs.org/t/2d-plots-overlayed-on-3d-scene/172
+// using sprites causes issues relating to the raycaster - on hold
+// var spriteMap = new THREE.TextureLoader().load('./textures/rabbit-9.jpg');
+// var spriteMaterial = new THREE.SpriteMaterial({ map: spriteMap });
+
+// var sprite = new THREE.Sprite(spriteMaterial);
+// scene.add(sprite);
 
 //Check this example for reference: https://threejs.org/examples/#webgl_interactive_lines
 //event handler when clicking an enemy to attack (or possibly a teammate to heal?)
@@ -151,9 +190,6 @@ function onMouseDown(event) {
 
     //set the mouse location to be accurate based on window size
     mouse.set((event.clientX / window.innerWidth) * 2 - 1, - (event.clientY / window.innerHeight) * 2 + 1);
-
-    //set the raycaster
-    raycaster.setFromCamera(mouse, camera);
 
     //raycaster direction for testing
     console.log(raycaster.ray.direction);
@@ -166,12 +202,12 @@ function onMouseDown(event) {
     //allows you to select a character to move them or an enemy to attack
     for (let i = 0; i < actors.length; i++) {
         if (raycaster.ray.intersectsBox(bBoxes[i])) {
-            if(bBoxes[i].name.includes("Player")){
+            if (bBoxes[i].name.includes("Player")) {
                 console.log(bBoxes[i].name);
                 currentActor = bBoxes[i].model;
                 //break;
             }
-            else{
+            else {
                 currentEnemy = bBoxes[i].model;
                 //break;
             }
@@ -192,6 +228,7 @@ function animate() {
     }
     // Rerenders the scene  
     render();
+
     //console.log(camera.position);
     controls.update();
 }
@@ -205,6 +242,8 @@ function render() {
     }
 
     renderer.render(scene, camera);
+    labelRenderer.render( scene, camera );
+
 }
 
 export {
