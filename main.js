@@ -5,7 +5,7 @@ import { createModels } from './js/modelMaker.js';
 import { HeightMap, VanillaRandomHeightMap } from './js/heightMap.js';
 // import {Melee, Defender, Ranged} from './js/actors.js';
 import { addButtons, onEndTurnClick } from './js/HUD.js';
-import { keyMove, changeCharacter, keyLifted, moveActor } from './js/moveActor.js';
+import { keyMove, keyLifted, moveActor } from './js/moveActor.js';
 import { moveRadius, characterRadius, clearRadius } from './js/highlights.js';
 
 //set window size
@@ -130,7 +130,7 @@ function keySwitch(event) {
             break;
         //adding swap implementation
         case 'r':
-            currentActor = changeCharacter(charactersArray.indexOf(currentActor));
+            changeCharacter(charactersArray.indexOf(currentActor));
             //console.log(currentActor);
             break;
     }
@@ -211,8 +211,19 @@ function updateBoundingBoxes() {
 
 }
 
+// Changes the seleceted character for the player
+function changeCharacter(characterCount) {
+    if (characterCount < 4)
+        characterCount++;
+    else
+        characterCount = 0;
+    clearRadius(scene);
+    currentActor = charactersArray[characterCount];
+    moveRadius(scene, currentActor, obstacles);
+}
+
 export {
-    scene
+    scene, changeCharacter
     , charactersArray, enemiesArray,
     mapTopZ,
     mapRightX,

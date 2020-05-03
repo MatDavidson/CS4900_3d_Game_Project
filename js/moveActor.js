@@ -1,6 +1,6 @@
 
 import { moveRadius, clearRadius } from './highlights.js';
-import { actors, charactersArray, scene } from '../main.js';
+import { actors, charactersArray, changeCharacter, scene } from '../main.js';
 import { isOccupied } from './layer1.js';
 
 var down = false;
@@ -78,7 +78,7 @@ function keyMove(key, actor, obstacles) {
     }
 
     if (job.moveLeft == 0)
-        actor = changeCharacter(actors.indexOf(actor));
+        changeCharacter(charactersArray.indexOf(actor));
 
     if (down)
         return;
@@ -119,16 +119,6 @@ function moveActor(actor, currentPos, endPos) {
         yDiff = 1;
     actor.actor.moveDelay -= 1;
     actor.position.set(actor.position.x + Math.pow(-1, xDir) * (increment * xDiff), actor.position.y, actor.position.z + Math.pow(-1, yDir) * (increment * yDiff));
-}
-
-// Changes the seleceted character for the player
-function changeCharacter(characterCount) {
-    if (characterCount < 9)
-        characterCount++;
-    else
-        characterCount = 0;
-
-    return charactersArray[characterCount];
 }
 
 export { keyMove, moveActor, changeCharacter, keyLifted };
