@@ -1,4 +1,4 @@
-//import { scene, enemiesArray, charactersArray } from "../main.js";
+import { scene, enemiesArray, charactersArray, currentActor, currentEnemy } from "../main.js";
 //import { enemiesTurn, enemyCount, characterCount } from "./objectGeneration.js";
 import { Actor, Melee, Defender, Ranged } from "./actors.js";
 
@@ -8,23 +8,28 @@ function addButtons(charactersArray, enemiesArray){
     endTurnBtn.addEventListener("click", onEndTurnClick, false);
 
     let attackBtn = document.getElementById("attack");
-    let onAttackClick = function(charactersArray, characterCount, enemiesArray, enemyCount){ 
+    let onAttackClick = function(charactersArray, enemiesArray){ 
         return function(event){
-            console.log("button clicked");
+            console.log(currentEnemy);
+            var player = currentActor.actor
+            var target = currentEnemy.actor;
+            // let currentChar;
+            // let actor = currentCharacter.actor;
 
-            let currentCharacter = scene.getObjectByName(charactersArray[characterCount].name);
-            let actor = currentCharacter.actor;
+            // let enemy = scene.getObjectByName(enemiesArray[enemyCount].name);
+            // let enemyActor = enemy.actor;
+            //console.log(currentActor);
+            //console.log(currentEnemy);
+            player.attack(target);
 
-            let enemy = scene.getObjectByName(enemiesArray[enemyCount].name);
-            let enemyActor = enemy.actor;
+            //this is to see the health going down
+            console.log(player);
+            console.log(target);
 
-            actor.attack(enemyActor, enemiesArray);   ////need to edit the method to use obj vector position
-
-            console.log(actor);
-            console.log(enemyActor);
+            //if health == 0, dead animation and disappear?
         }
     }
-    attackBtn.addEventListener("click", onAttackClick(charactersArray, characterCount, enemiesArray, enemyCount), false);
+    attackBtn.addEventListener("click", onAttackClick(charactersArray, enemiesArray), false);
 }
 
 function onEndTurnClick(event){

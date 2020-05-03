@@ -9,7 +9,7 @@ class Actor{   //Base character object
         this.yPos = 0;          //Y position
         this.exp = 0;           //Experience points
         this.moveLeft = 5;
-        this.range = 1;         //How far the unit can reach
+        this.range = 3;         //How far the unit can reach
         this.inTransit = false;
         this.destination = null;
         this.resist = null;     //Resistances, weakness and attack type are declared 
