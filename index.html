@@ -39,7 +39,9 @@
 
     <title>Senior Seminar Project</title>
     <script>
-        reference: https://stackoverflow.com/questions/8211128/multiple-distinct-pages-in-one-html-file
+
+//used to swap html pages (title screen / game screen)
+//reference: https://stackoverflow.com/questions/8211128/multiple-distinct-pages-in-one-html-file
 function show(shown, hidden) {
     //make a pane with a picture on it
   document.getElementById(shown).style.display='block';
@@ -74,7 +76,8 @@ function show(shown, hidden) {
             </tr>
         </table>
     </div>  -->
-    <div id="HUD" style="display:none">
+    <div id="HUD">
+    <!-- style="display:none"> -->
         <button style="bottom:0" id="endTurn" class="ui">End Turn</button>
         <button style="bottom:1" id="attack" class="ui">Attack</button>
         <a href="#" onclick="return show('titleScreen','HUD');">Quit</a>

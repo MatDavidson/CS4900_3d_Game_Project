@@ -1,5 +1,5 @@
 import { characterRadius } from './highlights.js';
-import { actors } from '../main.js';
+import { actors, charactersArray } from '../main.js';
 
 var down = false;
 let unit = 17 / 16;
@@ -54,15 +54,15 @@ function keyMove(key, actor, obstacles) {
     }
 
     console.log(job.moveLeft);
-    if(job.movement == 0)
+    if (job.movement == 0)
         actor = changeCharacter(actors.indexOf(actor));
 
-    if(down)
+    if (down)
         return;
 }
 
 //used when making sure one key press only performs one movement
-function keyLifted(){
+function keyLifted() {
     down = false;
     return down;
 }
@@ -96,15 +96,12 @@ function moveActor(actor, currentPos, endPos) {
 
 // Changes the seleceted character for the player
 function changeCharacter(characterCount) {
-    do {
-        if (characterCount < 9)
-            characterCount++;
-        else
-            characterCount = 0;
-    } while (actors[characterCount].actor.name.includes("Enemy"));
+    if (characterCount < 9)
+        characterCount++;
+    else
+        characterCount = 0;
 
-
-    return actors[characterCount];
+    return charactersArray[characterCount];
 }
 
 export { keyMove, moveActor, changeCharacter, keyLifted };
