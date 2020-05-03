@@ -77,8 +77,7 @@ function keyMove(key, actor, obstacles) {
         console.log(job.name + " - (" + job.xPos + "," + job.yPos + ")");
     }
 
-    if (job.moveLeft == 0)
-        changeCharacter(charactersArray.indexOf(actor));
+    
 
     if (down)
         return;
@@ -99,6 +98,8 @@ function moveActor(actor, currentPos, endPos) {
         
         actor.actor.destination = null;
         actor.bBox.setFromObject(actor);
+        if (actor.actor.moveLeft == 0)
+            changeCharacter(charactersArray.indexOf(actor));
         return;
     }
 
