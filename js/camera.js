@@ -3,7 +3,7 @@ function createCamera(width, height, renderer, scene) {
     //create camera
     var camera = new THREE.PerspectiveCamera(90, width / height, 0.1, 10000);
     //set position
-    camera.position.set(0, 5, -5);
+    camera.position.set(0, 10, -5);
     
     //render
     renderer.render(scene, camera);
@@ -26,7 +26,7 @@ function addCameraControls(camera, renderer) {
     controls.maxPolarAngle = Math.PI / 2.5;
     controls.minPolarAngle = Math.PI / 5;
 
-    controls.minDistance = 3;
+    controls.minDistance = 2;
     controls.maxDistance = 10;
 
     return controls
