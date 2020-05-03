@@ -1,18 +1,19 @@
 
-import { characterRadius } from './highlights.js';
-import { actors, charactersArray } from '../main.js';
+import { moveRadius, clearRadius } from './highlights.js';
+import { actors, charactersArray, scene } from '../main.js';
+import { placeObject } from './gameBoard.js';
 
 var down = false;
 let unit = 17 / 16;
-let increment = unit / 60;
+let increment = unit / 20;
 
 function keyMove(key, actor, obstacles) {
     console.log(actor.actor.moveLeft);
     let job = actor.actor;
     //console.log(actors.indexOf(actor));
 
-    while (job.moveLeft > 0) {
-        if (down)
+    //while (job.moveLeft > 0) {
+        if (down || job.inTransit == true)
             return;
 
         down = true;
@@ -21,7 +22,9 @@ function keyMove(key, actor, obstacles) {
         let yChange = 0;
 
         let currentPos = actor.position;
-        let endPos = actor.position;
+        job.source = new THREE.Vector3(actor.position);
+        let endPos = new THREE.Vector3(actor.position);
+        console.log(job.source);
 
         //Determine which direction to move
         switch (key) {
@@ -43,19 +46,21 @@ function keyMove(key, actor, obstacles) {
                 break;
         }
 
+        clearRadius(scene);
+        job.moveDelay = 20;
         job.inTransit = true;
         job.destination = endPos;
 
         job.move(job.xPos + xChange, job.yPos + yChange);
         job.moveLeft -= 1;
-        characterRadius(actor.scene, job.xPos, job.yPos, job.moveLeft)
-        moveActor(actor, currentPos, endPos);
+        moveRadius(actor.scene, actor, obstacles)
+        //moveActor(actor, currentPos, endPos);
 
         console.log(job.name + " - (" + job.xPos + "," + job.yPos + ")");
-    }
+    //}
 
     console.log(job.moveLeft);
-    if (job.movement == 0)
+    if (job.moveLeft == 0)
         actor = changeCharacter(actors.indexOf(actor));
 
     if (down)
@@ -69,16 +74,18 @@ function keyLifted() {
 }
 
 function moveActor(actor, currentPos, endPos) {
-    if (currentPos == endPos) {
+    if (actor.actor.moveDelay < 1) {
+        //actor.position.set(endPos.x, endPos.y, endPos.z);
         actor.actor.inTransit = false;
-        actor.actor.destinatin = null;
+        
+        actor.actor.destination = null;
         actor.bBox.setFromObject(actor);
         return;
     }
 
-    let xDir = 0;
-    if (currentPos.x > endPos.x)
-        xDir = 1;
+    let xDir = 1;
+    if (currentPos.x < endPos.x)
+        xDir = 0;
 
     let xDiff = 0;
     if (currentPos.x != endPos.x)
@@ -91,8 +98,13 @@ function moveActor(actor, currentPos, endPos) {
     let yDiff = 0;
     if (currentPos.z != endPos.z)
         yDiff = 1;
+    actor.actor.moveDelay -= 1;
+    actor.position.set(actor.position.x + Math.pow(-1, xDir) * (increment * xDiff), actor.position.y, actor.position.z + Math.pow(-1, yDir) * (increment * yDiff));
 
-    actor.position.set(currentPos.x + Math.pow(-1, xDir) * increment * xDiff, currentPos.y, currentPos.z + Math.pow(-1, zDir) * increment * zDiff);
+    if (actor.actor.moveDelay < 1) {
+        console.log(actor.actor.source, actor.actor.destination)
+        //placeObject(actor, actor.actor.xPos, actor.actor.yPos, 17)
+    }
 }
 
 // Changes the seleceted character for the player

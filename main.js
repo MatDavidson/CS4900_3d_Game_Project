@@ -5,7 +5,7 @@ import { createModels } from './js/modelMaker.js';
 import { HeightMap, VanillaRandomHeightMap } from './js/heightMap.js';
 // import {Melee, Defender, Ranged} from './js/actors.js';
 import { addButtons, onEndTurnClick } from './js/HUD.js';
-import { keyMove, changeCharacter, keyLifted } from './js/moveActor.js';
+import { keyMove, changeCharacter, keyLifted, moveActor } from './js/moveActor.js';
 import { moveRadius, characterRadius, clearRadius } from './js/highlights.js';
 
 //set window size
@@ -125,7 +125,7 @@ function keySwitch(event) {
         case 'a':
         case 's':
         case 'd':
-            clearRadius(scene);
+            
             keyMove(event.key, currentActor, obstacles);
             break;
         //adding swap implementation
@@ -174,7 +174,7 @@ function animate() {
     //updateBoundingBoxes();
     requestAnimationFrame(animate);
     if (currentActor.actor.inTransit === true) {
-        moveActor(currentActor, currentActor.position, currentActor.actor.destination);
+        moveActor(currentActor, currentActor.actor.source, currentActor.actor.destination);
         console.log("Moving...");
     }
     // Rerenders the scene  
