@@ -2,6 +2,7 @@
 import { moveRadius, clearRadius } from './highlights.js';
 import { actors, charactersArray, changeCharacter, scene } from '../main.js';
 import { isOccupied } from './layer1.js';
+import { placeObject } from './gameBoard.js';
 
 var down = false;
 let unit = 17 / 16;
@@ -10,6 +11,7 @@ var north = 2*Math.PI;
 var south = Math.PI;
 var east = 1.5*Math.PI;
 var west = .5*Math.PI;
+var caster = new THREE.Raycaster(new THREE.Vector3(0,0,0), down); 
 
 function keyMove(key, actor, obstacles) {
     console.log(actor.actor.moveLeft);
@@ -67,8 +69,11 @@ function keyMove(key, actor, obstacles) {
         action.play();
         job.destination = endPos;
 
+        console.log(endPos);
+
         obstacles[job.yPos][job.xPos] = 0;
         job.move(job.xPos + xChange, job.yPos + yChange);
+        //findHeight(actor);
         obstacles[job.yPos][job.xPos] = 2;
         job.moveLeft -= 1;
         moveRadius(actor.scene, actor, obstacles)
@@ -120,6 +125,28 @@ function moveActor(actor, currentPos, endPos) {
         yDiff = 1;
     actor.actor.moveDelay -= 1;
     actor.position.set(actor.position.x + Math.pow(-1, xDir) * (increment * xDiff), actor.position.y, actor.position.z + Math.pow(-1, yDir) * (increment * yDiff));
+}
+
+function findHeight(actor){
+    let x = actor.actor.xPos;
+    let y = actor.actor.yPos;
+    let floor = scene.getObjectByName("floorMesh");
+    let dummy = scene.getObjectByName("dummy");
+
+    placeObject(dummy, x, y, 17);
+    console.log("Dummy Box Position: " + x + "," + y);
+    
+    //place the raycaster at the same location as the model
+    caster.set(new THREE.Vector3(dummy.position), down);
+    let intersects = caster.intersectObjects(scene.children);
+    
+    let height = 0;
+    while(intersects.length < 1){
+        caster.set(dummy.position, down);
+        dummy.position.y += .05;
+        height += 0.05;
+        intersects = caster.intersectObjects(scene.children);
+    }
 }
 
 export { keyMove, moveActor, changeCharacter, keyLifted };

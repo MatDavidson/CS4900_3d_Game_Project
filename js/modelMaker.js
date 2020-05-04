@@ -26,6 +26,9 @@ function createModels(manager, scene, heightMap, obstacles, mixers, actors, boxe
   const models = ['./models/Pirate_Male.glb', './models/Ninja_Male.glb', './models/BlueSoldier_Female.glb',
                   './models/Cowgirl.glb', './models/Goblin_Male.glb', './models/Viking.glb'];
 
+  // const models = ['./models/melee.glb', './models/defender.glb', './models/ranged.glb'];
+
+
   //create the gltfLoader passing it the loading manager as an argument
   const gltfLoader = new THREE.GLTFLoader(manager);
 
@@ -82,14 +85,18 @@ function createModels(manager, scene, heightMap, obstacles, mixers, actors, boxe
         let intersects = caster.intersectObjects(scene.children);
         
         //bump the model up until the raycaster intersects the ground
+        let height = 0;
         while(intersects.length < 1){
           caster.set(root.position, down);
           root.position.y += .05;
+          height += 0.05;
           intersects = caster.intersectObjects(scene.children);
         }
 
-        //move the model up so that it is above the ground
+        //move the model up so that it is above the ground, assign height to the model so it can be accessed for later use
         root.position.y += .99;
+        height += .99;
+        root.height = height;
 
         //Add animations by creating an animation mixer. assign the model it's mixer and place the mixer in the array
         var mixer = new THREE.AnimationMixer(root);
@@ -146,6 +153,11 @@ function createModels(manager, scene, heightMap, obstacles, mixers, actors, boxe
       });//End GLTF loader
     } //End for (Models)
   }//End for (Parties)
+  let geometry = new THREE.BoxBufferGeometry( .5, .5, .5 );
+  let material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+  let cube = new THREE.Mesh( geometry, material );
+  cube.name = "dummy";
+  scene.add( cube );
 }
 
   export {createModels};
