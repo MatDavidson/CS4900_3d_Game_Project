@@ -10,7 +10,7 @@ function generateViableList(scene, currentActor, obstacles){
 
     for (let i = 0; i < 16; i++) {
         for (let j = 0; j < 16; j++) {
-            if(nodes[i][j].cost <= actor.movement && nodes[i][j].occupied == false)
+            if(nodes[i][j].cost <= actor.moveLeft && nodes[i][j].occupied == false)
                 openList.push(nodes[i][j]);
         }
     }

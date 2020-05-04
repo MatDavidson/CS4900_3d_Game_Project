@@ -5,7 +5,7 @@ import { createModels } from './js/modelMaker.js';
 import { HeightMap, VanillaRandomHeightMap } from './js/heightMap.js';
 // import {Melee, Defender, Ranged} from './js/actors.js';
 import { addButtons, onEndTurnClick } from './js/HUD.js';
-import { keyMove, changeCharacter, keyLifted } from './js/moveActor.js';
+import { keyMove, keyLifted, moveActor } from './js/moveActor.js';
 import { moveRadius, characterRadius, clearRadius } from './js/highlights.js';
 // import { CSS2DRenderer, CSS2DObject } from './js/CSS2DRenderer.js';
 
@@ -98,7 +98,7 @@ var bBoxes = []; //hold all bounding boxes
 //grab button functionality
 //addTitle();
 
-var labelRenderer;
+//var labelRenderer;
 
 createModels(manager, scene, heightMap, obstacles, mixers, actors, bBoxes);
 
@@ -116,8 +116,8 @@ var currentActor;
 var currentEnemy;
 
 //console.log(currentActor);
-var playerDiv = document.createElement('div');
-playerDiv.className = 'label';
+// var playerDiv = document.createElement('div');
+// playerDiv.className = 'label';
 
 function init() {
     populateArrays(actors, charactersArray, enemiesArray);
@@ -155,12 +155,12 @@ function keySwitch(event) {
         case 'a':
         case 's':
         case 'd':
-            clearRadius(scene);
+            
             keyMove(event.key, currentActor, obstacles);
             break;
         //adding swap implementation
         case 'r':
-            currentActor = changeCharacter(charactersArray.indexOf(currentActor));
+            changeCharacter(charactersArray.indexOf(currentActor));
             //console.log(currentActor);
             break;
     }
@@ -170,8 +170,6 @@ var mouse = new THREE.Vector2();
 
 var raycaster = new THREE.Raycaster();
 //set the raycaster
-raycaster.setFromCamera(mouse, camera);
-console.log(raycaster.camera);
 
 //maybe this will help? https://discourse.threejs.org/t/2d-plots-overlayed-on-3d-scene/172
 // using sprites causes issues relating to the raycaster - on hold
@@ -188,14 +186,16 @@ document.addEventListener('mousedown', onMouseDown, false);
 function onMouseDown(event) {
     event.preventDefault();
 
+    raycaster.setFromCamera(mouse, camera);
+
     //set the mouse location to be accurate based on window size
     mouse.set((event.clientX / window.innerWidth) * 2 - 1, - (event.clientY / window.innerHeight) * 2 + 1);
 
     //raycaster direction for testing
-    console.log(raycaster.ray.direction);
+    //console.log(raycaster.ray.direction);
 
     //make the raycaster visible
-    scene.add(new THREE.ArrowHelper(raycaster.ray.direction, raycaster.ray.origin, 300, 0xff0000));
+    //scene.add(new THREE.ArrowHelper(raycaster.ray.direction, raycaster.ray.origin, 300, 0xff0000));
 
     //console.log(boundingBoxArray);
 
@@ -213,8 +213,8 @@ function onMouseDown(event) {
             }
         }
     }
-    // console.log(currentEnemy);
-    // console.log(currentActor);
+     console.log(currentEnemy);
+     console.log(currentActor);
 
 }
 
@@ -223,7 +223,7 @@ function animate() {
     //updateBoundingBoxes();
     requestAnimationFrame(animate);
     if (currentActor.actor.inTransit === true) {
-        moveActor(currentActor, currentActor.position, currentActor.actor.destination);
+        moveActor(currentActor, currentActor.actor.source, currentActor.actor.destination);
         console.log("Moving...");
     }
     // Rerenders the scene  
@@ -242,12 +242,40 @@ function render() {
     }
 
     renderer.render(scene, camera);
-    labelRenderer.render( scene, camera );
+    //labelRenderer.render( scene, camera );
 
 }
 
+
+//IN PROGRESS - called within the animate function to update bounding box locations
+function updateBoundingBoxes() {
+    //console.log(charactersArray[0].name);
+    //console.log(boundingBoxArray);
+    // if(charactersArray[0].name === "melee"){
+    //     boundingBoxArray[0].setFromObject(scene.getObjectByName("melee"));
+    // }
+    // for(var i = 0; i < 3; i++){
+    //     if(charactersArray[i].name === "melee")  //doesn't recognize it within the for loop
+    //     ;
+    //         //meleeBox.copy( scene.getObjectByName("melee").boundingBox ).applyMatrix4( mesh.matrixWorld );
+
+    // }
+
+}
+
+// Changes the seleceted character for the player
+function changeCharacter(characterCount) {
+    if (characterCount < 4)
+        characterCount++;
+    else
+        characterCount = 0;
+    clearRadius(scene);
+    currentActor = charactersArray[characterCount];
+    moveRadius(scene, currentActor, obstacles);
+}
+
 export {
-    scene
+    scene, changeCharacter
     , charactersArray, enemiesArray,
     currentActor,
     currentEnemy,

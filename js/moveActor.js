@@ -1,17 +1,23 @@
-import { characterRadius } from './highlights.js';
-import { actors, charactersArray } from '../main.js';
+
+import { moveRadius, clearRadius } from './highlights.js';
+import { actors, charactersArray, changeCharacter, scene } from '../main.js';
+import { isOccupied } from './layer1.js';
 
 var down = false;
 let unit = 17 / 16;
-let increment = unit / 60;
+let increment = unit / 30;
+var north = 2*Math.PI;
+var south = Math.PI;
+var east = 1.5*Math.PI;
+var west = .5*Math.PI;
 
 function keyMove(key, actor, obstacles) {
     console.log(actor.actor.moveLeft);
     let job = actor.actor;
     //console.log(actors.indexOf(actor));
 
-    while (job.moveLeft > 0) {
-        if (down)
+    if(job.moveLeft > 0) {
+        if (down || job.inTransit == true)
             return;
 
         down = true;
@@ -19,43 +25,59 @@ function keyMove(key, actor, obstacles) {
         let xChange = 0;
         let yChange = 0;
 
-        let currentPos = actor.position;
-        let endPos = actor.position;
+        job.source = new THREE.Vector3(actor.position);
+        let endPos = new THREE.Vector3(actor.position);
+        console.log(job.source);
 
         //Determine which direction to move
         switch (key) {
             case 'w':
                 endPos.z = endPos.z + unit;
                 yChange = 1;
+                actor.rotation.y = north;
                 break;
             case 'a':
                 endPos.x = endPos.x + unit;
                 xChange = 1;
+                actor.rotation.y = west;
                 break;
             case 's':
                 endPos.z = endPos.z - unit;
                 yChange = -1;
+                actor.rotation.y = south;
                 break;
             case 'd':
                 endPos.x = endPos.x - unit;
                 xChange = -1;
+                actor.rotation.y = east;
                 break;
         }
 
+        if(job.xPos + xChange > 16 || job.xPos + xChange < 0 || job.yPos + yChange > 16 || job.yPos + yChange < 0)
+            return;
+
+        if(isOccupied(obstacles, job.yPos + yChange, job.xPos + xChange))
+            return;
+
+        clearRadius(scene);
+        job.moveDelay = 30;
         job.inTransit = true;
+        let action = actor.mixer.clipAction( actor.animations[9]); //Walk
+        actor.action = action;
+        action.play();
         job.destination = endPos;
 
+        obstacles[job.yPos][job.xPos] = 0;
         job.move(job.xPos + xChange, job.yPos + yChange);
+        obstacles[job.yPos][job.xPos] = 2;
         job.moveLeft -= 1;
-        characterRadius(actor.scene, job.xPos, job.yPos, job.moveLeft)
-        moveActor(actor, currentPos, endPos);
+        moveRadius(actor.scene, actor, obstacles)
+        //moveActor(actor, currentPos, endPos);
 
         console.log(job.name + " - (" + job.xPos + "," + job.yPos + ")");
     }
 
-    console.log(job.moveLeft);
-    if (job.movement == 0)
-        actor = changeCharacter(actors.indexOf(actor));
+    
 
     if (down)
         return;
@@ -68,16 +90,22 @@ function keyLifted() {
 }
 
 function moveActor(actor, currentPos, endPos) {
-    if (currentPos == endPos) {
+    if (actor.actor.moveDelay < 1) {
+        actor.action.stop();
+        actor.action = actor.mixer.clipAction( actor.animations[1]); //Idle
+        actor.action.play();
         actor.actor.inTransit = false;
-        actor.actor.destinatin = null;
+        
+        actor.actor.destination = null;
         actor.bBox.setFromObject(actor);
+        if (actor.actor.moveLeft == 0)
+            changeCharacter(charactersArray.indexOf(actor));
         return;
     }
 
-    let xDir = 0;
-    if (currentPos.x > endPos.x)
-        xDir = 1;
+    let xDir = 1;
+    if (currentPos.x < endPos.x)
+        xDir = 0;
 
     let xDiff = 0;
     if (currentPos.x != endPos.x)
@@ -91,17 +119,8 @@ function moveActor(actor, currentPos, endPos) {
     if (currentPos.z != endPos.z)
         yDiff = 1;
 
-    actor.position.set(currentPos.x + Math.pow(-1, xDir) * increment * xDiff, currentPos.y, currentPos.z + Math.pow(-1, zDir) * increment * zDiff);
-}
-
-// Changes the seleceted character for the player
-function changeCharacter(characterCount) {
-    if (characterCount < 4)
-        characterCount++;
-    else
-        characterCount = 0;
-
-    return charactersArray[characterCount];
+    actor.actor.moveDelay -= 1;
+    actor.position.set(actor.position.x + Math.pow(-1, xDir) * (increment * xDiff), actor.position.y, actor.position.z + Math.pow(-1, yDir) * (increment * yDiff));
 }
 
 export { keyMove, moveActor, changeCharacter, keyLifted };
