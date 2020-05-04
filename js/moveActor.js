@@ -1,5 +1,5 @@
 
-import { moveRadius, clearRadius } from './highlights.js';
+import { moveRadius, clearCharRadius, clearEnemyRadius, clearSelectedHighlight, addSelectedHighlight } from './highlights.js';
 import { actors, charactersArray, changeCharacter, scene } from '../main.js';
 import { isOccupied } from './layer1.js';
 import { placeObject } from './gameBoard.js';
@@ -19,6 +19,7 @@ function keyMove(key, actor, obstacles) {
     //console.log(actors.indexOf(actor));
 
     if(job.moveLeft > 0) {
+    //while(job.moveLeft > 0){
         if (down || job.inTransit == true)
             return;
 
@@ -61,7 +62,8 @@ function keyMove(key, actor, obstacles) {
         if(isOccupied(obstacles, job.yPos + yChange, job.xPos + xChange))
             return;
 
-        clearRadius(scene);
+        clearCharRadius(scene);
+        clearSelectedHighlight(scene, actor);
         job.moveDelay = 30;
         job.inTransit = true;
         let action = actor.mixer.clipAction( actor.animations[9]); //Walk
@@ -77,12 +79,12 @@ function keyMove(key, actor, obstacles) {
         obstacles[job.yPos][job.xPos] = 2;
         job.moveLeft -= 1;
         moveRadius(actor.scene, actor, obstacles)
+        addSelectedHighlight(scene, actor);
+
         //moveActor(actor, currentPos, endPos);
 
         console.log(job.name + " - (" + job.xPos + "," + job.yPos + ")");
     }
-
-    
 
     if (down)
         return;
@@ -102,9 +104,11 @@ function moveActor(actor, currentPos, endPos) {
         actor.actor.inTransit = false;
         
         actor.actor.destination = null;
+        //console.log(actor);
         actor.bBox.setFromObject(actor);
-        if (actor.actor.moveLeft == 0)
+        if (actor.actor.moveLeft == 0){
             changeCharacter(charactersArray.indexOf(actor));
+        }
         return;
     }
 
@@ -123,6 +127,7 @@ function moveActor(actor, currentPos, endPos) {
     let yDiff = 0;
     if (currentPos.z != endPos.z)
         yDiff = 1;
+
     actor.actor.moveDelay -= 1;
     actor.position.set(actor.position.x + Math.pow(-1, xDir) * (increment * xDiff), actor.position.y, actor.position.z + Math.pow(-1, yDir) * (increment * yDiff));
 }
@@ -149,4 +154,4 @@ function findHeight(actor){
     }
 }
 
-export { keyMove, moveActor, changeCharacter, keyLifted };
+export { keyMove, moveActor, keyLifted };

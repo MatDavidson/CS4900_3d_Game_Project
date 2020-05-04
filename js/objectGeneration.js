@@ -90,8 +90,10 @@ function movePlayer(key, charactersArray, boxHelper, bbox) {
         // bbox.setFromObject(currentCharacter);
         // boundingBoxArray[1] = bbox;
         // console.log(boundingBoxArray[1]);
+
         bbox = new THREE.Box3();
         bbox.setFromObject(currentCharacter);
+        
         ///////boxHelper = new THREE.BoxHelper(currentCharacter, 0xffff00 );
         //scene.add(box);
         ///////scene.add(boxHelper);
