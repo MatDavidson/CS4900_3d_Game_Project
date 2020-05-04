@@ -5,7 +5,7 @@ import { createModels } from './js/modelMaker.js';
 import { HeightMap, VanillaRandomHeightMap } from './js/heightMap.js';
 // import {Melee, Defender, Ranged} from './js/actors.js';
 import { addButtons, onEndTurnClick } from './js/HUD.js';
-import { keyMove, changeCharacter, keyLifted } from './js/moveActor.js';
+import { keyMove, keyLifted, moveActor } from './js/moveActor.js';
 import { moveRadius, characterRadius, clearRadius } from './js/highlights.js';
 
 //set window size
@@ -128,12 +128,12 @@ function keySwitch(event) {
         case 'a':
         case 's':
         case 'd':
-            clearRadius(scene);
+            
             keyMove(event.key, currentActor, obstacles);
             break;
         //adding swap implementation
         case 'r':
-            currentActor = changeCharacter(charactersArray.indexOf(currentActor));
+            changeCharacter(charactersArray.indexOf(currentActor));
             //console.log(currentActor);
             break;
     }
@@ -187,7 +187,7 @@ function animate() {
     //updateBoundingBoxes();
     requestAnimationFrame(animate);
     if (currentActor.actor.inTransit === true) {
-        moveActor(currentActor, currentActor.position, currentActor.actor.destination);
+        moveActor(currentActor, currentActor.actor.source, currentActor.actor.destination);
         console.log("Moving...");
     }
     // Rerenders the scene  
@@ -207,8 +207,36 @@ function render() {
     renderer.render(scene, camera);
 }
 
+
+//IN PROGRESS - called within the animate function to update bounding box locations
+function updateBoundingBoxes() {
+    //console.log(charactersArray[0].name);
+    //console.log(boundingBoxArray);
+    // if(charactersArray[0].name === "melee"){
+    //     boundingBoxArray[0].setFromObject(scene.getObjectByName("melee"));
+    // }
+    // for(var i = 0; i < 3; i++){
+    //     if(charactersArray[i].name === "melee")  //doesn't recognize it within the for loop
+    //     ;
+    //         //meleeBox.copy( scene.getObjectByName("melee").boundingBox ).applyMatrix4( mesh.matrixWorld );
+
+    // }
+
+}
+
+// Changes the seleceted character for the player
+function changeCharacter(characterCount) {
+    if (characterCount < 4)
+        characterCount++;
+    else
+        characterCount = 0;
+    clearRadius(scene);
+    currentActor = charactersArray[characterCount];
+    moveRadius(scene, currentActor, obstacles);
+}
+
 export {
-    scene
+    scene, changeCharacter
     , charactersArray, enemiesArray,
     currentActor,
     currentEnemy,

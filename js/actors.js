@@ -8,9 +8,12 @@ class Actor{   //Base character object
         this.xPos = 0;          //X position 
         this.yPos = 0;          //Y position
         this.exp = 0;           //Experience points
+        this.movement = 5;      //How far a unit can move in one turn
         this.moveLeft = 5;
+        this.moveDelay = 0;
         this.range = 3;         //How far the unit can reach
         this.inTransit = false;
+        this.source = null;
         this.destination = null;
         this.resist = null;     //Resistances, weakness and attack type are declared 
         this.weakness = null;   //-->as null here for the following basic functions 
