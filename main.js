@@ -6,7 +6,7 @@ import { HeightMap, VanillaRandomHeightMap } from './js/heightMap.js';
 // import {Melee, Defender, Ranged} from './js/actors.js';
 import { addButtons, onEndTurnClick } from './js/HUD.js';
 import { keyMove, keyLifted, moveActor } from './js/moveActor.js';
-import { moveRadius, characterRadius, clearRadius } from './js/highlights.js';
+import { moveRadius, characterRadius, clearCharRadius, clearEnemyRadius, clearSelectedHighlight, addSelectedHighlight } from './js/highlights.js';
 // import { CSS2DRenderer, CSS2DObject } from './js/CSS2DRenderer.js';
 
 
@@ -72,12 +72,6 @@ const mapRightX = -7.5;
 const mapBottomZ = -7.5;
 const mapLeftX = 7.5;
 
-//var manager = new THREE.LoadingManager();
-//var characterCount = 0;
-
-//var managerEnemies = new THREE.LoadingManager();
-//var enemyCount = 0;
-
 var charactersArray = [];
 var enemiesArray = [];
 
@@ -95,11 +89,6 @@ var mixers = []; //hold all animation mixers
 var actors = []; //hold all models
 var bBoxes = []; //hold all bounding boxes
 
-//grab button functionality
-//addTitle();
-
-//var labelRenderer;
-
 createModels(manager, scene, heightMap, obstacles, mixers, actors, bBoxes);
 
 //function that places the player characters and enemy characters in the appropriate arrays
@@ -113,31 +102,17 @@ function populateArrays(actors, charactersArray, enemiesArray) {
 }
 
 var currentActor;
-var currentEnemy;
 
-//console.log(currentActor);
-// var playerDiv = document.createElement('div');
-// playerDiv.className = 'label';
+var currentEnemy;
+var selectHighlightEnemy;
 
 function init() {
     populateArrays(actors, charactersArray, enemiesArray);
     currentActor = charactersArray[0];
+    addSelectedHighlight(scene, currentActor);
+
     currentEnemy = enemiesArray[0];
-    //console.log(currentActor);
-
-    //trying to add health labels above characters
-    // playerDiv.textContent = "";
-    // playerDiv.textContent = currentActor.actor.hitPts;
-    // var playerLabel = new THREE.CSS2DObject(  );
-    // playerLabel.position.set( 0, 1, 0 );
-    // currentActor.add( playerLabel );
-
-    // labelRenderer = new THREE.CSS2DRenderer();
-    // labelRenderer.setSize( window.innerWidth, window.innerHeight );
-    // labelRenderer.domElement.style.position = 'absolute';
-    // labelRenderer.domElement.style.top = '0px';
-    // document.body.appendChild( labelRenderer.domElement );
-
+    addSelectedHighlight(scene, currentEnemy);
 
     addButtons(charactersArray, enemiesArray);
 
@@ -154,8 +129,7 @@ function keySwitch(event) {
         case 'w':
         case 'a':
         case 's':
-        case 'd':
-            
+        case 'd':            
             keyMove(event.key, currentActor, obstacles);
             break;
         //adding swap implementation
@@ -170,14 +144,6 @@ var mouse = new THREE.Vector2();
 
 var raycaster = new THREE.Raycaster();
 //set the raycaster
-
-//maybe this will help? https://discourse.threejs.org/t/2d-plots-overlayed-on-3d-scene/172
-// using sprites causes issues relating to the raycaster - on hold
-// var spriteMap = new THREE.TextureLoader().load('./textures/rabbit-9.jpg');
-// var spriteMaterial = new THREE.SpriteMaterial({ map: spriteMap });
-
-// var sprite = new THREE.Sprite(spriteMaterial);
-// scene.add(sprite);
 
 //Check this example for reference: https://threejs.org/examples/#webgl_interactive_lines
 //event handler when clicking an enemy to attack (or possibly a teammate to heal?)
@@ -204,12 +170,18 @@ function onMouseDown(event) {
         if (raycaster.ray.intersectsBox(bBoxes[i])) {
             if (bBoxes[i].name.includes("Player")) {
                 console.log(bBoxes[i].name);
+                clearSelectedHighlight(scene, currentActor);
                 currentActor = bBoxes[i].model;
-                //break;
+                clearCharRadius(scene);
+                console.log(currentActor);
+                moveRadius(scene, currentActor, obstacles);
+                addSelectedHighlight(scene, currentActor);
             }
             else {
+                clearEnemyRadius(scene);
+                clearSelectedHighlight(scene, currentEnemy);
                 currentEnemy = bBoxes[i].model;
-                //break;
+                addSelectedHighlight(scene, currentEnemy);
             }
         }
     }
@@ -243,34 +215,20 @@ function render() {
 
     renderer.render(scene, camera);
     //labelRenderer.render( scene, camera );
-
-}
-
-
-//IN PROGRESS - called within the animate function to update bounding box locations
-function updateBoundingBoxes() {
-    //console.log(charactersArray[0].name);
-    //console.log(boundingBoxArray);
-    // if(charactersArray[0].name === "melee"){
-    //     boundingBoxArray[0].setFromObject(scene.getObjectByName("melee"));
-    // }
-    // for(var i = 0; i < 3; i++){
-    //     if(charactersArray[i].name === "melee")  //doesn't recognize it within the for loop
-    //     ;
-    //         //meleeBox.copy( scene.getObjectByName("melee").boundingBox ).applyMatrix4( mesh.matrixWorld );
-
-    // }
-
 }
 
 // Changes the seleceted character for the player
 function changeCharacter(characterCount) {
+    console.log(characterCount);
     if (characterCount < 4)
         characterCount++;
     else
         characterCount = 0;
-    clearRadius(scene);
+
+    clearCharRadius(scene);
+    clearSelectedHighlight(scene, currentActor);
     currentActor = charactersArray[characterCount];
+    addSelectedHighlight(scene, currentActor);
     moveRadius(scene, currentActor, obstacles);
 }
 
