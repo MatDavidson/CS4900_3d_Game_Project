@@ -8,6 +8,7 @@ function generateViableList(actor){
     let closedList = [];
     let nodes = scene.nodes;
     let currentNode;
+    let targetNode = null;
 
     //doesn't affect anything, needed for the checkNeighbors funtion
     setHeurs(actor.actor.xPos, actor.actor.yPos);
@@ -18,15 +19,15 @@ function generateViableList(actor){
     while(openList.length > 0){
         currentNode = leastCostNode(openList);
         openList.splice(openList.indexOf(currentNode),1);
-        console.log("Current node: (" + currentNode.yPos + "," + currentNode.xPos + "), Count: " + openList.length + "\nCost: " + currentNode.cost + ", Steps: " + currentNode.steps)
+        
         if(currentNode.steps > actor.actor.moveLeft){
-            //closedList.push(currentNode);
+            closedList.push(currentNode);
             continue;
         }
         else{
             viableList.push(currentNode);
             closedList.push(currentNode);
-            checkNeighbors(nodes, currentNode, openList, closedList, actor);
+            checkNeighbors(nodes, currentNode, openList, closedList, targetNode);
         }
     }
     console.log("Finished");
@@ -47,12 +48,15 @@ function getPath(actor, x,y){
 
     while(openList.length > 0){
         currentNode = leastCostNode(openList);
+        openList.splice(openList.indexOf(currentNode),1);
+        console.log("Current node: (" + currentNode.yPos + "," + currentNode.xPos + "), Count: " + openList.length + "\nCost: " + currentNode.cost + ", Steps: " + currentNode.steps)
         if(currentNode == targetNode){
             path = fillPath(currentNode);
+            return path;
         }
         else{
             closedList.push(currentNode);
-            checkNeighbors(nodes, currentNode, openList, closedList, actor);
+            checkNeighbors(nodes, currentNode, openList, closedList, targetNode);
         }
     }
 }
@@ -71,7 +75,7 @@ function leastCostNode(openList){
     return lcn;
 }
 
-function checkNeighbors(nodes, node, openList, closedList, actor){
+function checkNeighbors(nodes, node, openList, closedList, targetNode){
     let neighbor;
     let parent = node;
     let neighbors = [];
@@ -90,19 +94,23 @@ function checkNeighbors(nodes, node, openList, closedList, actor){
 
     for(let i = 0; i < neighbors.length; i++){
         neighbor = neighbors[i];
-        //setSteps(neighbor, actor);
+
         if(openList.includes(neighbor)){
-            console.log("(" + neighbor.yPos + "," + neighbor.xPos + ") already on Openlist");
+            //console.log("(" + neighbor.yPos + "," + neighbor.xPos + ") already on Openlist");
             continue;
         }
 
         if(closedList.includes(neighbor)){
-            console.log("(" + neighbor.yPos + "," + neighbor.xPos + ") already on Closedlist");
+            //console.log("(" + neighbor.yPos + "," + neighbor.xPos + ") already on Closedlist");
             continue;
         }
 
-        if(isOccupied(scene.obstacles, neighbor.yPos, neighbor.xPos)){
-            console.log("(" + neighbor.yPos + "," + neighbor.xPos + ") is occupied");
+        if(scene.obstacles[neighbor.yPos][ neighbor.xPos] == 1){
+            //console.log("(" + neighbor.yPos + "," + neighbor.xPos + ") is occupied");
+            continue;
+        }
+        if(scene.obstacles[neighbor.yPos][neighbor.xPos] == 2 && nodes[neighbor.xPos][neighbor.yPos] != targetNode){
+            //console.log("(" + neighbor.yPos + "," + neighbor.xPos + ") is occupied");
             continue;
         }
         if(neighbor.parent == null)
@@ -111,7 +119,7 @@ function checkNeighbors(nodes, node, openList, closedList, actor){
         neighbor.steps =parent.steps + 1;
         neighbor.cost = neighbor.steps + neighbor.heur;
         openList.push(neighbor);
-        console.log("(" + neighbor.yPos + "," + neighbor.xPos + ") added to Openlist, Count: " + openList.length + "\nCost: " + neighbor.cost + ", Steps: " + neighbor.steps + ", Parent: (" + neighbor.parent.xPos + "," + neighbor.parent.yPos + ")");
+        //console.log("(" + neighbor.yPos + "," + neighbor.xPos + ") added to Openlist, Count: " + openList.length + "\nCost: " + neighbor.cost + ", Steps: " + neighbor.steps + ", Parent: (" + neighbor.parent.xPos + "," + neighbor.parent.yPos + ")");
         
     }    
 }
@@ -149,23 +157,6 @@ function setHeurs(x,y){
     }
 }
 
-function setSteps(node, actor){
-    let s = getDiff(node.xPos, actor.xPos) + getDiff(node.yPos, actor.yPos);
-    node.steps = s;
-}
-
-function setCosts(nodes, actor){
-    for (let i = 0; i < 16; i++) {
-        for (let j = 0; j < 16; j++) {
-            let node = nodes[i][j];
-            //setHeur(node, actor);
-            setSteps(node, actor);
-            node.cost = node.heur + node.steps;
-            ///console.log(node.cost);
-        }
-    }
-    
-}
 function getDiff(a, b){
     if(a > b)
         return a-b;
@@ -173,4 +164,4 @@ function getDiff(a, b){
         return b-a;
 }
 
-export {generateViableList, createNode};
+export {generateViableList, createNode, getPath};

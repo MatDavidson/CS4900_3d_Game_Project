@@ -7,6 +7,7 @@ import { HeightMap, VanillaRandomHeightMap } from './js/heightMap.js';
 import { addButtons, onEndTurnClick } from './js/HUD.js';
 import { keyMove, keyLifted, moveActor } from './js/moveActor.js';
 import { moveRadius, characterRadius, clearCharRadius, clearEnemyRadius, clearSelectedHighlight, addSelectedHighlight } from './js/highlights.js';
+import { getPath } from './js/astar.js';
 // import { CSS2DRenderer, CSS2DObject } from './js/CSS2DRenderer.js';
 
 
@@ -182,12 +183,16 @@ function onMouseDown(event) {
                 clearSelectedHighlight(scene, currentEnemy);
                 currentEnemy = bBoxes[i].model;
                 addSelectedHighlight(scene, currentEnemy);
+                let path = getPath(currentActor, currentEnemy.actor.xPos, currentEnemy.actor.yPos);
+
+                for(let i = 0; i < path.length; i++){
+                    console.log("(" + path[i].yPos + "," + path[i].xPos);
+                }
             }
         }
     }
-     console.log(currentEnemy);
-     console.log(currentActor);
-
+    console.log(currentEnemy);
+    console.log(currentActor);       
 }
 
 function animate() {
