@@ -106,7 +106,7 @@ function moveActor(actor, currentPos, endPos) {
         actor.actor.destination = null;
         //console.log(actor);
         actor.bBox.setFromObject(actor);
-        if (actor.actor.moveLeft == 0){
+        if (actor.actor.moveLeft == 0 && actor.actor.hasAttacked){
             changeCharacter(charactersArray.indexOf(actor));
         }
         return;
