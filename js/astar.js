@@ -1,24 +1,39 @@
 import {scene} from '../main.js';
 import {isOccupied} from './layer1.js';
 
-function generateViableList(scene, currentActor, obstacles){
+//This function is used to display a model's viable movement options. 
+function generateViableList(actor){
     let viableList = [];
     let openList = [];
     let closedList = [];
     let nodes = scene.nodes;
-    let actor = currentActor.actor;
+    let currentNode;
 
-    setCosts(nodes, actor);
+    //doesn't affect anything, needed for the checkNeighbors funtion
+    setHeurs(actor.actor.xPos, actor.actor.yPos);
 
-    for (let i = 0; i < 16; i++) {
-        for (let j = 0; j < 16; j++) {
-            if(nodes[i][j].cost <= actor.moveLeft && nodes[i][j].occupied == false)
-                viableList.push(nodes[i][j]);
+    openList.push(nodes[actor.actor.xPos][actor.actor.yPos]);
+    nodes[actor.actor.xPos][actor.actor.yPos].steps = 0;
+
+    while(openList.length > 0){
+        currentNode = leastCostNode(openList);
+        openList.splice(openList.indexOf(currentNode),1);
+        console.log("Current node: (" + currentNode.yPos + "," + currentNode.xPos + "), Count: " + openList.length + "\nCost: " + currentNode.cost + ", Steps: " + currentNode.steps)
+        if(currentNode.steps > actor.actor.moveLeft){
+            //closedList.push(currentNode);
+            continue;
+        }
+        else{
+            viableList.push(currentNode);
+            closedList.push(currentNode);
+            checkNeighbors(nodes, currentNode, openList, closedList, actor);
         }
     }
-
+    console.log("Finished");
     return viableList;
 }
+
+//This function generates a traversal path
 function getPath(actor, x,y){
     let path = [];
     let openList = [];
@@ -52,22 +67,22 @@ function leastCostNode(openList){
             leastCost = lcn.cost;
         }
     }
-    openList.splice(openList.indexOf(lcn));
 
     return lcn;
 }
 
 function checkNeighbors(nodes, node, openList, closedList, actor){
     let neighbor;
+    let parent = node;
     let neighbors = [];
 
-    if(node.xPos - 1 > 0)
+    if(node.xPos - 1 > -1)
         neighbors.push(nodes[node.xPos - 1][node.yPos]);
 
     if(node.xPos + 1 < 17)
         neighbors.push(nodes[node.xPos + 1][node.yPos]);
 
-    if(node.yPos - 1 > 0)
+    if(node.yPos - 1 >= 0)
         neighbors.push(nodes[node.xPos][node.yPos - 1]);
 
     if(node.yPos + 1 < 17)
@@ -75,12 +90,29 @@ function checkNeighbors(nodes, node, openList, closedList, actor){
 
     for(let i = 0; i < neighbors.length; i++){
         neighbor = neighbors[i];
-        setSteps(neighbor, actor);
-        if(!openList.includes(neighbor) && !closedList.includes(neighbor) && !isOccupied(scene.obstacles, neighbor.xPos, neighbor.yPos)){
-            neighbor.parent = node;
-            neighbor.cost = neighbor.steps + neighbor.heur;
-            openList.push(neighbor);
+        //setSteps(neighbor, actor);
+        if(openList.includes(neighbor)){
+            console.log("(" + neighbor.yPos + "," + neighbor.xPos + ") already on Openlist");
+            continue;
         }
+
+        if(closedList.includes(neighbor)){
+            console.log("(" + neighbor.yPos + "," + neighbor.xPos + ") already on Closedlist");
+            continue;
+        }
+
+        if(isOccupied(scene.obstacles, neighbor.yPos, neighbor.xPos)){
+            console.log("(" + neighbor.yPos + "," + neighbor.xPos + ") is occupied");
+            continue;
+        }
+        if(neighbor.parent == null)
+            neighbor.parent = parent;
+
+        neighbor.steps =parent.steps + 1;
+        neighbor.cost = neighbor.steps + neighbor.heur;
+        openList.push(neighbor);
+        console.log("(" + neighbor.yPos + "," + neighbor.xPos + ") added to Openlist, Count: " + openList.length + "\nCost: " + neighbor.cost + ", Steps: " + neighbor.steps + ", Parent: (" + neighbor.parent.xPos + "," + neighbor.parent.yPos + ")");
+        
     }    
 }
 
@@ -110,8 +142,8 @@ function setHeurs(x,y){
 
     for (let i = 0; i < 16; i++) {
         for (let j = 0; j < 16; j++) {
-            dx = getDiff(x, actor.actor.xPos);
-            dy = getDiff(y, actor.actor.yPos);
+            dx = getDiff(x, i);
+            dy = getDiff(y, j);
             nodes[i][j].heur = dx + dy;
         }
     }
