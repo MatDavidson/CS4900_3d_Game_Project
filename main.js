@@ -5,7 +5,7 @@ import { createModels } from './js/modelMaker.js';
 import { HeightMap, VanillaRandomHeightMap } from './js/heightMap.js';
 // import {Melee, Defender, Ranged} from './js/actors.js';
 import { addButtons, onEndTurnClick } from './js/HUD.js';
-import { keyMove, keyLifted, moveActor } from './js/moveActor.js';
+import { keyMove, keyLifted, moveActor, pathMove } from './js/moveActor.js';
 import { moveRadius, characterRadius, clearCharRadius, clearEnemyRadius, clearSelectedHighlight, addSelectedHighlight } from './js/highlights.js';
 import { getPath } from './js/astar.js';
 // import { CSS2DRenderer, CSS2DObject } from './js/CSS2DRenderer.js';
@@ -183,11 +183,13 @@ function onMouseDown(event) {
                 clearSelectedHighlight(scene, currentEnemy);
                 currentEnemy = bBoxes[i].model;
                 addSelectedHighlight(scene, currentEnemy);
-                let path = getPath(currentActor, currentEnemy.actor.xPos, currentEnemy.actor.yPos);
+                currentActor.actor.path = getPath(currentActor, currentEnemy.actor.xPos, currentEnemy.actor.yPos);
 
-                for(let i = 0; i < path.length; i++){
-                    console.log("(" + path[i].yPos + "," + path[i].xPos);
+                for(let i = 0; i < currentActor.actor.path.length; i++){
+                    console.log("(" + currentActor.actor.path[i].yPos + "," + currentActor.actor.path[i].xPos);
                 }
+
+                pathMove(currentActor, currentActor.actor.path.pop(), obstacles, scene);
             }
         }
     }
@@ -199,6 +201,8 @@ function animate() {
     //update bounding boxes
     //updateBoundingBoxes();
     requestAnimationFrame(animate);
+    if(currentActor.actor.moveLeft>0 && currentActor.actor.path.length>0 && !currentActor.actor.inTransit)
+        pathMove(currentActor, currentActor.actor.path.pop(), obstacles, scene);
     if (currentActor.actor.inTransit === true) {
         moveActor(currentActor, currentActor.actor.source, currentActor.actor.destination);
         console.log("Moving...");
@@ -238,7 +242,7 @@ function changeCharacter(characterCount) {
 }
 
 export {
-    scene, changeCharacter
+    scene, changeCharacter, animate
     , charactersArray, enemiesArray,
     currentActor,
     currentEnemy,

@@ -1,6 +1,6 @@
 
 import { moveRadius, clearCharRadius, clearEnemyRadius, clearSelectedHighlight, addSelectedHighlight } from './highlights.js';
-import { actors, charactersArray, changeCharacter, scene } from '../main.js';
+import { actors, charactersArray, changeCharacter, scene, animate } from '../main.js';
 import { isOccupied } from './layer1.js';
 import { placeObject } from './gameBoard.js';
 
@@ -90,6 +90,65 @@ function keyMove(key, actor, obstacles) {
         return;
 }
 
+function pathMove(actor, next, obstacles, scene){
+    let job = actor.actor;   
+    let xChange = 0;
+    let yChange = 0;
+
+    job.source = new THREE.Vector3(actor.position);
+    let endPos = new THREE.Vector3(actor.position);
+    console.log(next.xPos, next.yPos);
+
+    if(job.xPos != next.xPos){
+        if(job.xPos > next.xPos){
+            endPos.x = endPos.x - unit;
+            xChange = -1;
+            actor.rotation.y = east;
+        }
+        else{
+            endPos.x = endPos.x + unit;
+            xChange = 1;
+            actor.rotation.y = west;
+        }
+    }
+    if(job.yPos != next.yPos){
+        if(job.yPos < next.yPos){
+            endPos.z = endPos.z + unit;
+            yChange = 1;
+            actor.rotation.y = north;
+        }
+        else{
+            endPos.z = endPos.z - unit;
+            yChange = -1;
+            actor.rotation.y = south;
+        }
+    }
+    console.log("Clearing highlights")
+    clearCharRadius(scene);
+    clearSelectedHighlight(scene, actor);
+
+    console.log("Setting Movement")
+    job.moveDelay = 30;
+    job.inTransit = true;
+    let action = actor.mixer.clipAction( actor.animations[9]); //Walk
+    actor.action = action;
+    action.play();
+    job.destination = endPos;
+
+    console.log(endPos);
+
+    console.log("Updating objects")
+    obstacles[job.yPos][job.xPos] = 0;
+    job.move(job.xPos + xChange, job.yPos + yChange);
+    //findHeight(actor);
+    obstacles[job.yPos][job.xPos] = 2;
+    job.moveLeft -= 1;
+
+    console.log("adding highlights")
+    moveRadius(actor.scene, actor, obstacles)
+    addSelectedHighlight(scene, actor);
+}
+
 //used when making sure one key press only performs one movement
 function keyLifted() {
     down = false;
@@ -154,4 +213,4 @@ function findHeight(actor){
     }
 }
 
-export { keyMove, moveActor, keyLifted };
+export { keyMove, moveActor, keyLifted, pathMove };
