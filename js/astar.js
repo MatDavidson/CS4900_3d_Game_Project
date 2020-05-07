@@ -42,14 +42,14 @@ function getPath(actor, x,y){
     let nodes = scene.nodes;
     let targetNode = nodes[x][y];
     let currentNode;
-
+    resetNodes(nodes);
     setHeurs(x,y);
     openList.push(nodes[actor.actor.xPos][actor.actor.yPos]);
 
     while(openList.length > 0){
         currentNode = leastCostNode(openList);
         openList.splice(openList.indexOf(currentNode),1);
-        console.log("Current node: (" + currentNode.yPos + "," + currentNode.xPos + "), Count: " + openList.length + "\nCost: " + currentNode.cost + ", Steps: " + currentNode.steps)
+        console.log("Current node: (" + currentNode.yPos + "," + currentNode.xPos + "), Count: " + openList.length + "Target node: (" + targetNode.yPos + "," + targetNode.xPos + ")\nCost: " + currentNode.cost + ", Steps: " + currentNode.steps+ ", Heur: " + currentNode.heur)
         if(currentNode == targetNode){
             path = fillPath(currentNode);
             return path;
@@ -80,7 +80,7 @@ function checkNeighbors(nodes, node, openList, closedList, targetNode){
     let parent = node;
     let neighbors = [];
 
-    if(node.xPos - 1 > -1)
+    if(node.xPos - 1 >= 0)
         neighbors.push(nodes[node.xPos - 1][node.yPos]);
 
     if(node.xPos + 1 < 17)
@@ -110,7 +110,7 @@ function checkNeighbors(nodes, node, openList, closedList, targetNode){
             continue;
         }
         if(scene.obstacles[neighbor.yPos][neighbor.xPos] == 2 && nodes[neighbor.xPos][neighbor.yPos] != targetNode){
-            //console.log("(" + neighbor.yPos + "," + neighbor.xPos + ") is occupied");
+        //     //console.log("(" + neighbor.yPos + "," + neighbor.xPos + ") is occupied");
             continue;
         }
         if(neighbor.parent == null)
@@ -133,6 +133,17 @@ function fillPath(node){
         prev = prev.parent;
     }
     return path;
+}
+
+function resetNodes(nodes){
+    for (let i = 0; i < 16; i++) {
+        for (let j = 0; j < 16; j++) {
+            nodes[i][j].heur = 0;
+            nodes[i][j].cost = 0;
+            nodes[i][j].steps = 0;
+            nodes[i][j].parent = null;
+        }
+    }
 }
 
 //Node objects for astar

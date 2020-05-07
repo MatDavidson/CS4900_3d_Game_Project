@@ -183,13 +183,16 @@ function onMouseDown(event) {
                 clearSelectedHighlight(scene, currentEnemy);
                 currentEnemy = bBoxes[i].model;
                 addSelectedHighlight(scene, currentEnemy);
-                currentActor.actor.path = getPath(currentActor, currentEnemy.actor.xPos, currentEnemy.actor.yPos);
 
-                for(let i = 0; i < currentActor.actor.path.length; i++){
-                    console.log("(" + currentActor.actor.path[i].yPos + "," + currentActor.actor.path[i].xPos);
+                if(!currentActor.actor.inTransit && currentActor.actor.path != null){
+                    currentActor.actor.path = getPath(currentActor, currentEnemy.actor.xPos, currentEnemy.actor.yPos);
+
+                    for(let i = 0; i < currentActor.actor.path.length; i++){
+                        console.log("(" + currentActor.actor.path[i].yPos + "," + currentActor.actor.path[i].xPos);
+                    }
+
+                    pathMove(currentActor, currentActor.actor.path.pop(), obstacles, scene);
                 }
-
-                pathMove(currentActor, currentActor.actor.path.pop(), obstacles, scene);
             }
         }
     }
@@ -201,8 +204,10 @@ function animate() {
     //update bounding boxes
     //updateBoundingBoxes();
     requestAnimationFrame(animate);
-    if(currentActor.actor.moveLeft>0 && currentActor.actor.path.length>0 && !currentActor.actor.inTransit)
-        pathMove(currentActor, currentActor.actor.path.pop(), obstacles, scene);
+    if(currentActor.actor.path != null){
+        if(currentActor.actor.moveLeft>0 && currentActor.actor.path.length>0 && !currentActor.actor.inTransit)
+            pathMove(currentActor, currentActor.actor.path.pop(), obstacles, scene);
+    }
     if (currentActor.actor.inTransit === true) {
         moveActor(currentActor, currentActor.actor.source, currentActor.actor.destination);
         console.log("Moving...");
