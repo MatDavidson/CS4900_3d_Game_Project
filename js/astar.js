@@ -83,13 +83,13 @@ function checkNeighbors(nodes, node, openList, closedList, targetNode){
     if(node.xPos - 1 >= 0)
         neighbors.push(nodes[node.xPos - 1][node.yPos]);
 
-    if(node.xPos + 1 < 17)
+    if(node.xPos + 1 < 16)
         neighbors.push(nodes[node.xPos + 1][node.yPos]);
 
     if(node.yPos - 1 >= 0)
         neighbors.push(nodes[node.xPos][node.yPos - 1]);
 
-    if(node.yPos + 1 < 17)
+    if(node.yPos + 1 < 16)
         neighbors.push(nodes[node.xPos][node.yPos + 1]);
 
     for(let i = 0; i < neighbors.length; i++){
