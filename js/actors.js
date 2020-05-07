@@ -1,4 +1,4 @@
-import {moveActor} from './moveActor.js';
+import { changeCharacter, charactersArray } from '../main.js';
 
 class Actor{   //Base character object
     constructor(name){
@@ -8,9 +8,11 @@ class Actor{   //Base character object
         this.xPos = 0;          //X position 
         this.yPos = 0;          //Y position
         this.exp = 0;           //Experience points
+        this.hasAttacked = false;
         this.movement = 5;      //How far a unit can move in one turn
         this.moveLeft = 5;
         this.moveDelay = 0;
+        this.path = [];
         this.range = 3;         //How far the unit can reach
         this.inTransit = false;
         this.source = null;
@@ -51,6 +53,9 @@ class Actor{   //Base character object
             }
         }
         actor.hitPts -= this.attPow * attMod;                  //reduce the arg actor's HP 
+        this.hasAttacked = true;
+        if(this.moveLeft == 0)
+            changeCharacter(charactersArray.indexOf(this))
     }
 
     //Check to see if an actor is in attack range
