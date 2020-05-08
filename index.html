@@ -17,17 +17,6 @@
     <script src="./js/TrackballControls.js"></script>
     <script src="./js/OBJLoader.js"></script>
     <script src="./js/GLTFLoader.js"></script>
-    <!-- <script src="./js/CSS2DRenderer.js"></script> -->
-
-
-
-    <!-- <script src="./js/worldGeneration.js"></script>
-    <script src="./js/camera.js"></script>
-    <script src="./js/objectGeneration.js"></script>
-    <script src="./js/actors.js"></script>
-    <script src="./js/loadingScreen.js"></script> -->
-
-        
 
     <script type="module" src="./js/gameBoard.js"></script>
     <script type="module" src="./js/layer1.js"></script>
@@ -54,36 +43,48 @@ function show(shown, hidden) {
 </head>
 
 <body>
-    <!-- <div class="title_screen" id="titleScreen">
+    <div class="title_screen" id="titleScreen">
         <table>
             <th>
-                Doughta
+                Random Rumble
             </th>
             <tr>
                 <td>            
                     <button id="start">
-                        <a href="#"  onclick="return show('HUD','titleScreen');">Get This Bread</a>
+                        <a href="#"  onclick="return show('HUD','titleScreen');">Let's Rumble!</a>
                     </button>
                 </td>
             </tr>
             <tr>
                 <td>        
-                    <button id="instructions">How do I get bread?</button>
+                    <button id="instructions">How do I rumble?</button>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <button id="about">Who made this bread?</button>
+                    <button id="about">Who made this rumble?</button>
                 </td>
             </tr>
         </table>
-    </div>  -->
-    <div id="HUD">
-    <!-- style="display:none"> -->
+    </div> 
+    <div id="HUD" style="display:none">
         <button style="bottom:0" id="endTurn" class="ui">End Turn</button>
-        <button style="bottom:1" id="attack" class="ui">Attack</button>
-        <a href="#" onclick="return show('titleScreen','HUD');">Quit</a>
+        <button style="position: absolute; right: 0; bottom: 0" id="attack" class="ui">Attack</button>
+        <div id="stats">
+            <p id="hp" >Health:</p>
+            <p id="attackPower" >Attack Power:</p>
+            <p id="range" >Range:</p>
+            <p id="attackType" >Attack Type:</p>
+
+        </div>
+
+
+        <button onclick="return show('titleScreen','HUD');" style="bottom:1;" id="quit" class="ui">Quit</button>
     </div>  
+
+    <!-- <div id="hp">
+        Health:
+    </div> -->
 </body>
 
 </html>

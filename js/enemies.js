@@ -1,4 +1,5 @@
-import { charactersArray,  scene, obstacles} from '../main.js';
+
+import { charactersArray,  scene, obstacles, enemiesArray} from '../main.js';
 import { getPath } from './astar.js';
 import { pathMove } from './moveActor.js';
 

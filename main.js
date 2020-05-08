@@ -2,13 +2,11 @@ import { boardGen } from './js/gameBoard.js';
 import { createCamera, addCameraControls } from './js/camera.js';
 import { createModels } from './js/modelMaker.js';
 import { VanillaRandomHeightMap } from './js/heightMap.js';
-import { addButtons} from './js/HUD.js';
+import { addButtons, getCurrentHP } from './js/HUD.js';
 import { keyMove, keyLifted, moveActor, pathMove } from './js/moveActor.js';
 import { moveRadius, characterRadius, clearCharRadius, clearEnemyRadius, clearSelectedHighlight, addSelectedHighlight } from './js/highlights.js';
 import { getPath } from './js/astar.js';
 import { enemyTurn } from './js/enemies.js';
-// import { CSS2DRenderer, CSS2DObject } from './js/CSS2DRenderer.js';
-
 
 //set window size
 var height = window.innerHeight;
@@ -38,24 +36,6 @@ boardGen(scene, heightMap, obstacles, highlights, nodes);
 
 //changed camera for title plane adjustment - see camera.js
 var camera = createCamera(width, height, renderer, scene);
-
-
-
-
-//create title screen scene
-// var planeGeometry = new THREE.PlaneGeometry(50, 50);
-// var planeTexture = new THREE.TextureLoader().load('textures/rabbit-9.jpg');
-// var planeMaterial = new THREE.MeshBasicMaterial({ map: planeTexture });
-// planeMaterial.side = THREE.DoubleSide;
-// var titlePlane = new THREE.Mesh(planeGeometry, planeMaterial);
-// titlePlane.position.set(-1, 1.5, -3.75);
-// //var rotateVector = new THREE.Vector3(-1, 0, -1);
-// //titlePlane.rotateOnWorldAxis(rotateVector, Math.PI);
-// // titlePlane.rotateZ = 2 * Math.PI;
-// titlePlane.lookAt(camera.position);
-
-//blocked for merging
-//scene.add( titlePlane );
 
 scene.add(camera);
 //removed for title screen plane - readded for merging
@@ -94,6 +74,7 @@ function init() {
     populateArrays(actors, charactersArray, enemiesArray);
     currentActor = charactersArray[0];
     addSelectedHighlight(scene, currentActor);
+    getCurrentHP(currentActor);
 
     currentEnemy = enemiesArray[0];
     addSelectedHighlight(scene, currentEnemy);
@@ -157,8 +138,10 @@ function onMouseDown(event) {
         if (raycaster.ray.intersectsBox(bBoxes[i])) {
             if (bBoxes[i].name.includes("Player")) {
                 console.log(bBoxes[i].name);
+
                 clearSelectedHighlight(scene, currentActor);
                 currentActor = bBoxes[i].model;
+                getCurrentHP(currentActor);
                 clearCharRadius(scene);
                 console.log(currentActor);
                 moveRadius(scene, currentActor, obstacles);
@@ -168,6 +151,7 @@ function onMouseDown(event) {
                 clearEnemyRadius(scene);
                 clearSelectedHighlight(scene, currentEnemy);
                 currentEnemy = bBoxes[i].model;
+                getCurrentHP(currentEnemy);
                 addSelectedHighlight(scene, currentEnemy);
 
                 if(!currentActor.actor.inTransit && currentActor.actor.path != null){
@@ -183,7 +167,7 @@ function onMouseDown(event) {
         }
     }
     console.log(currentEnemy);
-    console.log(currentActor);       
+    console.log(currentActor);    
 }
 
 //Some global game flags 
@@ -260,6 +244,8 @@ function changeCharacter(characterCount) {
     currentActor = charactersArray[characterCount];
     addSelectedHighlight(scene, currentActor);
     moveRadius(scene, currentActor, obstacles);
+
+    getCurrentHP(currentActor);
 }
 
 function endPlayerTurn(){

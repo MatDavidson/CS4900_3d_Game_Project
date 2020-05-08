@@ -41,4 +41,15 @@ function onEndTurnClick(event){
     }
 }
 
-export { addButtons, onEndTurnClick }
+//NEED TO CALL FOR ENEMIES AS WELL AS EACH TYPE OF CHARACTER SWAP
+function getCurrentHP(currentCharacter){
+    console.log(currentCharacter);
+    let healthDisplay = document.getElementById("hp").innerHTML = "Health: " + currentCharacter.actor.hitPts;
+    let attackDisplay = document.getElementById("attackPower").innerHTML = "Attack Power: " + currentCharacter.actor.attPow;
+    let rangeDisplay = document.getElementById("range").innerHTML = "Range: " + currentCharacter.actor.range;
+    let attackTypeDisplay = document.getElementById("attackType").innerHTML = "Class Type: " + currentCharacter.actor.attType;
+
+
+}
+
+export { addButtons, onEndTurnClick, getCurrentHP }
