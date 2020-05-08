@@ -1,10 +1,13 @@
-import { boardGen } from './gameBoard.js';
+import { boardGen, generateSkybox } from './gameBoard.js';
+import {keyMove} from './moveActor.js';
 import {createCamera, addCameraControls} from'./camera.js';
 import {createModels } from './modelMaker.js';
-import {HeightMap} from './heightMap.js';
-import {Melee, Defender, Ranged} from './actors.js'
+import {HeightMap, VanillaRandomHeightMap} from './heightMap.js';
+
+//set window size
 var height = window.innerHeight;
 var width = window.innerWidth;
+
 //create renderer
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(width, height);
@@ -14,43 +17,73 @@ document.body.append(renderer.domElement);
 var scene = new THREE.Scene;
 scene.background = new THREE.Color("#C0C0C0");
 
-//Generate height map
-var heightMap = new HeightMap(4,3,5,1,-1).map;
+//Generate height map and obstacles array 
+var heightMap = new VanillaRandomHeightMap(4).map;
+let mapVerts = heightMap.length;
+var obstacles = [...Array(mapVerts-1)].map((_, i) => [...Array(mapVerts-1)].map((_, i) => 0));
 
 //call method from worldGeneration.js
-boardGen(scene, heightMap);
+boardGen(scene, heightMap, obstacles);
 
 //create camera and camera controls
 var camera = createCamera(width, height, renderer, scene);
 var controls = addCameraControls(camera, renderer);
 
+var clock = new THREE.Clock();
 const manager = new THREE.LoadingManager();
 manager.onLoad = init;
-createModels(manager,scene, heightMap);
+var mixers = []; //hold all animation mixers
+var actors = []; //hold all models
+var bBoxes = []; //hold all bouding boxes
 
+createModels(manager, scene, heightMap, obstacles, mixers, actors, bBoxes);
+
+
+var currentActor;
 function init(){
-    var def = new Defender('Dan');
-    def.model = scene.getObjectByName('defender');
-    var mel = new Melee('Mike');
-    mel.model = scene.getObjectByName('melee');
-    var ran = new Ranged('Rick');
-    ran.model = scene.getObjectByName('ranged');
-
+    for(let i = 0; i < obstacles.length;i++){
+        console.log(obstacles[i].toString());
+    }
+    
+    currentActor = actors[0];
+    currentActor.actor.inTransit = false;
     animate1();
 }
 
 //add event listeners
 //window.addEventListener('keypress', cameraRotation, false);
-//window.addEventListener('keypress', moveActor, false);
+window.addEventListener('keypress', keySwitch, false);
+
+function keySwitch(event){
+    switch(event.key){
+        case 'w':
+        case 'a':
+        case 's':
+        case 'd':
+            keyMove(event.key, currentActor, obstacles);
+            break;
+    }
+}
+
 //call animate function
 
 //animation loop
 function animate1() {
     requestAnimationFrame(animate1);
-
+    currentActor.actor.update();
     // Rerenders the scene
-    renderer.render(scene, camera);
+    render();
     //update the controls
     controls.update();
 }
 
+function render() {
+
+    var delta = clock.getDelta();
+
+    for ( const mixer of mixers ) {
+        mixer.update( delta );    
+      }
+
+    renderer.render( scene, camera );
+}

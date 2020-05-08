@@ -4,11 +4,11 @@
 <head>
     <meta charset="utf-8">
     <title>Senior Seminar Project</title>
-   <link rel="stylesheet" href="./style.css">
-    
-   <script type ='module' src="./js/game.js"></script>
-    <!--<script type="module" src="main.js"></script>
-    <script type="text/javascript" src="./js/worldGeneration.js"></script>
+    <link rel="stylesheet" href="./style.css">
+
+    <!--<script type ='module' src="./js/game.js"></script>-->
+    <script type="module" src="main.js"></script>
+    <!--<script type="text/javascript" src="./js/worldGeneration.js"></script>
     <script type="module" src="./js/worldGeneration.js"></script> -->
     <script type="module" src="./js/camera.js"></script>
 
@@ -18,29 +18,106 @@
     <script src="./js/OBJLoader.js"></script>
     <script src="./js/GLTFLoader.js"></script>
 
-
-    <!-- <script src="./js/worldGeneration.js"></script>
-    <script src="./js/camera.js"></script>
-    <script src="./js/objectGeneration.js"></script>
-    <script src="./js/actors.js"></script>
-    <script src="./js/loadingScreen.js"></script> -->
-
-        
-
     <script type="module" src="./js/gameBoard.js"></script>
+    <script type="module" src="./js/layer1.js"></script>
+    <script type="module" src="./js/highlights.js"></script>
     <script type="module" src="./js/modelMaker.js"></script>
-    <script type="module" src="./js/actors.js"></script>
+    <script type='module' src="./js/actors.js"></script>
     <script type="module" src="./js/moveActor.js"></script>
-    <script type="module" src="./js/heightMap.js"></script>-->
-    1
+    <script type="module" src="./js/heightMap.js"></script>
+    <script type="module" src="./js/astar.js"></script>
     <script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/loaders/GLTFLoader.js"></script>
 
     <title>Senior Seminar Project</title>
+    <script>
+
+        //used to swap html pages (title screen / game screen)
+        //reference: https://stackoverflow.com/questions/8211128/multiple-distinct-pages-in-one-html-file
+        function show(shown, hidden) {
+            //make a pane with a picture on it
+            document.getElementById(shown).style.display = 'block';
+            document.getElementById(hidden).style.display = 'none';
+            return false;
+        }
+    </script>
 </head>
 
 <body>
-    
-    
+    <div class="title_screen" id="titleScreen">
+        <table>
+            <th>
+                Random Rumble
+            </th>
+            <tr>
+                <td>
+                    <button id="start">
+                        <a href="#" onclick="return show('HUD','titleScreen');">Let's Rumble!</a>
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button onclick="return show('howTo','titleScreen');" id="instructions">How do I play?</button>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <button onclick="return show('credits','titleScreen');" id="about">Who made this?</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="HUD" style="display:none">
+        <button style="bottom:0" id="endTurn" class="ui">End Turn</button>
+        <button style="position: absolute; right: 0; bottom: 0" id="attack" class="ui">Attack</button>
+        <div id="stats">
+            <p id="hp">Health:</p>
+            <p id="attackPower">Attack Power:</p>
+            <p id="range">Range:</p>
+            <p id="attackType">Attack Type:</p>
+
+        </div>
+
+
+        <button onclick="return show('titleScreen','HUD');" style="bottom:1;" id="quit" class="ui">Quit</button>
+    </div>
+    <div id="howTo" style="display:none">
+        <p>
+            Double-click an enemy to select it as a target and see its stats.
+        </p>
+        <p>
+            You can move your character with the W, A, S, and D keys.
+        </p>
+        <p>
+            To swap selected characters, either double-click or press R.
+        </p>
+        <p>
+            Pressing "End Turn" starts the enemy's turn.
+        </p>
+        <p>
+            Pressing "Attack" allows your currently selected character to attack the currently selected enemy (if in
+            range!).
+        </p>
+        <button onclick="return show('titleScreen','howTo');" style="bottom:1;" id="back" class="ui">Back</button>
+
+    </div>
+    <div id="credits" style="display:none">
+        <div>
+            <p>
+                Game made by Emily Shirley and Mathieu Davidson.
+            </p>
+            <p>
+                Valdosta State University, Spring 2020.
+            </p>
+            <p>
+                Created with three.js, a JavaScript library.
+            </p>
+        </div>
+
+        <button onclick="return show('titleScreen','credits');" style="bottom:1;" id="back" class="ui">Back</button>
+
+    </div>
+
 </body>
 
 </html>
