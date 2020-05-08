@@ -1,6 +1,6 @@
 
 import { moveRadius, clearCharRadius, clearEnemyRadius, clearSelectedHighlight, addSelectedHighlight } from './highlights.js';
-import { actors, charactersArray, changeCharacter, scene, animate } from '../main.js';
+import { actors, charactersArray, changeCharacter, scene } from '../main.js';
 import { isOccupied } from './layer1.js';
 import { placeObject } from './gameBoard.js';
 

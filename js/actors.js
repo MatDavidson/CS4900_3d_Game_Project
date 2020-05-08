@@ -19,16 +19,31 @@ class Actor{   //Base character object
         this.path = [];
         this.range = null;         //How far the unit can reach
         //this.range = 3;         //How far the unit can reach
+        this.target = null;
+        this.reacting = false;
+        this.reactDelay = 0;
         this.inTransit = false;
         this.source = null;
         this.destination = null;
         this.resist = null;     //Resistances, weakness and attack type are declared 
         this.weakness = null;   //-->as null here for the following basic functions 
         this.attType = null;    //-->that all ACTOR subclasses will have 
-        this.model = null;      //String that holds the model's name
+        this.model = null;      //String that holds the model
     }
     update(){
-        
+        if(this.reacting && this.reactDelay > 0){
+            this.reactDelay--;
+        }
+        else{
+            if(!this.inTransit){
+                
+                    this.model.action.stop();
+                    let action = this.model.mixer.clipAction( this.model.animations[1]); //idle
+                    this.model.action = action;
+                    action.play();
+                    this.reacting = false;
+            }
+        }
     }
     //Function for changing the the position of an actor
     move(x, y){ 
@@ -61,6 +76,14 @@ class Actor{   //Base character object
         this.hasAttacked = true;
         if(this.moveLeft == 0)
             changeCharacter(charactersArray.indexOf(this))
+
+        let action = this.model.mixer.clipAction( this.model.animations[3]); //Melee attack
+        this.action = action;
+        action.play();
+
+        this.reactDelay = 30;
+        this.reacting = true;
+        
     }
 
     //Check to see if an actor is in attack range
