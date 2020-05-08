@@ -13,6 +13,7 @@ class Actor{   //Base character object
         this.moveLeft = 5;
         this.moveDelay = 0;
         this.path = [];
+        this.target = null;
         this.range = 3;         //How far the unit can reach
         this.inTransit = false;
         this.source = null;

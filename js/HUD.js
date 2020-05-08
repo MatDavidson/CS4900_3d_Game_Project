@@ -1,5 +1,4 @@
-import { scene, enemiesArray, charactersArray, currentActor, currentEnemy } from "../main.js";
-//import { enemiesTurn, enemyCount, characterCount } from "./objectGeneration.js";
+import { scene, enemiesArray, charactersArray, currentActor, currentEnemy, endPlayerTurn } from "../main.js";
 import { Actor, Melee, Defender, Ranged } from "./actors.js";
 
 //this file contains HUD elements
@@ -35,7 +34,7 @@ function addButtons(charactersArray, enemiesArray){
 
 function onEndTurnClick(event){
     console.log("button clicked");
-    enemiesTurn(enemiesArray, enemyCount);  //will need to add more parameters 
+    endPlayerTurn();                            //will need to add more parameters 
                                             //once enemy attacking is implemented
 }
 

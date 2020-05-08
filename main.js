@@ -1,13 +1,12 @@
 import { boardGen } from './js/gameBoard.js';
 import { createCamera, addCameraControls } from './js/camera.js';
 import { createModels } from './js/modelMaker.js';
-// import { keyLifted, movePlayer, changeCharacter, } from './js/objectGeneration.js';
-import { HeightMap, VanillaRandomHeightMap } from './js/heightMap.js';
-// import {Melee, Defender, Ranged} from './js/actors.js';
-import { addButtons, onEndTurnClick } from './js/HUD.js';
+import { VanillaRandomHeightMap } from './js/heightMap.js';
+import { addButtons} from './js/HUD.js';
 import { keyMove, keyLifted, moveActor, pathMove } from './js/moveActor.js';
 import { moveRadius, characterRadius, clearCharRadius, clearEnemyRadius, clearSelectedHighlight, addSelectedHighlight } from './js/highlights.js';
 import { getPath } from './js/astar.js';
+import { enemyTurn } from './js/enemies.js';
 // import { CSS2DRenderer, CSS2DObject } from './js/CSS2DRenderer.js';
 
 
@@ -64,24 +63,8 @@ var controls = addCameraControls(camera, renderer);
 
 //loadCat();
 
-var meleeBox;
-var rangedBox;
-var defenderBox;
-
-const mapTopZ = 7.5;
-const mapRightX = -7.5;
-const mapBottomZ = -7.5;
-const mapLeftX = 7.5;
-
 var charactersArray = [];
 var enemiesArray = [];
-
-var boundingBoxArray = [];
-var boxHelperMelee;
-var boxHelperRanged;
-var boxHelperDefender;
-
-boundingBoxArray.push(boxHelperMelee, boxHelperRanged, boxHelperDefender);
 
 var clock = new THREE.Clock();
 const manager = new THREE.LoadingManager();
@@ -200,17 +183,43 @@ function onMouseDown(event) {
     console.log(currentActor);       
 }
 
+//Some global game flags 
+var playerTurn = true;
+
 function animate() {
     //update bounding boxes
     //updateBoundingBoxes();
     requestAnimationFrame(animate);
-    if(currentActor.actor.path != null){
-        if(currentActor.actor.moveLeft>0 && currentActor.actor.path.length>0 && !currentActor.actor.inTransit)
-            pathMove(currentActor, currentActor.actor.path.pop(), obstacles, scene);
+
+    if(playerTurn){
+        if(currentActor.actor.path != null){
+            if(currentActor.actor.moveLeft>0 && currentActor.actor.path.length>0 && !currentActor.actor.inTransit)
+                pathMove(currentActor, currentActor.actor.path.pop(), obstacles, scene);
+            if(currentActor.actor.moveLeft == 0)
+                currentActor.actor.path = null;
+        }
+        if (currentActor.actor.inTransit === true) {
+            moveActor(currentActor, currentActor.actor.source, currentActor.actor.destination);
+            console.log("Moving...");
+        }
     }
-    if (currentActor.actor.inTransit === true) {
-        moveActor(currentActor, currentActor.actor.source, currentActor.actor.destination);
-        console.log("Moving...");
+    else{
+        if(currentEnemy.actor.path != null){
+            if(currentEnemy.actor.moveLeft>0 && currentEnemy.actor.path.length>0 && !currentEnemy.actor.inTransit)
+                pathMove(currentEnemy, currentEnemy.actor.path.pop(), obstacles, scene);
+            if(currentEnemy.actor.moveLeft == 0 && !currentEnemy.actor.inTransit){
+                currentEnemy.actor.path = null;
+                nextEnemy();
+            }
+            if(currentEnemy.actor.inRange(currentEnemy.actor.target.actor)){
+                currentEnemy.actor.attack(currentEnemy.actor.target.actor);
+                nextEnemy();
+            }
+        }
+        if (currentEnemy.actor.inTransit === true) {
+            moveActor(currentEnemy, currentEnemy.actor.source, currentEnemy.actor.destination);
+            console.log("Moving...");
+        }
     }
     // Rerenders the scene  
     render();
@@ -246,15 +255,40 @@ function changeCharacter(characterCount) {
     moveRadius(scene, currentActor, obstacles);
 }
 
+function endPlayerTurn(){
+    playerTurn = false;
+    clearCharRadius(scene);
+    clearSelectedHighlight(scene, currentActor);
+
+    currentEnemy = enemiesArray[0];
+    addSelectedHighlight(scene, currentEnemy);
+    moveRadius(scene, currentEnemy, obstacles);
+    enemyTurn(currentEnemy);
+}
+
+function nextEnemy(){
+    let count = enemiesArray.indexOf(currentEnemy);
+    if(count ==enemiesArray.length-1){
+        playerTurn = true;
+        for(let i = 0; i < enemiesArray.length; i++){
+            enemiesArray[i].actor.moveLeft = enemiesArray[i].actor.movement;
+        }
+        changeCharacter(charactersArray.length);
+    }
+    else{
+        clearCharRadius(scene);
+        clearSelectedHighlight(scene, currentEnemy);
+        currentEnemy = enemiesArray[enemiesArray.indexOf(currentEnemy) + 1];
+        addSelectedHighlight(scene, currentEnemy);
+        moveRadius(scene, currentEnemy, obstacles);
+        enemyTurn(currentEnemy);
+    }
+}
+
 export {
-    scene, changeCharacter, animate
-    , charactersArray, enemiesArray,
-    currentActor,
+    scene, changeCharacter, charactersArray, enemiesArray,
+    currentActor, obstacles,
     currentEnemy,
-    mapTopZ,
-    mapRightX,
-    mapBottomZ,
-    mapLeftX,
     //controls
-    actors
+    actors, endPlayerTurn
 };
