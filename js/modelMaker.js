@@ -107,9 +107,15 @@ function createModels(manager, scene, heightMap, obstacles, mixers, actors, boxe
         //Have the model play the ide animation 
         let animations = gltf.animations;
         root.animations = animations;
-        var action = mixer.clipAction( root.animations[1]); //Idle
-        root.action = action;
-        action.play();
+        var idleAni = mixer.clipAction( root.animations[1]); //Idle
+        root.idleAni = idleAni;
+        idleAni.play();
+
+        var attAni = mixer.clipAction( root.animations[3]); //Melee Attack
+        root.attAni = attAni;
+
+        var reactAni = mixer.clipAction( root.animations[4]); //Melee Attack
+        root.reactAni = reactAni;
         
         //name the model for easy access
         root.name = 'model - ' + a + ' - ' + i;

@@ -26,17 +26,19 @@ class Actor{   //Base character object
         this.model = null;      //String that holds the model
     }
     update(){
-        if(this.reacting && this.reactDelay > 0){
-            this.reactDelay--;
-        }
-        else{
-            if(!this.inTransit){
-                
-                    this.model.action.stop();
-                    let action = this.model.mixer.clipAction( this.model.animations[1]); //idle
-                    this.model.action = action;
-                    action.play();
+        if(this.reacting ){
+            if(this.reactDelay > 0){
+                this.reactDelay--;
+            }
+            else{
+                if(!this.inTransit){
+                    
+                    this.model.attAni.stop();
+                    this.model.reactAni.stop();
+                    
+                    this.model.idleAni.play();
                     this.reacting = false;
+                }
             }
         }
     }
@@ -70,13 +72,14 @@ class Actor{   //Base character object
         actor.hitPts -= this.attPow * attMod;                  //reduce the arg actor's HP 
         this.hasAttacked = true;
 
-        let action = this.model.mixer.clipAction( this.model.animations[3]); //Melee attack
-        this.action = action;
-        action.play();
+        this.model.attAni.play();
+        actor.model.reactAni.play();
 
-        this.reactDelay = 30;
+        this.reactDelay = 45;
         this.reacting = true;
-        
+
+        actor.reactDelay = 45;
+        actor.reacting = true;
     }
 
     //Check to see if an actor is in attack range
