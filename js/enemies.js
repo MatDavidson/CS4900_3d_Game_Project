@@ -1,4 +1,4 @@
-import { charactersArray,  scene, obstacles, nextEnemy} from '../main.js';
+import { charactersArray,  scene, obstacles, nextEnemy, delay} from '../main.js';
 import { getPath } from './astar.js';
 import { pathMove } from './moveActor.js';
 
@@ -8,6 +8,7 @@ function enemyTurn(actor){
 
     if(actor.actor.target != null && actor.actor.inRange(actor.actor.target.actor)){
         actor.actor.attack(actor.actor.target.actor);
+        delay(30);
         nextEnemy();
         return;
     }
