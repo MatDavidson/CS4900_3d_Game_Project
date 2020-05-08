@@ -1,4 +1,4 @@
-import { changeCharacter, charactersArray} from '../main.js';
+import { actorDefeated} from '../main.js';
 
 class Actor{   //Base character object
     constructor(name){
@@ -38,6 +38,8 @@ class Actor{   //Base character object
                     
                     this.model.idleAni.play();
                     this.reacting = false;
+                    if(this.hitPts <= 0)
+                        actorDefeated(this.model);
                 }
             }
         }
@@ -72,13 +74,18 @@ class Actor{   //Base character object
         actor.hitPts -= this.attPow * attMod;                  //reduce the arg actor's HP 
         this.hasAttacked = true;
 
+        
         this.model.attAni.play();
-        actor.model.reactAni.play();
 
-        this.reactDelay = 45;
+        if(actor.hitPts <= 0)
+            actor.model.defeatAni.play();
+        else
+            actor.model.reactAni.play();
+
+        this.reactDelay = 35;
         this.reacting = true;
 
-        actor.reactDelay = 45;
+        actor.reactDelay = 35;
         actor.reacting = true;
     }
 

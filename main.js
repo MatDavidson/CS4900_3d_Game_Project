@@ -208,14 +208,15 @@ function animate() {
     }
     else{
         if(currentEnemy.actor.path != null){
+            if(currentEnemy.actor.target != null && currentEnemy.actor.inRange(currentEnemy.actor.target.actor) && !currentEnemy.actor.inTransit){
+                currentEnemy.actor.attack(currentEnemy.actor.target.actor);
+                currentEnemy.actor.path = null;
+                nextEnemy();
+            }
             if(currentEnemy.actor.moveLeft>0 && currentEnemy.actor.path.length>0 && !currentEnemy.actor.inTransit)
                 pathMove(currentEnemy, currentEnemy.actor.path.pop(), obstacles, scene);
             if(currentEnemy.actor.moveLeft == 0 && !currentEnemy.actor.inTransit){
                 currentEnemy.actor.path = null;
-                nextEnemy();
-            }
-            if(currentEnemy.actor.inRange(currentEnemy.actor.target.actor) && !currentEnemy.actor.inTransit){
-                currentEnemy.actor.attack(currentEnemy.actor.target.actor);
                 nextEnemy();
             }
         }
@@ -250,7 +251,7 @@ function render() {
 // Changes the seleceted character for the player
 function changeCharacter(characterCount) {
     console.log(characterCount);
-    if (characterCount < 4)
+    if (characterCount < charactersArray.length-1)
         characterCount++;
     else
         characterCount = 0;
@@ -294,7 +295,23 @@ function nextEnemy(){
     }
 }
 
+function actorDefeated(actor){
+    if (actor.actor.name.includes("Enemy"))
+        enemiesArray.splice(enemiesArray.indexOf(actor));
+    else{
+        charactersArray.splice(charactersArray.indexOf(actor));
+        for(let i = 0; i < enemiesArray.length; i++){
+            if(enemiesArray[i].actor.target == actor)
+                enemiesArray[i].actor.target = null;
+        }
+    }
+    actors.splice(actors.indexOf(actor));
+    let box = actor.bBox;
+    bBoxes.splice(bBoxes.indexOf(box));
 
+    scene.remove( actor);
+    
+}
 
 
 export {
@@ -302,5 +319,5 @@ export {
     currentActor, obstacles,
     currentEnemy,
     //controls
-    actors, endPlayerTurn
+    actors, endPlayerTurn, actorDefeated, nextEnemy
 };
