@@ -78,22 +78,26 @@ class Actor{   //Base character object
         }
         actor.hitPts -= this.attPow * attMod;                  //reduce the arg actor's HP 
         this.hasAttacked = true;
-        if(this.moveLeft == 0)
-            changeCharacter(charactersArray.indexOf(this))
+        // if(this.moveLeft == 0)
+        //     changeCharacter(charactersArray.indexOf(this))
 
         
         this.model.attAni.play();
 
-        if(actor.hitPts <= 0)
+        if(actor.hitPts <= 0){
             actor.model.defeatAni.play();
-        else
+        }
+        else{
             actor.model.reactAni.play();
+        }
 
         this.reactDelay = 35;
         this.reacting = true;
 
         actor.reactDelay = 35;
         actor.reacting = true;
+
+        console.log(this.name + " attacks " + actor.name )
     }
 
     //Check to see if an actor is in attack range
@@ -152,7 +156,7 @@ class Melee extends Actor{
         super(name);
         this.movement = 5;
         this.moveLeft = 5;
-        this.range = 5;
+        this.range = 2;
         this.hitPts = 10;
         this.attPow = 3;
         this.weakness = ['Defender'];
@@ -166,7 +170,7 @@ class Defender extends Actor{
         super(name);
         this.movement = 3;
         this.moveLeft = 3;
-        this.range = 3;
+        this.range = 2;
         this.hitPts = 15;
         this.attPow = 4;
         this.weakness = ['Ranged'];
@@ -180,7 +184,7 @@ class Ranged extends Actor{
         super(name);
         this.movement = 4;
         this.moveLeft = 4;
-        this.range = 8;
+        this.range = 6;
         this.hitPts = 5;
         this.attPow = 2;
         this.weakness = ['Melee'];

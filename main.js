@@ -192,12 +192,12 @@ function animate() {
     }
     else{
         if(currentEnemy.actor.path != null){
-            if(currentEnemy.actor.target != null && currentEnemy.actor.inRange(currentEnemy.actor.target.actor) && !currentEnemy.actor.inTransit){
+            if(currentEnemy.actor.target != null && currentEnemy.actor.inRange(currentEnemy.actor.target.actor) && !currentEnemy.actor.inTransit && !currentEnemy.actor.hasAttacked){
                 currentEnemy.actor.attack(currentEnemy.actor.target.actor);
                 currentEnemy.actor.path = null;
                 nextEnemy();
             }
-            if(currentEnemy.actor.moveLeft>0 && currentEnemy.actor.path.length>0 && !currentEnemy.actor.inTransit)
+            if(currentEnemy.actor.moveLeft>0 && currentEnemy.actor.path != null && currentEnemy.actor.path.length && !currentEnemy.actor.inTransit)
                 pathMove(currentEnemy, currentEnemy.actor.path.pop(), obstacles, scene);
             if(currentEnemy.actor.moveLeft == 0 && !currentEnemy.actor.inTransit){
                 currentEnemy.actor.path = null;
@@ -269,7 +269,7 @@ function nextEnemy(){
         }
         clearCharRadius(scene);
         clearSelectedHighlight(scene, currentEnemy);
-        changeCharacter(charactersArray.length);
+        //changeCharacter(charactersArray.length);
     }
     else{
         clearCharRadius(scene);
@@ -285,15 +285,18 @@ function actorDefeated(actor){
     if (actor.actor.name.includes("Enemy"))
         enemiesArray.splice(enemiesArray.indexOf(actor));
     else{
-        charactersArray.splice(charactersArray.indexOf(actor));
+        
         for(let i = 0; i < enemiesArray.length; i++){
             if(enemiesArray[i].actor.target == actor)
                 enemiesArray[i].actor.target = null;
         }
+        charactersArray.splice(charactersArray.indexOf(actor));
     }
     actors.splice(actors.indexOf(actor));
     let box = actor.bBox;
     bBoxes.splice(bBoxes.indexOf(box));
+
+    obstacles[actor.actor.xPos][actor.actor.yPos] == 0;
 
     scene.remove( actor);
     
