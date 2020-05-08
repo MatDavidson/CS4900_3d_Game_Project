@@ -4,9 +4,10 @@ import { createModels } from './js/modelMaker.js';
 // import { keyLifted, movePlayer, changeCharacter, } from './js/objectGeneration.js';
 import { HeightMap, VanillaRandomHeightMap } from './js/heightMap.js';
 // import {Melee, Defender, Ranged} from './js/actors.js';
-import { addButtons, onEndTurnClick } from './js/HUD.js';
-import { keyMove, keyLifted, moveActor } from './js/moveActor.js';
+import { addButtons, onEndTurnClick, getCurrentHP } from './js/HUD.js';
+import { keyMove, keyLifted, moveActor, pathMove } from './js/moveActor.js';
 import { moveRadius, characterRadius, clearCharRadius, clearEnemyRadius, clearSelectedHighlight, addSelectedHighlight } from './js/highlights.js';
+import { getPath } from './js/astar.js';
 // import { CSS2DRenderer, CSS2DObject } from './js/CSS2DRenderer.js';
 
 
@@ -38,24 +39,6 @@ boardGen(scene, heightMap, obstacles, highlights, nodes);
 
 //changed camera for title plane adjustment - see camera.js
 var camera = createCamera(width, height, renderer, scene);
-
-
-
-
-//create title screen scene
-// var planeGeometry = new THREE.PlaneGeometry(50, 50);
-// var planeTexture = new THREE.TextureLoader().load('textures/rabbit-9.jpg');
-// var planeMaterial = new THREE.MeshBasicMaterial({ map: planeTexture });
-// planeMaterial.side = THREE.DoubleSide;
-// var titlePlane = new THREE.Mesh(planeGeometry, planeMaterial);
-// titlePlane.position.set(-1, 1.5, -3.75);
-// //var rotateVector = new THREE.Vector3(-1, 0, -1);
-// //titlePlane.rotateOnWorldAxis(rotateVector, Math.PI);
-// // titlePlane.rotateZ = 2 * Math.PI;
-// titlePlane.lookAt(camera.position);
-
-//blocked for merging
-//scene.add( titlePlane );
 
 scene.add(camera);
 //removed for title screen plane - readded for merging
@@ -110,6 +93,7 @@ function init() {
     populateArrays(actors, charactersArray, enemiesArray);
     currentActor = charactersArray[0];
     addSelectedHighlight(scene, currentActor);
+    getCurrentHP(currentActor);
 
     currentEnemy = enemiesArray[0];
     addSelectedHighlight(scene, currentEnemy);
@@ -150,6 +134,7 @@ var raycaster = new THREE.Raycaster();
 document.addEventListener('mousedown', onMouseDown, false);
 
 function onMouseDown(event) {
+
     event.preventDefault();
 
     raycaster.setFromCamera(mouse, camera);
@@ -170,8 +155,10 @@ function onMouseDown(event) {
         if (raycaster.ray.intersectsBox(bBoxes[i])) {
             if (bBoxes[i].name.includes("Player")) {
                 console.log(bBoxes[i].name);
+
                 clearSelectedHighlight(scene, currentActor);
                 currentActor = bBoxes[i].model;
+                getCurrentHP(currentActor);
                 clearCharRadius(scene);
                 console.log(currentActor);
                 moveRadius(scene, currentActor, obstacles);
@@ -181,19 +168,34 @@ function onMouseDown(event) {
                 clearEnemyRadius(scene);
                 clearSelectedHighlight(scene, currentEnemy);
                 currentEnemy = bBoxes[i].model;
+                getCurrentHP(currentEnemy);
                 addSelectedHighlight(scene, currentEnemy);
+
+                if(!currentActor.actor.inTransit && currentActor.actor.path != null){
+                    currentActor.actor.path = getPath(currentActor, currentEnemy.actor.xPos, currentEnemy.actor.yPos);
+
+                    for(let i = 0; i < currentActor.actor.path.length; i++){
+                        console.log("(" + currentActor.actor.path[i].yPos + "," + currentActor.actor.path[i].xPos);
+                    }
+
+                    pathMove(currentActor, currentActor.actor.path.pop(), obstacles, scene);
+                }
             }
         }
     }
-     console.log(currentEnemy);
-     console.log(currentActor);
-
+    console.log(currentEnemy);
+    console.log(currentActor);    
+    
 }
 
 function animate() {
     //update bounding boxes
     //updateBoundingBoxes();
     requestAnimationFrame(animate);
+    if(currentActor.actor.path != null){
+        if(currentActor.actor.moveLeft>0 && currentActor.actor.path.length>0 && !currentActor.actor.inTransit)
+            pathMove(currentActor, currentActor.actor.path.pop(), obstacles, scene);
+    }
     if (currentActor.actor.inTransit === true) {
         moveActor(currentActor, currentActor.actor.source, currentActor.actor.destination);
         console.log("Moving...");
@@ -230,10 +232,12 @@ function changeCharacter(characterCount) {
     currentActor = charactersArray[characterCount];
     addSelectedHighlight(scene, currentActor);
     moveRadius(scene, currentActor, obstacles);
+
+    getCurrentHP(currentActor);
 }
 
 export {
-    scene, changeCharacter
+    scene, changeCharacter, animate
     , charactersArray, enemiesArray,
     currentActor,
     currentEnemy,

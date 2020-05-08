@@ -66,7 +66,7 @@ function createHighlights(scene, heightMap, mapVerts, highlights, nodes) {
 }
 
 function moveRadius(scene, actor, obstacles) {
-  var viableSpaces = generateViableList(scene, actor, obstacles);
+  var viableSpaces = generateViableList(actor);
 
   for (let i = 0; i < viableSpaces.length; i++) {
 
