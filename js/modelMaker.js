@@ -108,6 +108,7 @@ function createModels(manager, scene, heightMap, obstacles, mixers, actors, boxe
         let animations = gltf.animations;
         root.animations = animations;
         var action = mixer.clipAction( root.animations[1]); //Idle
+        root.action = action;
         action.play();
         
         //name the model for easy access
