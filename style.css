@@ -40,6 +40,7 @@ button #quit{
 	text-align: center;
 	z-index: 100;
     display:block;
+    color: #fff;
 }
 
 .title_screen button a{
@@ -83,3 +84,14 @@ table th{
   #attackPower, #range, #attackType {
       font-size: 20px;
   }
+
+  #credits, #howTo{
+    background-color: #ca530e;
+    position: relative;
+    text-align: center;
+    top: 250;
+    color: white;
+    font-size: 30px;
+    z-index: 100;
+  }
+
