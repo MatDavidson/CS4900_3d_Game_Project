@@ -49,7 +49,7 @@ function getPath(actor, x,y){
     while(openList.length > 0){
         currentNode = leastCostNode(openList);
         openList.splice(openList.indexOf(currentNode),1);
-        console.log("Current node: (" + currentNode.yPos + "," + currentNode.xPos + "), Count: " + openList.length + "Target node: (" + targetNode.yPos + "," + targetNode.xPos + ")\nCost: " + currentNode.cost + ", Steps: " + currentNode.steps+ ", Heur: " + currentNode.heur)
+        //console.log("Current node: (" + currentNode.yPos + "," + currentNode.xPos + "), Count: " + openList.length + "Target node: (" + targetNode.yPos + "," + targetNode.xPos + ")\nCost: " + currentNode.cost + ", Steps: " + currentNode.steps+ ", Heur: " + currentNode.heur)
         if(currentNode == targetNode){
             path = fillPath(currentNode);
             return path;
@@ -59,6 +59,7 @@ function getPath(actor, x,y){
             checkNeighbors(nodes, currentNode, openList, closedList, targetNode);
         }
     }
+    return path;
 }
 
 function leastCostNode(openList){

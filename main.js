@@ -177,37 +177,45 @@ function animate() {
     //update bounding boxes
     //updateBoundingBoxes();
     requestAnimationFrame(animate);
-
-    if(playerTurn){
-        if(currentActor.actor.path != null){
-            if(currentActor.actor.moveLeft>0 && currentActor.actor.path.length>0 && !currentActor.actor.inTransit)
-                pathMove(currentActor, currentActor.actor.path.pop(), obstacles, scene);
-            if(currentActor.actor.moveLeft == 0)
-                currentActor.actor.path = null;
-        }
-        if (currentActor.actor.inTransit === true) {
-            moveActor(currentActor, currentActor.actor.source, currentActor.actor.destination);
-            console.log("Moving...");
-        }
+    if(globalDelay > 0){
+        globalDelay--;
+        return;
     }
-    else{
-        if(currentEnemy.actor.path != null){
-            if(currentEnemy.actor.moveLeft>0 && currentEnemy.actor.path.length>0 && !currentEnemy.actor.inTransit)
-                pathMove(currentEnemy, currentEnemy.actor.path.pop(), obstacles, scene);
-            if(currentEnemy.actor.moveLeft == 0 && !currentEnemy.actor.inTransit){
-                currentEnemy.actor.path = null;
-                nextEnemy();
+
+    
+        if(playerTurn){
+            if(currentActor.actor.path != null){
+                if(currentActor.actor.moveLeft>0 && currentActor.actor.path.length>0 && !currentActor.actor.inTransit)
+                    pathMove(currentActor, currentActor.actor.path.pop(), obstacles, scene);
+                if(currentActor.actor.moveLeft == 0)
+                    currentActor.actor.path = null;
             }
-            if(currentEnemy.actor.inRange(currentEnemy.actor.target.actor) && !currentEnemy.actor.inTransit){
-                currentEnemy.actor.attack(currentEnemy.actor.target.actor);
-                nextEnemy();
+            if (currentActor.actor.inTransit === true) {
+                moveActor(currentActor, currentActor.actor.source, currentActor.actor.destination);
+                console.log("Moving...");
+            }
+        }
+        else{
+            if(currentEnemy.actor.path != null){
+                if(currentEnemy.actor.target != null && currentEnemy.actor.inRange(currentEnemy.actor.target.actor) && !currentEnemy.actor.inTransit && !currentEnemy.actor.hasAttacked){
+                    currentEnemy.actor.attack(currentEnemy.actor.target.actor);
+                    currentEnemy.actor.path = null;
+                    nextEnemy();
+                }
+                if(currentEnemy.actor.moveLeft>0 && currentEnemy.actor.path != null && currentEnemy.actor.path.length && !currentEnemy.actor.inTransit)
+                    pathMove(currentEnemy, currentEnemy.actor.path.pop(), obstacles, scene);
+                if(currentEnemy.actor.moveLeft == 0 && !currentEnemy.actor.inTransit){
+                    currentEnemy.actor.path = null;
+                    nextEnemy();
+                }
             }
         }
         if (currentEnemy.actor.inTransit === true) {
             moveActor(currentEnemy, currentEnemy.actor.source, currentEnemy.actor.destination);
             console.log("Moving...");
         }
-    }
+    
+    
     // Rerenders the scene  
     render();
 
@@ -234,7 +242,7 @@ function render() {
 // Changes the seleceted character for the player
 function changeCharacter(characterCount) {
     console.log(characterCount);
-    if (characterCount < 4)
+    if (characterCount < charactersArray.length-1)
         characterCount++;
     else
         characterCount = 0;
@@ -254,6 +262,7 @@ function endPlayerTurn(){
     clearSelectedHighlight(scene, currentActor);
 
     currentEnemy = enemiesArray[0];
+    getCurrentHP(currentEnemy);
     addSelectedHighlight(scene, currentEnemy);
     moveRadius(scene, currentEnemy, obstacles);
     enemyTurn(currentEnemy);
@@ -268,7 +277,7 @@ function nextEnemy(){
         }
         clearCharRadius(scene);
         clearSelectedHighlight(scene, currentEnemy);
-        changeCharacter(charactersArray.length);
+        changeCharacter(0);
     }
     else{
         clearCharRadius(scene);
@@ -276,17 +285,42 @@ function nextEnemy(){
         currentEnemy = enemiesArray[enemiesArray.indexOf(currentEnemy) + 1];
         addSelectedHighlight(scene, currentEnemy);
         moveRadius(scene, currentEnemy, obstacles);
+        getCurrentHP(currentEnemy);
+        delay(30);
         enemyTurn(currentEnemy);
     }
 }
 
+function actorDefeated(actor){
+    if (actor.actor.name.includes("Enemy"))
+        enemiesArray.splice(enemiesArray.indexOf(actor));
+    else{
+        
+        for(let i = 0; i < enemiesArray.length; i++){
+            if(enemiesArray[i].actor.target == actor)
+                enemiesArray[i].actor.target = null;
+        }
+        charactersArray.splice(charactersArray.indexOf(actor));
+    }
+    actors.splice(actors.indexOf(actor));
+    let box = actor.bBox;
+    bBoxes.splice(bBoxes.indexOf(box));
 
+    obstacles[actor.actor.xPos][actor.actor.yPos] == 0;
 
+    scene.remove( actor);
+    
+}
+
+var globalDelay = 0;
+function delay(frames){
+    globalDelay = frames;
+}
 
 export {
     scene, changeCharacter, charactersArray, enemiesArray, playerTurn,
     currentActor, obstacles,
     currentEnemy,
     //controls
-    actors, endPlayerTurn
+    actors, endPlayerTurn, actorDefeated, nextEnemy, delay
 };
