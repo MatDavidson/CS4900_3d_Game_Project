@@ -40,6 +40,7 @@ button #quit{
 	text-align: center;
 	z-index: 100;
     display:block;
+    color: #fff;
 }
 
 .title_screen button a{
