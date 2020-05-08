@@ -3,20 +3,25 @@ import { actorDefeated} from '../main.js';
 class Actor{   //Base character object
     constructor(name){
         this.name = name;
-        this.hitPts = 10;       //Hit points
-        this.attPow = 2;        //Attack power
+        //this.hitPts = 10;       //Hit points
+        this.hitPts = null;       //Hit points
+        this.attPow = null;        //Attack power
+        //this.attPow = 2;        //Attack power
         this.xPos = 0;          //X position 
         this.yPos = 0;          //Y position
         this.exp = 0;           //Experience points
         this.hasAttacked = false;
-        this.movement = 5;      //How far a unit can move in one turn
-        this.moveLeft = 5;
+        this.movement = null;      //How far a unit can move in one turn
+        //this.movement = 5;      //How far a unit can move in one turn
+        //this.moveLeft = 5;
+        this.moveLeft = null;
         this.moveDelay = 0;
         this.path = [];
+        this.range = null;         //How far the unit can reach
+        //this.range = 3;         //How far the unit can reach
         this.target = null;
         this.reacting = false;
         this.reactDelay = 0;
-        this.range = 3;         //How far the unit can reach
         this.inTransit = false;
         this.source = null;
         this.destination = null;
@@ -73,6 +78,8 @@ class Actor{   //Base character object
         }
         actor.hitPts -= this.attPow * attMod;                  //reduce the arg actor's HP 
         this.hasAttacked = true;
+        if(this.moveLeft == 0)
+            changeCharacter(charactersArray.indexOf(this))
 
         
         this.model.attAni.play();
@@ -143,6 +150,11 @@ class Actor{   //Base character object
 class Melee extends Actor{
     constructor(name){
         super(name);
+        this.movement = 5;
+        this.moveLeft = 5;
+        this.range = 5;
+        this.hitPts = 10;
+        this.attPow = 3;
         this.weakness = ['Defender'];
         this.attType = ['Melee'];
     }
@@ -152,6 +164,11 @@ class Melee extends Actor{
 class Defender extends Actor{
     constructor(name){
         super(name);
+        this.movement = 3;
+        this.moveLeft = 3;
+        this.range = 3;
+        this.hitPts = 15;
+        this.attPow = 4;
         this.weakness = ['Ranged'];
         this.attType = ['Defender'];
     }
@@ -161,7 +178,11 @@ class Defender extends Actor{
 class Ranged extends Actor{
     constructor(name){
         super(name);
-        this.range = 5;
+        this.movement = 4;
+        this.moveLeft = 4;
+        this.range = 8;
+        this.hitPts = 5;
+        this.attPow = 2;
         this.weakness = ['Melee'];
         this.attType = ['Ranged'];
     }
