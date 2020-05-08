@@ -134,6 +134,9 @@ var raycaster = new THREE.Raycaster();
 document.addEventListener('mousedown', onMouseDown, false);
 
 function onMouseDown(event) {
+    if(!playerTurn)
+        return;
+
     event.preventDefault();
 
     raycaster.setFromCamera(mouse, camera);
@@ -211,7 +214,7 @@ function animate() {
                 currentEnemy.actor.path = null;
                 nextEnemy();
             }
-            if(currentEnemy.actor.inRange(currentEnemy.actor.target.actor)){
+            if(currentEnemy.actor.inRange(currentEnemy.actor.target.actor) && !currentEnemy.actor.inTransit){
                 currentEnemy.actor.attack(currentEnemy.actor.target.actor);
                 nextEnemy();
             }
@@ -234,6 +237,10 @@ function render() {
 
     for (const mixer of mixers) {
         mixer.update(delta);
+    }
+
+    for (const actor of actors) {
+        actor.actor.update();
     }
 
     renderer.render(scene, camera);
@@ -273,6 +280,8 @@ function nextEnemy(){
         for(let i = 0; i < enemiesArray.length; i++){
             enemiesArray[i].actor.moveLeft = enemiesArray[i].actor.movement;
         }
+        clearCharRadius(scene);
+        clearSelectedHighlight(scene, currentEnemy);
         changeCharacter(charactersArray.length);
     }
     else{
@@ -285,8 +294,11 @@ function nextEnemy(){
     }
 }
 
+
+
+
 export {
-    scene, changeCharacter, charactersArray, enemiesArray,
+    scene, changeCharacter, charactersArray, enemiesArray, playerTurn,
     currentActor, obstacles,
     currentEnemy,
     //controls
